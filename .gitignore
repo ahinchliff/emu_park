@@ -1,0 +1,28 @@
+# Dependency directories
+node_modules
+
+# Optional npm cache directory
+.npm
+
+# Error logs
+yarn-*.log
+
+# ts
+build/
+*.tsbuildinfo
+.webpack/
+
+# DS_Store
+.DS_Store
+
+# Config
+.npmrc
+
+.vscode/settings.json
+
+# Terraform
+*.tfvars
+*.tfstate*
+.terraform
+*.ovpn
+

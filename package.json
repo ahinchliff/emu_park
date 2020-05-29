@@ -1,0 +1,19 @@
+{
+  "name": "lambda_terraform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "deploy": "yarn build && yarn webpack && yarn terraform-apply",
+    "encrypt-config": "aws-vault exec personal-free-3 -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
+    "terraform-apply": "cd ./terraform/environments/dev && aws-vault exec personal-free-3 -- terraform init && aws-vault exec personal-free-3 -- terraform apply",
+    "destroy": "cd ./terraform/environments/dev && aws-vault exec personal-free-3 -- terraform destroy",
+    "webpack": "webpack",
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "ts-loader": "^7.0.2",
+    "typescript": "^3.9.2",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@lambda_terraform/core",
+  "version": "0.1.0",
+  "private": true,
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf build && rm -f tsconfig.tsbuildinfo",
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.2"
+  },
+  "dependencies": {
+    "@types/joi": "^14.3.4",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^14.0.1",
+    "@types/uuid": "^7.0.3",
+    "aws-sdk": "^2.683.0",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.8.0",
+    "uuid": "^8.0.0"
+  }
+}

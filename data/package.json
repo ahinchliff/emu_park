@@ -1,0 +1,25 @@
+{
+  "name": "@lambda_terraform/api",
+  "version": "0.1.0",
+  "private": true,
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf build",
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.2"
+  },
+  "peerDependencies": {},
+  "dependencies": {
+    "@types/mysql2": "types/mysql2",
+    "@types/node": "^14.0.1",
+    "@types/sql-bricks": "^2.0.1",
+    "moment": "^2.25.3",
+    "mysql2": "^2.1.0",
+    "sql-bricks": "^2.0.5"
+  },
+  "resolutions": {
+    "@types/node": "10.12.3"
+  }
+}

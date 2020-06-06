@@ -30,14 +30,14 @@
       "path": "./data"
     },
     {
-      "path": "./core"
+      "path": "./core-backend"
     }
   ],
   "include": [
     "./queue-tasks/src/**/*.d.ts",
     "./api/src/**/*.d.ts",
     "./data/src/**/*.d.ts",
-    "./core/src/**/*.d.ts"
+    "./core-backend/src/**/*.d.ts"
   ],
   "exclude": ["node_modules", "*/dist/*", "*/build/*"]
 }

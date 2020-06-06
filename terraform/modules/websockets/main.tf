@@ -87,10 +87,12 @@ resource "aws_iam_role_policy" "lambda_can_access_dynamodb_policy" {
 data "aws_iam_policy_document" "lambda_policy_document" {
   statement {
     actions = [
+      "dynamodb:Query",
+      "dynamodb:BatchWriteItem",
       "dynamodb:PutItem",
       "dynamodb:DeleteItem",
     ]
-    resources = [aws_dynamodb_table.connections.arn]
+    resources = [aws_dynamodb_table.connections.arn, "${aws_dynamodb_table.connections.arn}/index/*"]
   }
 
   statement {
@@ -114,7 +116,12 @@ resource "aws_dynamodb_table" "connections" {
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
   write_capacity = 20
-  hash_key       = "connectionId"
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
 
   attribute {
     name = "connectionId"
@@ -124,6 +131,15 @@ resource "aws_dynamodb_table" "connections" {
   attribute {
     name = "room"
     type = "S"
+  }
+
+  global_secondary_index {
+    name               = "connectionId"
+    hash_key           = "connectionId"
+    range_key          = "room"
+    write_capacity     = 20
+    read_capacity      = 20
+    projection_type    = "ALL"
   }
 
   global_secondary_index {

@@ -1,4 +1,4 @@
-declare namespace core {
+declare namespace core.backend {
   interface ISocketService {
     closeConnection(connectionId: string): Promise<void>;
     subscribeConnectionToRoom(
@@ -10,7 +10,6 @@ declare namespace core {
       room: string
     ): Promise<void>;
     unsubscribeConnectionFromAllRooms(connectionId: string): Promise<void>;
-    connectionHasRecord(connectionId: string): Promise<boolean>;
     sendTestMessage(room: string, message: string): Promise<void>;
   }
 }

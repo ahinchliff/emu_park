@@ -5,7 +5,7 @@ import UserClient from "./clients/User";
 
 export async function initialise(
   config: data.IMysqlConfig,
-  logger: core.Logger
+  logger: core.backend.Logger
 ): Promise<Pool> {
   logger.debug("Creating MySQL pool");
   return new Promise(
@@ -36,7 +36,7 @@ export async function initialise(
 
 export const getClients = (
   pool: Pool,
-  logger: core.Logger,
+  logger: core.backend.Logger,
   logValues: boolean
 ): data.DataClients => ({
   dbTransaction: new MysqlDBTransactionClient(pool, logger),

@@ -5,7 +5,11 @@ import { rowExtractor } from "./utils";
 export default class UserClient
   extends EntityClientBase<"user", data.User, data.NewUser>
   implements data.UserClient {
-  public constructor(pool: Pool, logger: core.Logger, logValues: boolean) {
+  public constructor(
+    pool: Pool,
+    logger: core.backend.Logger,
+    logValues: boolean
+  ) {
     super("user", pool, logger, logValues, mapper, "userId");
   }
 }

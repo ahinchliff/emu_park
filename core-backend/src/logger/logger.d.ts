@@ -1,4 +1,4 @@
-declare namespace core {
+declare namespace core.backend {
   interface Logger {
     silly: (message: string, data?: any) => void;
     debug: (message: string, data?: any) => void;

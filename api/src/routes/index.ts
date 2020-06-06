@@ -7,7 +7,7 @@ import user from "./user";
 export default (
   app: Koa,
   config: api.Config,
-  services: (logger: core.Logger) => api.Services
+  services: (logger: core.backend.Logger) => api.Services
 ): void => {
   const auth = authBuilder(config, services);
 

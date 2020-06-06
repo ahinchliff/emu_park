@@ -22,7 +22,7 @@ export default class EntityClientBase<
   constructor(
     protected tableName: Table,
     pool: Pool,
-    logger: core.Logger,
+    logger: core.backend.Logger,
     logValues: boolean,
     private mapper: (row: RowDataPacket) => Entity,
     private primaryKey:

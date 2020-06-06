@@ -1,7 +1,7 @@
 import * as Koa from "koa";
 import * as serverlessHttp from "serverless-http";
 import initApp from "./initApp";
-import Logger from "../../core/build/logger";
+import Logger from "../../core-backend/build/logger";
 
 let app: Koa | undefined = undefined;
 

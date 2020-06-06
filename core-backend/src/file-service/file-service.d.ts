@@ -1,4 +1,4 @@
-declare namespace core {
+declare namespace core.backend {
   type PreSignedUrlData = {
     url: string;
     fields: {

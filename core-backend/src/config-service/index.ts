@@ -1,8 +1,12 @@
 import * as AWS from "aws-sdk";
 
-export default class ConfigService implements core.config.IConfigService {
+export default class ConfigService
+  implements core.backend.config.IConfigService {
   private ssm: AWS.SSM;
-  constructor(private logger: core.Logger, defaultRegion?: "eu-west-1") {
+  constructor(
+    private logger: core.backend.Logger,
+    defaultRegion?: "eu-west-1"
+  ) {
     if (defaultRegion) {
       AWS.config.update({ region: "eu-west-1" });
     }
@@ -10,9 +14,9 @@ export default class ConfigService implements core.config.IConfigService {
   }
 
   public get = async <T>(
-    sensitiveConfigKeys: core.config.SensitiveConfigKey[]
+    sensitiveConfigKeys: core.backend.config.SensitiveConfigKey[]
   ) => {
-    const nonSensitiveKeys: core.config.NonSensitiveConfigKey[] = [
+    const nonSensitiveKeys: core.backend.config.NonSensitiveConfigKey[] = [
       "env",
       "mysql_host",
       "mysql_port",
@@ -23,7 +27,7 @@ export default class ConfigService implements core.config.IConfigService {
       "web_sockets_dynamo_table_name",
       "web_sockets_endpoint",
     ];
-    const allKeys: core.config.ConfigKey[] = [
+    const allKeys: core.backend.config.ConfigKey[] = [
       ...sensitiveConfigKeys,
       ...nonSensitiveKeys,
     ];
@@ -38,7 +42,7 @@ export default class ConfigService implements core.config.IConfigService {
     const parameters = paramsResult.Parameters || [];
 
     const fetchedParams = allKeys.reduce(
-      (builder: {}, key: core.config.ConfigKey) => {
+      (builder: {}, key: core.backend.config.ConfigKey) => {
         const param = parameters.find((p) => p.Name === key);
         if (!param) {
           const error = new Error(
@@ -54,9 +58,9 @@ export default class ConfigService implements core.config.IConfigService {
         };
       },
       {}
-    ) as { [key in core.config.ConfigKey]: any };
+    ) as { [key in core.backend.config.ConfigKey]: any };
 
-    const config: core.config.Config = {
+    const config: core.backend.config.Config = {
       env: fetchedParams.env,
       auth: {
         jwtIssuer: fetchedParams.jwt_issuer,

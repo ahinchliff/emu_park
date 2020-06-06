@@ -4,7 +4,7 @@ const getProfilePictureUploadUrl: AuthRequestHandler<
   {},
   {},
   {},
-  core.PreSignedUrlData
+  core.backend.PreSignedUrlData
 > = async ({ user, services }) => {
   return services.file.getProfilePictureUploadUrl(user.userId.toString());
 };

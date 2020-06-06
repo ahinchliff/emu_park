@@ -1,9 +1,9 @@
-import ConfigService from "../../../core/build/config-service";
-import Logger from "../../../core/build/logger";
-import AuthService from "../../../core/build/auth-service";
-import SocketService from "../../../core/build/socket-service";
+import ConfigService from "../../../core-backend/build/config-service";
+import Logger from "../../../core-backend/build/logger";
+import AuthService from "../../../core-backend/build/auth-service";
+import SocketService from "../../../core-backend/build/socket-service";
 
-type Config = Pick<core.config.Config, "auth" | "env" | "websockets">;
+type Config = Pick<core.backend.config.Config, "auth" | "env" | "websockets">;
 
 type APIGatewayWebsocketEvent = {
   requestContext: {
@@ -14,8 +14,8 @@ type APIGatewayWebsocketEvent = {
 };
 
 let config: Config | undefined = undefined;
-let authService: core.IAuthService | undefined = undefined;
-let socketService: core.ISocketService | undefined = undefined;
+let authService: core.backend.IAuthService | undefined = undefined;
+let socketService: core.backend.ISocketService | undefined = undefined;
 
 const success = { statusCode: 200 };
 const error = { statusCode: 500 };
@@ -79,9 +79,9 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
 const onAuthenticate = async (
   connectionId: string,
   body: string,
-  socketService: core.ISocketService,
-  authService: core.IAuthService,
-  logger: core.Logger
+  socketService: core.backend.ISocketService,
+  authService: core.backend.IAuthService,
+  logger: core.backend.Logger
 ) => {
   const closeConnection = () => socketService.closeConnection(connectionId);
 
@@ -119,8 +119,8 @@ const onAuthenticate = async (
 
 const onDisconnect = async (
   connectionId: string,
-  socketService: core.ISocketService,
-  logger: core.Logger
+  socketService: core.backend.ISocketService,
+  logger: core.backend.Logger
 ) => {
   try {
     await socketService.unsubscribeConnectionFromAllRooms(connectionId);

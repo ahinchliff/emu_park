@@ -1,9 +1,12 @@
 import * as AWS from "aws-sdk";
+import { v4 as uuid } from "uuid";
 
-export default class SocketService implements core.ISocketService {
+const MAX_BATCH_SIZE = 25;
+
+export default class SocketService implements core.backend.ISocketService {
   private dynamoDB: AWS.DynamoDB.DocumentClient;
   private agw: AWS.ApiGatewayManagementApi;
-  constructor(private config: core.config.Config["websockets"]) {
+  constructor(private config: core.backend.config.Config["websockets"]) {
     this.dynamoDB = new AWS.DynamoDB.DocumentClient();
     this.agw = new AWS.ApiGatewayManagementApi({
       apiVersion: "2018-11-29",
@@ -19,6 +22,7 @@ export default class SocketService implements core.ISocketService {
       .put({
         TableName: this.config.dynamoTableName,
         Item: {
+          id: uuid(),
           connectionId,
           room,
         },
@@ -27,14 +31,37 @@ export default class SocketService implements core.ISocketService {
   };
 
   public unsubscribeConnectionFromAllRooms = async (connectionId: string) => {
-    await this.dynamoDB
-      .delete({
+    const subscriptions = await this.dynamoDB
+      .query({
         TableName: this.config.dynamoTableName,
-        Key: {
-          connectionId,
+        IndexName: "connectionId",
+        ExpressionAttributeValues: {
+          ":connectionId": connectionId,
         },
+        KeyConditionExpression: "connectionId = :connectionId",
       })
       .promise();
+
+    if (subscriptions.Items) {
+      const deleteRequests = subscriptions.Items.map((s) => ({
+        DeleteRequest: {
+          Key: {
+            id: s.id,
+          },
+        },
+      }));
+
+      for (let i = 0; i < deleteRequests.length; i += MAX_BATCH_SIZE) {
+        const requests = deleteRequests.slice(i, i + MAX_BATCH_SIZE);
+        await this.dynamoDB
+          .batchWrite({
+            RequestItems: {
+              [this.config.dynamoTableName]: requests,
+            },
+          })
+          .promise();
+      }
+    }
   };
 
   public unsubscribeConnectionFromRoom = async (
@@ -55,31 +82,15 @@ export default class SocketService implements core.ISocketService {
       .promise();
   };
 
-  public connectionHasRecord = async (
-    connectionId: string
-  ): Promise<boolean> => {
-    const connectionRecordResults = await this.dynamoDB
-      .query({
-        TableName: this.config.dynamoTableName,
-        ExpressionAttributeValues: {
-          ":connectionId": connectionId,
-        },
-        KeyConditionExpression: "connectionId = :connectionId",
-      })
-      .promise();
-
-    return !!connectionRecordResults.Items?.length;
-  };
-
   public closeConnection = async (connectionId: string) => {
     await this.agw.deleteConnection({ ConnectionId: connectionId }).promise();
   };
 
   public sendTestMessage = async (room: string, message: string) => {
-    await this.emitEvent(room, "test_event", { message });
+    await this.emitEventToRoom(room, "test_event", { message });
   };
 
-  private emitEvent = async <T>(room: string, event: string, body: T) => {
+  private emitEventToRoom = async <T>(room: string, event: string, body: T) => {
     const usersConnectionSearchResult = await this.dynamoDB
       .query({
         TableName: this.config.dynamoTableName,
@@ -108,6 +119,8 @@ export default class SocketService implements core.ISocketService {
         const error = e as AWS.AWSError;
         if (error.code === "GoneException") {
           this.unsubscribeConnectionFromAllRooms(c.connectionId);
+        } else {
+          // logging
         }
       }
     });

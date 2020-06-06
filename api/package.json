@@ -39,7 +39,7 @@
     "watch": [
       "./build",
       "../data",
-      "../core"
+      "../core-backend"
     ],
     "legacyWatch": true,
     "delay": "1000",

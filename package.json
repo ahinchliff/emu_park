@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "deploy": "yarn build && yarn webpack && yarn terraform-apply",
+    "deploy": "yarn build && yarn webpack && yarn terraform-apply && rm -rf .webpack && rm -rf build",
     "encrypt-config": "aws-vault exec personal-free-3 -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
     "terraform-apply": "cd ./terraform/environments/dev && aws-vault exec personal-free-3 -- terraform init && aws-vault exec personal-free-3 -- terraform apply",
     "destroy": "cd ./terraform/environments/dev && aws-vault exec personal-free-3 -- terraform destroy",

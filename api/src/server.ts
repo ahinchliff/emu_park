@@ -1,5 +1,5 @@
 import initApp from "./initApp";
-import Logger from "../../core/build/logger";
+import Logger from "../../core-backend/build/logger";
 
 (async () => {
   // At this point we don't known what enviorment we are in because we havent

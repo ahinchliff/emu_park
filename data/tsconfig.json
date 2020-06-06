@@ -4,6 +4,6 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "references": [{ "path": "../core" }],
-  "include": ["./src", "../core/src/**/*.d.ts"]
+  "references": [{ "path": "../core-backend" }],
+  "include": ["./src", "../core-backend/src/**/*.d.ts"]
 }

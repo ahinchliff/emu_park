@@ -1,4 +1,4 @@
-declare namespace core.config {
+declare namespace core.backend.config {
   type Config = {
     env: "dev" | "staging" | "production";
     aws: {

@@ -1,11 +1,11 @@
 import * as Koa from "koa";
 import app from "./app";
 import * as mysql from "../../data/build/mysql/index";
-import ConfigService from "../../core/build/config-service";
+import ConfigService from "../../core-backend/build/config-service";
 import { initServices } from "./services";
 
 export default async (
-  logger: core.Logger,
+  logger: core.backend.Logger,
   defaultRegion?: "eu-west-1"
 ): Promise<Koa> => {
   logger.debug("Initialising api");

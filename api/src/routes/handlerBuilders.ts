@@ -1,12 +1,12 @@
 import * as Koa from "koa";
 import * as Router from "@koa/router";
-import Logger from "../../../core/build/logger";
+import Logger from "../../../core-backend/build/logger";
 import { addErrorToContext, notAuthorized } from "../utils/errorsUtils";
 
 export type RequestHandlerPayload<User, Params, QueryString, Body> = {
   user: User;
   config: api.Config;
-  logger: core.Logger;
+  logger: core.backend.Logger;
   services: api.Services;
   params: Params;
   queryString: QueryString;
@@ -24,7 +24,7 @@ type UnAuthRequestHandlerPayload<
   QueryString,
   Body
 > = RequestHandlerPayload<
-  core.api.AuthUser | undefined,
+  core.backend.api.AuthUser | undefined,
   Params,
   QueryString,
   Body
@@ -56,8 +56,8 @@ export type UnAuthRequestHandler<
 
 const getAuthId = async (
   ctx: Koa.Context,
-  authService: core.IAuthService,
-  logger: core.Logger
+  authService: core.backend.IAuthService,
+  logger: core.backend.Logger
 ): Promise<string | undefined> => {
   const authToken = ctx.get("Authorization");
   const split = authToken && authToken.split && authToken.split("Bearer ");
@@ -71,7 +71,7 @@ const getAuthId = async (
 
 const handlerBuilder = (
   config: api.Config,
-  getServices: (logger: core.Logger) => api.Services,
+  getServices: (logger: core.backend.Logger) => api.Services,
   handler:
     | AuthRequestHandler<any, any, any, any>
     | UnAuthRequestHandler<any, any, any, any>,
@@ -123,7 +123,7 @@ const handlerBuilder = (
 
 const getBuilder = (requiresAuth: boolean) => (
   config: api.Config,
-  getServices: (logger: core.Logger) => api.Services
+  getServices: (logger: core.backend.Logger) => api.Services
 ) => (handler: AuthRequestHandler<any, any, any, any>) =>
   handlerBuilder(config, getServices, handler, requiresAuth);
 

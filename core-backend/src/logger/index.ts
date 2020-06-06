@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 
-export default class Logger implements core.Logger {
+export default class Logger implements core.backend.Logger {
   constructor(
     private environment: "dev" | "staging" | "production",
     private userId?: number | string,

@@ -10,9 +10,9 @@ export interface AccessTokenPayload {
   username: string; // cognito specific
 }
 
-export default class AuthService implements core.IAuthService {
+export default class AuthService implements core.backend.IAuthService {
   private jwksClient: jwks.JwksClient | undefined = undefined;
-  constructor(private config: core.config.Config["auth"]) {
+  constructor(private config: core.backend.config.Config["auth"]) {
     const jwksUri = `https://${config.jwtIssuer}${config.jwksPath}`;
     if (!this.jwksClient) {
       this.jwksClient = jwks({
@@ -25,7 +25,7 @@ export default class AuthService implements core.IAuthService {
 
   public getAuthIdFromJwt = async (
     token: string,
-    logger: core.Logger
+    logger: core.backend.Logger
   ): Promise<string | undefined> => {
     try {
       const decodedJwt = await this.verifyAndDecodeJwt(token);

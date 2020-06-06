@@ -16,7 +16,7 @@ export interface IMySQLTransaction extends data.IDBTransaction {
 export default class MySQLClientBase {
   constructor(
     private pool: Pool,
-    private logger: core.Logger,
+    private logger: core.backend.Logger,
     private logValues: boolean = false
   ) {}
 

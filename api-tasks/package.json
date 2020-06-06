@@ -1,5 +1,5 @@
 {
-  "name": "@lambda_terraform/queue-tasks",
+  "name": "@lambda_terraform/api-tasks",
   "version": "0.1.0",
   "private": true,
   "scripts": {},

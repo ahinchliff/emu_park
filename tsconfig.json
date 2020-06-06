@@ -21,7 +21,7 @@
   },
   "references": [
     {
-      "path": "./queue-tasks"
+      "path": "./api-tasks"
     },
     {
       "path": "./api"
@@ -34,7 +34,7 @@
     }
   ],
   "include": [
-    "./queue-tasks/src/**/*.d.ts",
+    "./api-tasks/src/**/*.d.ts",
     "./api/src/**/*.d.ts",
     "./data/src/**/*.d.ts",
     "./core-backend/src/**/*.d.ts"

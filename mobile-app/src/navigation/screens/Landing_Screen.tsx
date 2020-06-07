@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { LiveLeagueScreen } from "../../components";
+import { ScreenWrapper } from "../../components";
 import { ScreenProps } from "../../typings/screenProps";
 
 type Props = ScreenProps<"Landing">;
@@ -10,7 +10,7 @@ const LoginScreen: React.FC<Props> = () => {
 };
 
 const LoginScrenView: React.FC = () => {
-  return <LiveLeagueScreen removeTopSafeArea={true}></LiveLeagueScreen>;
+  return <ScreenWrapper removeTopSafeArea={true}></ScreenWrapper>;
 };
 
 export default observer(LoginScreen);

@@ -1,5 +1,5 @@
-import LiveLeagueScreen from "./ScreenWrapper";
+import ScreenWrapper from "./ScreenWrapper";
 import HorizontalSpacer from "./HorizontalSpacer";
 import Loading from "./Loading";
 
-export { LiveLeagueScreen, HorizontalSpacer, Loading };
+export { ScreenWrapper, HorizontalSpacer, Loading };

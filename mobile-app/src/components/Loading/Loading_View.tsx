@@ -15,7 +15,7 @@ const LoadingView: React.FC<Props> = (props) => {
         width: "100%",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: variables.colors.purpleLight,
+        backgroundColor: variables.colors.primary,
         ...props.style,
       }}
     >

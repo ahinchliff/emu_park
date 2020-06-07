@@ -19,7 +19,7 @@ const state = new Stores(api);
 
 const App = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: variables.colors.purpleLight }}>
+    <View style={{ flex: 1, backgroundColor: variables.colors.primary }}>
       <SafeAreaProvider>
         <storeContext.Provider value={state}>
           <NavigationContainer>

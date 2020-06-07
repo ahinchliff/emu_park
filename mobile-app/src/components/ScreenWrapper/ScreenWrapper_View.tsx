@@ -16,7 +16,7 @@ const ScreenWrapper_View: React.FC<Props> = (props) => {
   const insets = useSafeArea();
 
   const style = {
-    backgroundColor: variables.colors.purpleLight,
+    backgroundColor: variables.colors.primary,
     height: variables.screen.height,
     ...props.style,
   };

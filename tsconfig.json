@@ -31,13 +31,17 @@
     },
     {
       "path": "./core-backend"
+    },
+    {
+      "path": "./mobile-app"
     }
   ],
   "include": [
     "./api-tasks/src/**/*.d.ts",
     "./api/src/**/*.d.ts",
     "./data/src/**/*.d.ts",
-    "./core-backend/src/**/*.d.ts"
+    "./core-backend/src/**/*.d.ts",
+    "./mobile-app/src/**/*.d.ts"
   ],
   "exclude": ["node_modules", "*/dist/*", "*/build/*"]
 }

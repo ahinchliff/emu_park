@@ -45,3 +45,9 @@ resource "aws_cognito_user_pool_domain" "main" {
   domain       = "terraform"
   user_pool_id = aws_cognito_user_pool.users.id
 }
+
+module email_verification_email_customisation_lambda {
+  source = "../shared/lambda"
+  name = "email-verification-email-customisation"
+  source_file = "../../../.webpack/email-verification-email-customisation.js"
+}

@@ -4,8 +4,11 @@
   "private": true,
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rm -rf build && rm -f tsconfig.tsbuildinfo",
-    "build": "tsc --build"
+    "clean": "rm -rf build",
+    "build": "tsc --build && rm -f tsconfig.tsbuildinfo",
+    "generate-email-templates-setup": "yarn build && yarn copy-email-templates-to-build && cd ../ && yarn webpack && cd core-backend && cp ../.webpack/generate-email-templates.js build/email-service && rm -rf ../.webpack",
+    "generate-email-templates": "node ./build/email-service/generate-all-templates.js",
+    "copy-email-templates-to-build": "cp -rv src/email-service/templates build/email-service"
   },
   "devDependencies": {
     "typescript": "^3.9.2"

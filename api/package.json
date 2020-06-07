@@ -6,7 +6,7 @@
     "webpack": "webpack",
     "start-server": "node ./build/server.js",
     "start:watch": "aws-vault exec personal-free-3 nodemon",
-    "build": "tsc --build",
+    "build": "tsc --build && rm -f tsconfig.tsbuildinf",
     "watch": "yarn build --watch --preserveWatchOutput"
   },
   "dependencies": {

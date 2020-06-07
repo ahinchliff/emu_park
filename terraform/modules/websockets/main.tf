@@ -64,7 +64,6 @@ resource "aws_apigatewayv2_route" "authenticate" {
   target         = "integrations/${aws_apigatewayv2_integration.authenticate.id}"
 }
 
-
 module inbound_web_socket_handler {
   source = "../shared/lambda"
   name = "inbound-web-socket-handler"

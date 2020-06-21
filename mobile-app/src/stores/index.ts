@@ -1,14 +1,18 @@
-import UserStore from "./UserStore";
+import UIStore from "./UIStore";
 import Api from "../api";
+import AuthStore from "./AuthStore";
 
 export interface IStores {
-  userStore: UserStore;
+  uiStore: UIStore;
+  authStore: AuthStore;
 }
 
 export default class Stores implements IStores {
-  public userStore: UserStore;
+  public authStore: AuthStore;
+  public uiStore: UIStore;
 
   constructor(api: Api) {
-    this.userStore = new UserStore(api);
+    this.authStore = new AuthStore(api);
+    this.uiStore = new UIStore(api);
   }
 }

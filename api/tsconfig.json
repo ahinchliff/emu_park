@@ -5,6 +5,15 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "references": [{ "path": "../data" }, { "path": "../core-backend" }],
-  "include": ["../data/src/**/*.d.ts", "../core-backend/src/**/*.d.ts", "./src"]
+  "references": [
+    { "path": "../data" },
+    { "path": "../core-backend" },
+    { "path": "../api-interfaces" }
+  ],
+  "include": [
+    "../data/src/**/*.d.ts",
+    "../core-backend/src/**/*.d.ts",
+    "../api-interfaces/src/**/*.d.ts",
+    "./src"
+  ]
 }

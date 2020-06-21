@@ -7,7 +7,7 @@
     "start-server": "node ./build/server.js",
     "start:watch": "aws-vault exec personal-free-3 nodemon",
     "build": "tsc --build && rm -f tsconfig.tsbuildinf",
-    "watch": "yarn build --watch --preserveWatchOutput"
+    "watch": "tsc --build --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@koa/cors": "^3.0.0",

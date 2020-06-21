@@ -23,12 +23,7 @@ type UnAuthRequestHandlerPayload<
   Params,
   QueryString,
   Body
-> = RequestHandlerPayload<
-  core.backend.api.AuthUser | undefined,
-  Params,
-  QueryString,
-  Body
->;
+> = RequestHandlerPayload<api.AuthUser | undefined, Params, QueryString, Body>;
 
 type RequestHandler<Payload, Result extends Object> = (
   payload: Payload
@@ -98,6 +93,8 @@ const handlerBuilder = (
   if (authRequired && !user) {
     addErrorToContext(ctx, notAuthorized());
   } else {
+    console.log("------------------");
+    console.log(JSON.stringify(ctx));
     const payload: RequestHandlerPayload<any, any, any, any> = {
       user,
       services,
@@ -105,7 +102,7 @@ const handlerBuilder = (
       config,
       params: ctx.params,
       queryString: ctx.querystring,
-      body: ctx.body,
+      body: ctx.request.body,
     };
 
     const result = await handler(payload);

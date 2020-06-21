@@ -19,4 +19,12 @@ export default class Api extends HTTPClient {
       },
     });
   }
+
+  public signup = async (user: api.SignupBody): Promise<api.AuthUser> => {
+    return this.post<api.AuthUser>("/auth/signup", user);
+  };
+
+  public getMe = async (): Promise<api.AuthUser> => {
+    return this.get<api.AuthUser>("/auth/me");
+  };
 }

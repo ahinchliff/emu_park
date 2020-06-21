@@ -1,5 +1,6 @@
-declare namespace core.backend.api {
+declare namespace api {
   type User = {
+    id: string;
     firstName: string;
     lastName: string;
   };

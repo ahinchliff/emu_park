@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Landing from "../screens/Landing_Screen";
+import Landing from "../screens/Landing/Landing_Logic";
 export type StackParamList = {
   Landing: undefined;
 };

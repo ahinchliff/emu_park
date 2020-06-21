@@ -1,19 +1,24 @@
 import { RequestHandlerPayload } from "../handlerBuilders";
+import { toApiAuthUser } from "../../serialisers/to-api-auth-user";
 
 type SignupRequestPayload = RequestHandlerPayload<
   { authId: string },
   {},
   {},
-  data.User
+  api.SignupBody
 >;
 
-const signup = async ({ user, services }: SignupRequestPayload) => {
+const signup = async ({
+  user,
+  services,
+  body,
+}: SignupRequestPayload): Promise<api.AuthUser> => {
   const newUser = await services.data.user.create({
     authId: user.authId,
-    email: "anthony.hinchliff@gmail.com",
+    email: body.email,
   });
 
-  return newUser;
+  return toApiAuthUser(newUser);
 };
 
 export default signup;

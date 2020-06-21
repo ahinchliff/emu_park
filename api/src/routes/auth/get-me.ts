@@ -1,18 +1,10 @@
 import { AuthRequestHandler } from "../handlerBuilders";
+import { toApiAuthUser } from "../../serialisers/to-api-auth-user";
 
-const getMe: AuthRequestHandler<
-  {},
-  {},
-  {},
-  core.backend.api.AuthUser
-> = async ({ user, services }) => {
-  await services.socket.sendTestMessage(user.authId, "This is a test message");
-
-  await services.socket.unsubscribeConnectionFromRoom(
-    "NT8tMcYdjoECHkA=",
-    user.authId
-  );
-  return (user as unknown) as core.backend.api.AuthUser;
+const getMe: AuthRequestHandler<{}, {}, {}, api.AuthUser> = async ({
+  user,
+}) => {
+  return toApiAuthUser(user);
 };
 
 export default getMe;

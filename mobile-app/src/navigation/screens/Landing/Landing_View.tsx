@@ -17,7 +17,7 @@ import {
   LoginError,
   SignupError,
   ConfirmEmailError,
-} from "mobile-app/src/typings/auth-client";
+} from "../../../clients/typings/auth-client";
 import { HandledErrorState } from "mobile-app/src/hooks/useHandledErrorState";
 
 export type Screen =

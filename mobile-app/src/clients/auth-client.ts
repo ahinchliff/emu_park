@@ -12,7 +12,7 @@ import {
   LoginError,
   SignupError,
   ConfirmEmailError,
-} from "../typings/auth-client";
+} from "./typings/auth-client";
 import moment from "moment";
 
 export default class CognitoAuthClient implements IAuthClient {

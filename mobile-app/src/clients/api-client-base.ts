@@ -3,23 +3,25 @@ import Axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-} from 'axios';
-import axiosRetry, { isNetworkOrIdempotentRequestError } from 'axios-retry';
+} from "axios";
+import axiosRetry, { isNetworkOrIdempotentRequestError } from "axios-retry";
 
-export interface HTTPClientOptions {
+export interface ApiClientBaseOptions {
   apiBaseURL: string;
   onError(error: AxiosError, url: string, errorHandled?: boolean): void;
   responseDataMapper<T>(res: AxiosResponse<any>): T;
 }
 
-export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
+export class ApiClientBase<
+  Options extends ApiClientBaseOptions = ApiClientBaseOptions
+> {
   private apiClient: AxiosInstance;
 
   constructor(protected options: Options) {
     this.apiClient = Axios.create({
       baseURL: options.apiBaseURL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -30,10 +32,10 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
     this.apiClient = Axios.create({
       baseURL: this.options.apiBaseURL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
-      responseType: 'json',
+      responseType: "json",
     });
 
     axiosRetry(this.apiClient, this.retryConfig());
@@ -43,9 +45,9 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
     this.apiClient = Axios.create({
       baseURL: this.options.apiBaseURL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      responseType: 'json',
+      responseType: "json",
     });
 
     axiosRetry(this.apiClient, this.retryConfig());
@@ -53,7 +55,7 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
 
   protected get = <T>(
     url: string,
-    axiosReqConfig?: AxiosRequestConfig,
+    axiosReqConfig?: AxiosRequestConfig
   ): Promise<T> =>
     this.apiClient
       .get(url, axiosReqConfig)
@@ -64,19 +66,19 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
     url: string,
     data?: object,
     reqConfig?: AxiosRequestConfig,
-    errorHandled?: boolean,
+    errorHandled?: boolean
   ): Promise<T> =>
     this.apiClient
       .post(url, data, reqConfig)
       .then((res: AxiosResponse) => this.options.responseDataMapper<T>(res))
       .catch((err: AxiosError) =>
-        this.options.onError(err, url, errorHandled),
+        this.options.onError(err, url, errorHandled)
       ) as Promise<T>;
 
   protected put = <T>(
     url: string,
     data?: any,
-    axiosReqConfig?: AxiosRequestConfig,
+    axiosReqConfig?: AxiosRequestConfig
   ): Promise<T> =>
     this.apiClient
       .put(url, data, axiosReqConfig)
@@ -85,7 +87,7 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
 
   protected delete = <T>(
     url: string,
-    axiosReqConfig?: AxiosRequestConfig,
+    axiosReqConfig?: AxiosRequestConfig
   ): Promise<T> =>
     this.apiClient
       .delete(url, axiosReqConfig)
@@ -108,11 +110,11 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
       }
 
       const IDEMPOTENT_HTTP_METHODS = [
-        'get',
-        'head',
-        'options',
-        'put',
-        'delete',
+        "get",
+        "head",
+        "options",
+        "put",
+        "delete",
       ];
       return IDEMPOTENT_HTTP_METHODS.indexOf(error.config.method) !== -1;
     };
@@ -123,9 +125,9 @@ export class HTTPClient<Options extends HTTPClientOptions = HTTPClientOptions> {
         const shouldRetry =
           isSafeToRetry(error) &&
           (isNetworkOrIdempotentRequestError(error) ||
-            error.code === 'ECONNABORTED');
+            error.code === "ECONNABORTED");
         if (shouldRetry) {
-          console.log('failed http request, retrying..');
+          console.log("failed http request, retrying..");
         }
         return shouldRetry;
       },

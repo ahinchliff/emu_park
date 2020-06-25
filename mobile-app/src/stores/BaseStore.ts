@@ -1,5 +1,5 @@
-import Api from "../api";
+import { Api, Sockets } from "../clients";
 
 export default class BaseStore {
-  constructor(protected api: Api) {}
+  constructor(protected api: Api, protected sockets: Sockets) {}
 }

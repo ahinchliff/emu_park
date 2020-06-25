@@ -23,17 +23,17 @@ export default class AuthService implements core.backend.IAuthService {
     }
   }
 
-  public getAuthIdFromJwt = async (
-    token: string,
-    logger: core.backend.Logger
-  ): Promise<string | undefined> => {
+  public decodeJWT = async (token: string, logger: core.backend.Logger) => {
     try {
       const decodedJwt = await this.verifyAndDecodeJwt(token);
       if (!decodedJwt.username) {
         logger.debug("Token not defined correctly", decodedJwt);
         return undefined;
       }
-      return decodedJwt.username;
+      return {
+        authId: decodedJwt.username,
+        expiry: decodedJwt.exp,
+      };
     } catch (err) {
       logger.debug("Failed to decode token", err);
       return undefined;

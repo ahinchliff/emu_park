@@ -8,18 +8,21 @@ const isEnvironment = (env: ReleaseChannel): boolean =>
   (releaseChannel || "").indexOf(env as string) === 0;
 
 const devConfig: config.Config = {
-  apiEndpoint: "http://192.168.0.23:3001",
+  apiEndpoint: "http://localhost:3001",
   authEndpoint: "",
+  socketEndpoint: "wss://q09o18vqck.execute-api.eu-west-1.amazonaws.com/live",
 };
 
 const stagingConfig: config.Config = {
   apiEndpoint: "",
   authEndpoint: "",
+  socketEndpoint: "",
 };
 
 const productionConfig: config.Config = {
   apiEndpoint: "",
   authEndpoint: "",
+  socketEndpoint: "",
 };
 
 const getChannelConfig = () => {

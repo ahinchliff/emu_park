@@ -10,7 +10,7 @@ import {
   LoginError,
   SignupError,
   ConfirmEmailError,
-} from "mobile-app/src/typings/auth-client";
+} from "../../../clients/typings/auth-client";
 import { useHandledErrorState } from "../../../hooks/useHandledErrorState";
 
 type Props = ScreenProps<"Landing">;

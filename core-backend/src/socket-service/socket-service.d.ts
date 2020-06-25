@@ -3,7 +3,8 @@ declare namespace core.backend {
     closeConnection(connectionId: string): Promise<void>;
     subscribeConnectionToRoom(
       connectionId: string,
-      userAuthId: string
+      room: string,
+      connectionExpiry: string
     ): Promise<void>;
     unsubscribeConnectionFromRoom(
       connectionId: string,

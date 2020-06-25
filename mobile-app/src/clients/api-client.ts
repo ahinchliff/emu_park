@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { HTTPClient } from "./http-client";
+import { ApiClientBase } from "./api-client-base";
 
-export default class Api extends HTTPClient {
+export default class Api extends ApiClientBase {
   constructor(
     protected config: config.Config,
     onError: (

@@ -16,7 +16,8 @@ export default class SocketService implements core.backend.ISocketService {
 
   public subscribeConnectionToRoom = async (
     connectionId: string,
-    room: string
+    room: string,
+    connectionExpiry: string
   ) => {
     await this.dynamoDB
       .put({
@@ -25,6 +26,7 @@ export default class SocketService implements core.backend.ISocketService {
           id: uuid(),
           connectionId,
           room,
+          connectionExpiry,
         },
       })
       .promise();
@@ -84,6 +86,7 @@ export default class SocketService implements core.backend.ISocketService {
 
   public closeConnection = async (connectionId: string) => {
     await this.agw.deleteConnection({ ConnectionId: connectionId }).promise();
+    this.unsubscribeConnectionFromAllRooms(connectionId);
   };
 
   public sendTestMessage = async (room: string, message: string) => {

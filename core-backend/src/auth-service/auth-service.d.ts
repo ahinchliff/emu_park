@@ -9,9 +9,9 @@ declare namespace core.backend {
   };
 
   interface IAuthService {
-    getAuthIdFromJwt(
+    decodeJWT(
       token: string,
       logger: core.backend.Logger
-    ): Promise<string | undefined>;
+    ): Promise<{ authId: string; expiry: number } | undefined>;
   }
 }

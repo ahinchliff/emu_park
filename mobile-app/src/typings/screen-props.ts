@@ -1,7 +1,7 @@
 import { RouteProp, NavigationProp } from "@react-navigation/native";
-import { StackParamList } from "../navigation/main";
+import { AuthStackParamList } from "../navigation";
 
-export type ScreenProps<ScreenName extends keyof StackParamList> = {
-  route: RouteProp<StackParamList, ScreenName>;
-  navigation: NavigationProp<StackParamList, ScreenName>;
+export type ScreenProps<ScreenName extends keyof AuthStackParamList> = {
+  route: RouteProp<AuthStackParamList, ScreenName>;
+  navigation: NavigationProp<AuthStackParamList, ScreenName>;
 };

@@ -2,9 +2,7 @@ import { action, observable } from "mobx";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import BaseStore from "./BaseStore";
-import { IAuthClient } from "../typings/auth-client";
-import Api from "../api";
-import CognitoAuthClient from "../api/auth-client";
+import { Api, Auth, IAuthClient, Sockets } from "../clients";
 
 const AUTH_TOKEN_LOCAL_STORE_KEY = "auth-token";
 const REFRESH_TOKEN_LOCAL_STORE_KEY = "refresh-token";
@@ -22,20 +20,20 @@ type AuthTokens = {
 export default class AuthStore extends BaseStore {
   private authClient: IAuthClient;
   private authTokens: AuthTokens | undefined;
+  private authTokenExpiryIntervalTimer: number | undefined;
 
   @observable
   public me: api.AuthUser | undefined;
 
-  constructor(api: Api) {
-    super(api);
-    this.authClient = new CognitoAuthClient();
-    this.initAuthTokens();
-    this.startAuthTokenExpiryCheck();
+  constructor(api: Api, sockets: Sockets) {
+    super(api, sockets);
+    this.authClient = new Auth();
   }
 
   public signup = async (email: string, password: string) =>
     this.authClient.signup(email, password);
 
+  @action
   public confirmEmailAndLogin = async (
     email: string,
     password: string,
@@ -43,7 +41,7 @@ export default class AuthStore extends BaseStore {
   ) => {
     await this.authClient.confirmEmail(email, code);
     const loginResult = await this.authClient.login(email, password);
-    await this.onNewTokens(loginResult);
+    await this.onSetTokens(loginResult, true);
     this.me = await this.api.signup({
       email,
     });
@@ -51,8 +49,7 @@ export default class AuthStore extends BaseStore {
 
   public login = async (email: string, password: string): Promise<void> => {
     const result = await this.authClient.login(email, password);
-    await this.onNewTokens(result);
-    this.me = await this.api.getMe();
+    await this.onSetTokens(result);
   };
 
   public resendConfirmationEmail = async (email: string) =>
@@ -67,47 +64,64 @@ export default class AuthStore extends BaseStore {
     newPassword: string
   ) => this.authClient.resetPassword(email, code, newPassword);
 
+  public initAuth = async () => {
+    await this.initAuthTokens();
+    this.startAuthTokenExpiryCheck();
+  };
+
+  public stopAuthTokenExpiryCheck = () => {
+    clearInterval(this.authTokenExpiryIntervalTimer);
+  };
+
   @action
-  public initAuthTokens = async () => {
-    await this.setAuthTokensFromLocalStore();
-    if (!this.authTokens) {
+  private initAuthTokens = async () => {
+    const authTokens = await this.getAuthTokensFromLocalStore();
+    if (!authTokens) {
       return console.log("AuthStore - No tokens in local store.");
     }
 
     if (
-      this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
-        this.authTokens.expiry
-      )
+      this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(authTokens.expiry)
     ) {
       console.log(
         "AuthStore - Auth token is expiring soon or has already expired. Attempting to refresh session with refresh token."
       );
 
       try {
-        await this.refreshSession();
+        await this.refreshSession(authTokens);
 
         console.log(
           "AuthStore - Successfully refreshed session and fetched user."
         );
       } catch (e) {
         console.log("AuthStore - Failed to refresh session.");
-        // clear local state everything and this.me
+        await this.logout();
       }
     } else {
       console.log(
         "AuthStore - Auth token is valid for at least ten more minutes. Using current auth token."
       );
+      this.onSetTokens(authTokens);
     }
   };
 
-  private refreshSession = async () => {
-    if (this.authTokens) {
-      const result = await this.authClient.refreshSession(
-        this.authTokens.email,
-        this.authTokens.refreshToken
-      );
-      await this.onNewTokens(result);
-    }
+  @action
+  public logout = async () => {
+    this.me = undefined;
+    this.api.clearAuthorization();
+    await SecureStore.deleteItemAsync(AUTH_TOKEN_LOCAL_STORE_KEY);
+    await SecureStore.deleteItemAsync(REFRESH_TOKEN_LOCAL_STORE_KEY);
+    await SecureStore.deleteItemAsync(AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY);
+    await SecureStore.deleteItemAsync(USER_EMAIL_ADDRESS_LOCAL_STORE_KEY);
+  };
+
+  private refreshSession = async (authTokens: AuthTokens) => {
+    const result = await this.authClient.refreshSession(
+      authTokens.email,
+      authTokens.refreshToken
+    );
+
+    await this.onSetTokens(result);
   };
 
   private authTokenHasExpiredOrExpiresInLessThenTenMinutes = (
@@ -118,10 +132,18 @@ export default class AuthStore extends BaseStore {
     return !expiry.isAfter(inTenMinutes);
   };
 
-  private onNewTokens = async (authTokens: AuthTokens) => {
+  @action
+  private onSetTokens = async (
+    authTokens: AuthTokens,
+    withoutFetchUser?: boolean
+  ) => {
     this.authTokens = authTokens;
     await this.saveAuthTokensToLocalStore(authTokens);
     this.api.setAuthorization(authTokens.authToken);
+    this.sockets.setAuthorization(authTokens.authToken);
+    if (!withoutFetchUser) {
+      this.me = await this.api.getMe();
+    }
   };
 
   private startAuthTokenExpiryCheck = () => {
@@ -130,21 +152,23 @@ export default class AuthStore extends BaseStore {
         CHECK_TOKEN_EXPIRY_INTERVAL_IN_MILLISECONDS / 60 / 1000
       } minutes.`
     );
-    setInterval(() => {
+    this.authTokenExpiryIntervalTimer = setInterval(async () => {
       console.log(
         "AuthStore - Checking if auth token have expired or is about to expire."
       );
+
+      const authTokens =
+        this.authTokens || (await this.getAuthTokensFromLocalStore());
       if (
-        this.authTokens &&
-        this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
-          this.authTokens.expiry
-        )
+        authTokens &&
+        this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(authTokens.expiry)
       ) {
         console.log("AuthStore - Auth token is about to expire. Refreshing...");
         try {
-          this.refreshSession();
+          this.refreshSession(authTokens);
         } catch (e) {
           console.log("AuthStore - Failed to refresh auth tokens.");
+          this.logout();
         }
       }
     }, CHECK_TOKEN_EXPIRY_INTERVAL_IN_MILLISECONDS);
@@ -169,7 +193,9 @@ export default class AuthStore extends BaseStore {
     );
   };
 
-  private setAuthTokensFromLocalStore = async (): Promise<void> => {
+  private getAuthTokensFromLocalStore = async (): Promise<
+    AuthTokens | undefined
+  > => {
     const authToken = await SecureStore.getItemAsync(
       AUTH_TOKEN_LOCAL_STORE_KEY
     );
@@ -184,12 +210,14 @@ export default class AuthStore extends BaseStore {
     );
 
     if (authToken && refreshToken && expiry && email) {
-      this.authTokens = {
+      return {
         authToken,
         refreshToken,
         expiry,
         email,
       };
     }
+
+    return undefined;
   };
 }

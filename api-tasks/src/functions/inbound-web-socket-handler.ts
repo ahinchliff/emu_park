@@ -2,6 +2,7 @@ import ConfigService from "../../../core-backend/build/config-service";
 import Logger from "../../../core-backend/build/logger";
 import AuthService from "../../../core-backend/build/auth-service";
 import SocketService from "../../../core-backend/build/socket-service";
+import { toDatabaseDate } from "../../../core-backend/build/utils";
 
 type Config = Pick<core.backend.config.Config, "auth" | "env" | "websockets">;
 
@@ -100,15 +101,31 @@ const onAuthenticate = async (
   }
 
   try {
-    const authId = await authService.getAuthIdFromJwt(parsedBody.token, logger);
+    const decodedToken = await authService.decodeJWT(parsedBody.token, logger);
 
-    if (!authId) {
-      logger.debug("Failed to get authId from token");
+    if (!decodedToken) {
+      logger.debug("Failed to decode JWT token");
       await closeConnection();
       return unauthorized;
     }
 
-    await socketService.subscribeConnectionToRoom(connectionId, authId);
+    if (!decodedToken.authId) {
+      logger.debug("Failed to decode get authId from JWT token");
+      await closeConnection();
+      return unauthorized;
+    }
+
+    if (!decodedToken.expiry) {
+      logger.debug("Failed to decode get expiry from JWT token");
+      await closeConnection();
+      return unauthorized;
+    }
+
+    await socketService.subscribeConnectionToRoom(
+      connectionId,
+      decodedToken.authId,
+      toDatabaseDate(decodedToken.expiry)
+    );
     return success;
   } catch (e) {
     logger.error("Error in onAuthenticate", e);

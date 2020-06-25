@@ -1,11 +1,11 @@
-import React from "react";
-import { View } from "react-native";
-import { registerRootComponent } from "expo";
+import React, { useState } from "react";
+import { View, AppState, AppStateStatus } from "react-native";
+import { registerRootComponent, AppLoading } from "expo";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeProvider } from "react-native-elements";
-import Api from "./api";
-import Navigation from "./navigation/main";
+import { Api, Sockets } from "./clients";
+import Navigation from "./navigation";
 import Stores from "./stores";
 import { storeContext } from "./context";
 import { variables } from "./styles";
@@ -17,9 +17,33 @@ const api = new Api(config, (e, url) => {
   throw e;
 });
 
-const state = new Stores(api);
+const sockets = new Sockets(config);
 
-const App = () => {
+const state = new Stores(api, sockets);
+
+const App: React.FC = () => {
+  const [appInitialising, setAppInitialising] = useState(true);
+
+  const initApp = async () => {
+    initReactToAppStateChange();
+    sockets.connect();
+    await state.authStore.initAuth();
+    await new Promise((resolve) => {
+      // we want the loading screen to display for an extra half second
+      // so that the auth state has time to propagate
+      setTimeout(() => resolve(), 500);
+    });
+  };
+
+  if (appInitialising) {
+    return (
+      <AppLoading
+        startAsync={initApp}
+        onFinish={() => setAppInitialising(false)}
+      />
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: variables.colors.primary }}>
       <ThemeProvider>
@@ -34,6 +58,31 @@ const App = () => {
       </ThemeProvider>
     </View>
   );
+};
+
+const initReactToAppStateChange = () => {
+  let appState: AppStateStatus = "active";
+
+  AppState.addEventListener("change", async (nextAppState: AppStateStatus) => {
+    if (
+      appState === "active" &&
+      (nextAppState === "background" || nextAppState === "inactive")
+    ) {
+      console.log("app.tsx - App paused.");
+      state.authStore.stopAuthTokenExpiryCheck();
+      sockets.disconnect();
+    }
+
+    if (
+      (appState === "background" || appState === "inactive") &&
+      nextAppState === "active"
+    ) {
+      console.log("app.tsx - App resumed");
+      sockets.connect();
+      await state.authStore.initAuth();
+    }
+    appState = nextAppState;
+  });
 };
 
 export default registerRootComponent(App);

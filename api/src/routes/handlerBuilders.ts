@@ -61,7 +61,8 @@ const getAuthId = async (
     return undefined;
   }
 
-  return authService.getAuthIdFromJwt(token, logger);
+  const result = await authService.decodeJWT(token, logger);
+  return result?.authId;
 };
 
 const handlerBuilder = (

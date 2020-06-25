@@ -1,5 +1,5 @@
 import UIStore from "./UIStore";
-import Api from "../api";
+import { Api, Sockets } from "../clients";
 import AuthStore from "./AuthStore";
 
 export interface IStores {
@@ -11,8 +11,8 @@ export default class Stores implements IStores {
   public authStore: AuthStore;
   public uiStore: UIStore;
 
-  constructor(api: Api) {
-    this.authStore = new AuthStore(api);
-    this.uiStore = new UIStore(api);
+  constructor(api: Api, sockets: Sockets) {
+    this.authStore = new AuthStore(api, sockets);
+    this.uiStore = new UIStore(api, sockets);
   }
 }

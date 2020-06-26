@@ -13,8 +13,10 @@ const CHECK_TOKEN_EXPIRY_INTERVAL_IN_MILLISECONDS = 300000; // five minutes
 type AuthTokens = {
   authToken: string;
   refreshToken: string;
-  expiry: string;
-  email: string;
+  decodedData: {
+    expiry: string;
+    email: string;
+  };
 };
 
 export default class AuthStore extends BaseStore {
@@ -81,7 +83,9 @@ export default class AuthStore extends BaseStore {
     }
 
     if (
-      this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(authTokens.expiry)
+      this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
+        authTokens.decodedData.expiry
+      )
     ) {
       console.log(
         "AuthStore - Auth token is expiring soon or has already expired. Attempting to refresh session with refresh token."
@@ -117,7 +121,7 @@ export default class AuthStore extends BaseStore {
 
   private refreshSession = async (authTokens: AuthTokens) => {
     const result = await this.authClient.refreshSession(
-      authTokens.email,
+      authTokens.decodedData.email,
       authTokens.refreshToken
     );
 
@@ -161,7 +165,9 @@ export default class AuthStore extends BaseStore {
         this.authTokens || (await this.getAuthTokensFromLocalStore());
       if (
         authTokens &&
-        this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(authTokens.expiry)
+        this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
+          authTokens.decodedData.expiry
+        )
       ) {
         console.log("AuthStore - Auth token is about to expire. Refreshing...");
         try {
@@ -185,11 +191,11 @@ export default class AuthStore extends BaseStore {
     );
     await SecureStore.setItemAsync(
       AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY,
-      authTokens.expiry
+      authTokens.decodedData.expiry
     );
     await SecureStore.setItemAsync(
       USER_EMAIL_ADDRESS_LOCAL_STORE_KEY,
-      authTokens.email
+      authTokens.decodedData.email
     );
   };
 
@@ -213,8 +219,10 @@ export default class AuthStore extends BaseStore {
       return {
         authToken,
         refreshToken,
-        expiry,
-        email,
+        decodedData: {
+          expiry,
+          email,
+        },
       };
     }
 

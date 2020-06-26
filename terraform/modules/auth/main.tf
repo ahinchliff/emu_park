@@ -11,6 +11,14 @@ resource "aws_cognito_user_pool" "users" {
   auto_verified_attributes = [
     "email"
   ]
+
+  schema {
+    name                     = "userId"
+    attribute_data_type      = "Number"
+    required                 = false
+    developer_only_attribute = false
+    mutable                  = true
+  }
 }
 
 resource "aws_cognito_user_pool_client" "web" {
@@ -38,6 +46,7 @@ resource "aws_cognito_user_pool_client" "web" {
   callback_urls = [
     "http://localhost:3000/login-callback",
   ]
+
   default_redirect_uri = "http://localhost:3000/login-callback"
 }
 

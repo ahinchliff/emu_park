@@ -1,6 +1,7 @@
 declare namespace data {
   interface User {
     userId: number;
+    email: string;
     authId: string;
   }
 

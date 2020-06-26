@@ -3,11 +3,8 @@ import * as AWS from "aws-sdk";
 export default class ConfigService
   implements core.backend.config.IConfigService {
   private ssm: AWS.SSM;
-  constructor(
-    private logger: core.backend.Logger,
-    defaultRegion?: "eu-west-1"
-  ) {
-    if (defaultRegion) {
+  constructor(private logger: core.backend.Logger, region?: "eu-west-1") {
+    if (region) {
       AWS.config.update({ region: "eu-west-1" });
     }
     this.ssm = new AWS.SSM();

@@ -19,5 +19,6 @@ const mapper = (row: RowDataPacket): data.User => {
   return {
     userId: user("userId"),
     authId: user("authId"),
+    email: user("email"),
   };
 };

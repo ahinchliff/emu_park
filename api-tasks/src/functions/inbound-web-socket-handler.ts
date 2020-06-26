@@ -109,8 +109,8 @@ const onAuthenticate = async (
       return unauthorized;
     }
 
-    if (!decodedToken.authId) {
-      logger.debug("Failed to decode get authId from JWT token");
+    if (!decodedToken.userId) {
+      logger.debug("Failed to decode get userId from JWT token");
       await closeConnection();
       return unauthorized;
     }
@@ -123,7 +123,7 @@ const onAuthenticate = async (
 
     await socketService.subscribeConnectionToRoom(
       connectionId,
-      decodedToken.authId,
+      decodedToken.userId.toString(),
       toDatabaseDate(decodedToken.expiry)
     );
     return success;

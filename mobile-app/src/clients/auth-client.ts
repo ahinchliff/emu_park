@@ -19,8 +19,8 @@ export default class CognitoAuthClient implements IAuthClient {
   private userPool: CognitoUserPool;
   constructor() {
     this.userPool = new CognitoUserPool({
-      UserPoolId: "eu-west-1_wIXakbxs3",
-      ClientId: "130kgqg7dqa21opkkcampp6g9g",
+      UserPoolId: "eu-west-1_C1QvyP9PI",
+      ClientId: "4d0ana6j8irk8lh0scu13fus5v",
     });
   }
 
@@ -142,16 +142,21 @@ export default class CognitoAuthClient implements IAuthClient {
   private cognitioUserSessionToAuthTokens = (
     x: CognitoUserSession
   ): AuthenticationResult => {
-    const accessToken = x.getAccessToken();
-    const refreshToken = x.getRefreshToken();
     const idToken = x.getIdToken();
+    const refreshToken = x.getRefreshToken();
+
+    console.log(idToken.decodePayload());
+
+    // cognito returns three tokens; auth, id and refresh. Both auth and id can be used
+    // to authenticate. We use the id token because it contains extra user details.
 
     return {
-      success: true,
-      authToken: accessToken.getJwtToken(),
+      authToken: idToken.getJwtToken(),
       refreshToken: refreshToken.getToken(),
-      expiry: moment.unix(accessToken.getExpiration()).utc().format(),
-      email: idToken.decodePayload().email,
+      decodedData: {
+        expiry: moment.unix(idToken.getExpiration()).utc().format(),
+        email: idToken.decodePayload().email,
+      },
     };
   };
 

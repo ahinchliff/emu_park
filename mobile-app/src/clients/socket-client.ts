@@ -24,6 +24,7 @@ export default class Sockets {
   };
 
   public disconnect = () => {
+    console.log(this.authToken);
     if (this.connection) {
       this.connection.close();
     }

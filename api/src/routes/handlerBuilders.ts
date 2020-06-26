@@ -49,11 +49,11 @@ export type UnAuthRequestHandler<
   Result
 >;
 
-const getAuthId = async (
+const getDecodedJWT = async (
   ctx: Koa.Context,
   authService: core.backend.IAuthService,
   logger: core.backend.Logger
-): Promise<string | undefined> => {
+): Promise<api.AuthToken | undefined> => {
   const authToken = ctx.get("Authorization");
   const split = authToken && authToken.split && authToken.split("Bearer ");
   const token = split && split[1];
@@ -61,8 +61,7 @@ const getAuthId = async (
     return undefined;
   }
 
-  const result = await authService.decodeJWT(token, logger);
-  return result?.authId;
+  return authService.decodeJWT(token, logger);
 };
 
 const handlerBuilder = (
@@ -79,23 +78,21 @@ const handlerBuilder = (
 
   const services = getServices(logger);
 
-  const authId = await getAuthId(ctx, services.auth, logger);
+  const decodedJWT = await getDecodedJWT(ctx, services.auth, logger);
 
   let user: data.User | undefined = undefined;
 
-  if (authId) {
+  if (decodedJWT?.authId) {
     if (ctx.url === "/auth/signup") {
-      user = { authId } as data.User;
+      user = decodedJWT as data.User;
     } else {
-      user = await services.data.user.get({ authId });
+      user = await services.data.user.get({ authId: decodedJWT?.authId });
     }
   }
 
   if (authRequired && !user) {
     addErrorToContext(ctx, notAuthorized());
   } else {
-    console.log("------------------");
-    console.log(JSON.stringify(ctx));
     const payload: RequestHandlerPayload<any, any, any, any> = {
       user,
       services,

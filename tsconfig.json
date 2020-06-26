@@ -30,13 +30,13 @@
       "path": "./data"
     },
     {
+      "path": "./api-interfaces"
+    },
+    {
       "path": "./core-backend"
     },
     {
       "path": "./mobile-app"
-    },
-    {
-      "path": "./api-interfaces"
     }
   ],
   "include": [

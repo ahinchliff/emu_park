@@ -6,10 +6,10 @@ import { initServices } from "./services";
 
 export default async (
   logger: core.backend.Logger,
-  defaultRegion?: "eu-west-1"
+  region?: "eu-west-1"
 ): Promise<Koa> => {
   logger.debug("Initialising api");
-  const configService = new ConfigService(logger, defaultRegion);
+  const configService = new ConfigService(logger, region);
 
   const config = await configService.get<api.Config>([
     "mysql_application_user_password",

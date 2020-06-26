@@ -1,8 +1,10 @@
 {
   "extends": "../tsconfig.json",
+  "composite": true,
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "include": ["./src"]
+  "references": [{ "path": "../api-interfaces" }],
+  "include": ["../api-interfaces/src/**/*.d.ts", "./src"]
 }

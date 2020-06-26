@@ -21,11 +21,12 @@ export type ResetPasswordError = AuthClientError<ResetPasswordErrorCode>;
 export type ConfirmEmailError = AuthClientError<ConfirmEmailErrorCode>;
 
 export type AuthenticationResult = {
-  success: true;
   authToken: string;
   refreshToken: string;
-  email: string;
-  expiry: string;
+  decodedData: {
+    expiry: string;
+    email: string;
+  };
 };
 
 export interface IAuthClient {

@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Landing from "./screens/Landing/Landing_Logic";
 import { observer } from "mobx-react-lite";
 import useStores from "../hooks/useStores";
@@ -40,9 +40,7 @@ const MainNavigation: React.FC = () => {
   const { authStore } = useStores();
   const tesst = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>
-        <Button title="Logout" onPress={authStore.logout} />
-      </Text>
+      <Button title="Logout" onPress={authStore.logout} />
     </View>
   );
   return (

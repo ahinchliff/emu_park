@@ -18,6 +18,10 @@ resource "aws_cognito_user_pool" "users" {
     required                 = false
     developer_only_attribute = false
     mutable                  = true
+    number_attribute_constraints { 
+      min_value                = "1"
+      max_value                = "2147483647"
+    }
   }
 }
 

@@ -26,13 +26,13 @@ const App: React.FC = () => {
 
   const initApp = async () => {
     initReactToAppStateChange();
-    sockets.connect();
     await state.authStore.initAuth();
     await new Promise((resolve) => {
       // we want the loading screen to display for an extra half second
       // so that the auth state has time to propagate
       setTimeout(() => resolve(), 500);
     });
+    state.authStore.subscribeToUserEvents();
   };
 
   if (appInitialising) {

@@ -14,22 +14,23 @@ export default class SocketService implements core.backend.ISocketService {
     });
   }
 
-  public subscribeConnectionToRoom = async (
+  public subscribeToUser = async (
     connectionId: string,
-    room: string,
+    userId: string,
     connectionExpiry: string
   ) => {
-    await this.dynamoDB
-      .put({
-        TableName: this.config.dynamoTableName,
-        Item: {
-          id: uuid(),
-          connectionId,
-          room,
-          connectionExpiry,
-        },
-      })
-      .promise();
+    await this.subscribeConnectionToRoom(
+      connectionId,
+      this.getUserRoom(userId),
+      connectionExpiry
+    );
+  };
+
+  public unsubscribeFromUser = async (connectionId: string, userId: string) => {
+    await this.unsubscribeConnectionFromRoom(
+      connectionId,
+      this.getUserRoom(userId)
+    );
   };
 
   public unsubscribeConnectionFromAllRooms = async (connectionId: string) => {
@@ -66,22 +67,42 @@ export default class SocketService implements core.backend.ISocketService {
     }
   };
 
-  public unsubscribeConnectionFromRoom = async (
+  private unsubscribeConnectionFromRoom = async (
     connectionId: string,
     room: string
   ) => {
-    await this.dynamoDB
-      .delete({
+    const subscriptions = await this.dynamoDB
+      .query({
         TableName: this.config.dynamoTableName,
-        Key: {
-          connectionId,
-        },
+        IndexName: "connectionId",
         ExpressionAttributeValues: {
+          ":connectionId": connectionId,
           ":room": room,
         },
-        ConditionExpression: "room = :room",
+        KeyConditionExpression: "connectionId = :connectionId and room = :room",
       })
       .promise();
+
+    if (subscriptions.Items) {
+      const deleteRequests = subscriptions.Items.map((s) => ({
+        DeleteRequest: {
+          Key: {
+            id: s.id,
+          },
+        },
+      }));
+
+      for (let i = 0; i < deleteRequests.length; i += MAX_BATCH_SIZE) {
+        const requests = deleteRequests.slice(i, i + MAX_BATCH_SIZE);
+        await this.dynamoDB
+          .batchWrite({
+            RequestItems: {
+              [this.config.dynamoTableName]: requests,
+            },
+          })
+          .promise();
+      }
+    }
   };
 
   public closeConnection = async (connectionId: string) => {
@@ -91,6 +112,24 @@ export default class SocketService implements core.backend.ISocketService {
 
   public sendTestMessage = async (room: string, message: string) => {
     await this.emitEventToRoom(room, "test_event", { message });
+  };
+
+  private subscribeConnectionToRoom = async (
+    connectionId: string,
+    room: string,
+    connectionExpiry: string
+  ) => {
+    await this.dynamoDB
+      .put({
+        TableName: this.config.dynamoTableName,
+        Item: {
+          id: uuid(),
+          connectionId,
+          room,
+          connectionExpiry,
+        },
+      })
+      .promise();
   };
 
   private emitEventToRoom = async <T>(room: string, event: string, body: T) => {
@@ -128,4 +167,6 @@ export default class SocketService implements core.backend.ISocketService {
       }
     });
   };
+
+  private getUserRoom = (userId: string | number) => `USER_${userId}`;
 }

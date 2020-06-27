@@ -1,15 +1,12 @@
 declare namespace core.backend {
   interface ISocketService {
-    closeConnection(connectionId: string): Promise<void>;
-    subscribeConnectionToRoom(
+    subscribeToUser(
       connectionId: string,
-      room: string,
+      userId: string,
       connectionExpiry: string
     ): Promise<void>;
-    unsubscribeConnectionFromRoom(
-      connectionId: string,
-      room: string
-    ): Promise<void>;
+    unsubscribeFromUser(connectionId: string, userId: string): Promise<void>;
+    closeConnection(connectionId: string): Promise<void>;
     unsubscribeConnectionFromAllRooms(connectionId: string): Promise<void>;
     sendTestMessage(room: string, message: string): Promise<void>;
   }

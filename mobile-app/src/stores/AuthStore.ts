@@ -119,6 +119,18 @@ export default class AuthStore extends BaseStore {
     await SecureStore.deleteItemAsync(USER_EMAIL_ADDRESS_LOCAL_STORE_KEY);
   };
 
+  public subscribeToUserEvents = () => {
+    if (this.me) {
+      this.sockets.send("SUBSCRIBE_PERSONAL");
+    }
+  };
+
+  public unsubscribeToUserEvents = () => {
+    if (this.me) {
+      this.sockets.send("UNSUBSCRIBE_PERSONAL");
+    }
+  };
+
   private refreshSession = async (authTokens: AuthTokens) => {
     const result = await this.authClient.refreshSession(
       authTokens.decodedData.email,

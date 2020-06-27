@@ -6,13 +6,31 @@ import { toDatabaseDate } from "../../../core-backend/build/utils";
 
 type Config = Pick<core.backend.config.Config, "auth" | "env" | "websockets">;
 
+type EventToDataMapping = {
+  SUBSCRIBE_PERSONAL: undefined;
+  UNSUBSCRIBE_PERSONAL: undefined;
+};
+
+type Event = keyof EventToDataMapping;
+
 type APIGatewayWebsocketEvent = {
   requestContext: {
-    routeKey: "$connect" | "$disconnect" | "authenticate";
+    routeKey: "$connect" | "$disconnect" | "$default";
     connectionId: string;
   };
   body: string;
 };
+
+type Handler<Token, Data> = (payload: {
+  connectionId: string;
+  data: Data;
+  socketService: core.backend.ISocketService;
+  token: Token;
+}) => Promise<void>;
+
+type AuthHandler<Data> = Handler<api.AuthToken, Data>;
+
+// type UnAuthHandler<Data> = Handler<undefined, Data>;
 
 let config: Config | undefined = undefined;
 let authService: core.backend.IAuthService | undefined = undefined;
@@ -20,7 +38,6 @@ let socketService: core.backend.ISocketService | undefined = undefined;
 
 const success = { statusCode: 200 };
 const error = { statusCode: 500 };
-const unauthorized = { statusCode: 401 };
 const badRequest = (message: string) => ({
   statusCode: 400,
   body: message,
@@ -52,7 +69,7 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
     requestContext: { routeKey, connectionId },
   } = event;
 
-  logger.debug("Event receieved", { routeKey, connectionId });
+  logger.debug("Route", { routeKey, connectionId });
 
   if (routeKey === "$connect") {
     return success;
@@ -62,8 +79,8 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
     return await onDisconnect(connectionId, socketService, logger);
   }
 
-  if (routeKey === "authenticate") {
-    return await onAuthenticate(
+  if (routeKey === "$default") {
+    return await onDefault(
       connectionId,
       body,
       socketService,
@@ -73,64 +90,81 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
   }
 
   logger.error("No handler for routekey", { routeKey });
-
   return error;
 };
 
-const onAuthenticate = async (
+const onDefault = async (
   connectionId: string,
   body: string,
   socketService: core.backend.ISocketService,
   authService: core.backend.IAuthService,
   logger: core.backend.Logger
 ) => {
-  const closeConnection = () => socketService.closeConnection(connectionId);
-
   if (!body) {
-    logger.debug("No body");
-    await closeConnection();
+    return logger.debug("No body");
+  }
+
+  const parsedBody = JSON.parse(body) as {
+    token?: string;
+    event: Event | undefined;
+    data: EventToDataMapping[Event];
+  };
+
+  if (!parsedBody.event) {
+    logger.debug('Property "body" is missing on request');
     return badRequest('Property "body" is missing on request');
   }
 
-  const parsedBody = JSON.parse(body) as { token?: string };
+  logger.debug("Event on body", { event: parsedBody.event });
 
-  if (!parsedBody.token) {
-    logger.debug("No token");
-    await closeConnection();
-    return badRequest('Property "token" is missing on request.body');
-  }
+  const eventToFunctionMap: {
+    [key in Event]: {
+      fn: Handler<any, any>;
+      requiresAuth: boolean;
+    };
+  } = {
+    SUBSCRIBE_PERSONAL: { fn: onSubscribePersonal, requiresAuth: true },
+    UNSUBSCRIBE_PERSONAL: { fn: onUnsubscribePersonal, requiresAuth: true },
+  };
 
-  try {
+  const handler = eventToFunctionMap[parsedBody.event];
+
+  if (handler.requiresAuth) {
+    if (!parsedBody.token) {
+      logger.debug("Handler requires auth but no token on body");
+      return badRequest("Handler requires auth but no token on body");
+    }
+
     const decodedToken = await authService.decodeJWT(parsedBody.token, logger);
 
     if (!decodedToken) {
       logger.debug("Failed to decode JWT token");
-      await closeConnection();
-      return unauthorized;
+      return badRequest("Failed to decode JWT token");
     }
 
     if (!decodedToken.userId) {
       logger.debug("Failed to decode get userId from JWT token");
-      await closeConnection();
-      return unauthorized;
+      return badRequest("Failed to decode get userId from JWT token");
     }
 
     if (!decodedToken.expiry) {
       logger.debug("Failed to decode get expiry from JWT token");
-      await closeConnection();
-      return unauthorized;
+      return badRequest("Failed to decode get expiry from JWT token");
     }
 
-    await socketService.subscribeConnectionToRoom(
+    await handler.fn({
       connectionId,
-      decodedToken.userId.toString(),
-      toDatabaseDate(decodedToken.expiry)
-    );
-    return success;
-  } catch (e) {
-    logger.error("Error in onAuthenticate", e);
-    await closeConnection();
-    return error;
+      data: parsedBody.data,
+      socketService,
+      token: decodedToken,
+    });
+  } else {
+    await handler.fn({
+      connectionId,
+      data: parsedBody.data,
+      socketService,
+      token: undefined,
+    });
   }
 };
 
@@ -141,9 +175,26 @@ const onDisconnect = async (
 ) => {
   try {
     await socketService.unsubscribeConnectionFromAllRooms(connectionId);
-    return success;
   } catch (e) {
     logger.error("Error in onDisconnect", e);
-    return error;
   }
+};
+
+const onSubscribePersonal: AuthHandler<
+  EventToDataMapping["SUBSCRIBE_PERSONAL"]
+> = async ({ socketService, connectionId, token }) => {
+  await socketService.subscribeToUser(
+    connectionId,
+    token.userId.toString(),
+    toDatabaseDate(token.expiry)
+  );
+};
+
+const onUnsubscribePersonal: AuthHandler<
+  EventToDataMapping["SUBSCRIBE_PERSONAL"]
+> = async ({ socketService, connectionId, token }) => {
+  await socketService.unsubscribeFromUser(
+    connectionId,
+    token.userId.toString()
+  );
 };

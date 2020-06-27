@@ -3,7 +3,7 @@ resource "aws_apigatewayv2_deployment" "websockets" {
   depends_on = [
     aws_apigatewayv2_route.connect,
     aws_apigatewayv2_route.disconnect,
-    aws_apigatewayv2_route.authenticate,
+    aws_apigatewayv2_route.default,
   ]
 }
 
@@ -49,19 +49,19 @@ resource "aws_apigatewayv2_route" "disconnect" {
   target         = "integrations/${aws_apigatewayv2_integration.disconnect.id}"
 }
 
-resource "aws_apigatewayv2_integration" "authenticate" {
+resource "aws_apigatewayv2_integration" "default" {
   api_id             = aws_apigatewayv2_api.websockets.id
   integration_type   = "AWS_PROXY"
-  description        = "authenticate"
+  description        = "default"
   integration_uri    = module.inbound_web_socket_handler.invoke_arn
   integration_method = "POST"
 }
 
-resource "aws_apigatewayv2_route" "authenticate" {
+resource "aws_apigatewayv2_route" "default" {
   api_id         = aws_apigatewayv2_api.websockets.id
-  route_key      = "authenticate"
-  operation_name = "authenticate"
-  target         = "integrations/${aws_apigatewayv2_integration.authenticate.id}"
+  route_key      = "$default"
+  operation_name = "default"
+  target         = "integrations/${aws_apigatewayv2_integration.default.id}"
 }
 
 module inbound_web_socket_handler {

@@ -19,8 +19,8 @@ export default class CognitoAuthClient implements IAuthClient {
   private userPool: CognitoUserPool;
   constructor() {
     this.userPool = new CognitoUserPool({
-      UserPoolId: "eu-west-1_C1QvyP9PI",
-      ClientId: "4d0ana6j8irk8lh0scu13fus5v",
+      UserPoolId: "eu-west-1_PQ8PetY0c",
+      ClientId: "73utpc46cud8168ifdp4n9tnm5",
     });
   }
 

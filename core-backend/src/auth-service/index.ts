@@ -68,7 +68,7 @@ export default class CognitoAuthService implements core.backend.IAuthService {
       cognitoISP.adminUpdateUserAttributes(
         {
           UserAttributes: [{ Name: `custom:${attribute}`, Value: value }],
-          UserPoolId: "eu-west-1_C1QvyP9PI",
+          UserPoolId: "eu-west-1_PQ8PetY0c",
           Username: authId,
         },
         (err) => {

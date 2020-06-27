@@ -38,8 +38,15 @@ export default class Sockets {
     this.authToken = authToken;
   };
 
-  public subscribeToPersonalRoom = async () => {
-    (await this.getConnection()).send("");
+  public send = async (event: string, data?: any) => {
+    const connection = await this.getConnection();
+    console.log(`SocketClient - Sending "${event}"`, data);
+    connection.send(
+      JSON.stringify({
+        event,
+        token: this.authToken,
+      })
+    );
   };
 
   private getConnection = async () => {

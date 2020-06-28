@@ -30,6 +30,7 @@ export default class AuthStore extends BaseStore {
   constructor(api: Api, sockets: Sockets) {
     super(api, sockets);
     this.authClient = new Auth();
+    this.listenForTestMessages();
   }
 
   public signup = async (email: string, password: string) =>
@@ -47,6 +48,9 @@ export default class AuthStore extends BaseStore {
     this.me = await this.api.signup({
       email,
     });
+    // when we signup on the api we set some additional data on the auth service.
+    // we need to refetch the JWT so we have this additonal data.
+    await this.login(email, password);
   };
 
   public login = async (email: string, password: string): Promise<void> => {
@@ -121,13 +125,7 @@ export default class AuthStore extends BaseStore {
 
   public subscribeToUserEvents = () => {
     if (this.me) {
-      this.sockets.send("SUBSCRIBE_PERSONAL");
-    }
-  };
-
-  public unsubscribeToUserEvents = () => {
-    if (this.me) {
-      this.sockets.send("UNSUBSCRIBE_PERSONAL");
+      this.sockets.subscribe("ME");
     }
   };
 
@@ -239,5 +237,12 @@ export default class AuthStore extends BaseStore {
     }
 
     return undefined;
+  };
+
+  private listenForTestMessages = () => {
+    console.log("listening for test event");
+    this.sockets.addOnEvent("TEST_EVENT", (body: any) => {
+      console.log(body);
+    });
   };
 }

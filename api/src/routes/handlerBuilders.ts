@@ -116,11 +116,21 @@ const handlerBuilder = (
   next();
 };
 
-const getBuilder = (requiresAuth: boolean) => (
+const getBuilder = <
+  Handler extends
+    | AuthRequestHandler<any, any, any, any>
+    | UnAuthRequestHandler<any, any, any, any>
+>(
+  requiresAuth: boolean
+) => (
   config: api.Config,
   getServices: (logger: core.backend.Logger) => api.Services
-) => (handler: AuthRequestHandler<any, any, any, any>) =>
+) => (handler: Handler) =>
   handlerBuilder(config, getServices, handler, requiresAuth);
 
-export const authBuilder = getBuilder(true);
-export const noAuthBuilder = getBuilder(false);
+export const authBuilder = getBuilder<AuthRequestHandler<any, any, any, any>>(
+  true
+);
+export const noAuthBuilder = getBuilder<
+  UnAuthRequestHandler<any, any, any, any>
+>(false);

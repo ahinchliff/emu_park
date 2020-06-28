@@ -145,8 +145,6 @@ export default class CognitoAuthClient implements IAuthClient {
     const idToken = x.getIdToken();
     const refreshToken = x.getRefreshToken();
 
-    console.log(idToken.decodePayload());
-
     // cognito returns three tokens; auth, id and refresh. Both auth and id can be used
     // to authenticate. We use the id token because it contains extra user details.
 

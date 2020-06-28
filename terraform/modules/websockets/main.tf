@@ -17,6 +17,10 @@ resource "aws_apigatewayv2_stage" "stage" {
   api_id        = aws_apigatewayv2_api.websockets.id
   name          = "live"
   deployment_id = aws_apigatewayv2_deployment.websockets.id
+  default_route_settings {
+    throttling_burst_limit = 5000
+    throttling_rate_limit = 10000
+  }
 }
 
 resource "aws_apigatewayv2_integration" "connect" {

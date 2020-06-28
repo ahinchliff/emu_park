@@ -26,13 +26,10 @@ const App: React.FC = () => {
 
   const initApp = async () => {
     initReactToAppStateChange();
-    await state.authStore.initAuth();
-    await new Promise((resolve) => {
-      // we want the loading screen to display for an extra half second
-      // so that the auth state has time to propagate
-      setTimeout(() => resolve(), 500);
-    });
-    state.authStore.subscribeToUserEvents();
+    await initAuth();
+    if (state.authStore.me) {
+      state.authStore.subscribeToUserEvents();
+    }
   };
 
   if (appInitialising) {
@@ -78,11 +75,19 @@ const initReactToAppStateChange = () => {
       nextAppState === "active"
     ) {
       console.log("app.tsx - App resumed");
-      sockets.connect();
-      await state.authStore.initAuth();
+      await initAuth();
+      sockets.reconnect();
     }
     appState = nextAppState;
   });
 };
+
+const initAuth = () =>
+  new Promise(async (resolve) => {
+    await state.authStore.initAuth();
+    // we want the loading screen to display for an extra half second
+    // so that the auth state has time to propagate
+    setTimeout(() => resolve(), 500);
+  });
 
 export default registerRootComponent(App);

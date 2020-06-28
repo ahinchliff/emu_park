@@ -1,8 +1,9 @@
 import * as Koa from "koa";
 import * as Router from "@koa/router";
-import { authBuilder } from "./handlerBuilders";
+import { authBuilder, noAuthBuilder } from "./handlerBuilders";
 import authHandlers from "./auth";
 import user from "./user";
+import test from "./test";
 
 export default (
   app: Koa,
@@ -10,6 +11,7 @@ export default (
   services: (logger: core.backend.Logger) => api.Services
 ): void => {
   const auth = authBuilder(config, services);
+  const unAuth = noAuthBuilder(config, services);
 
   const authRouter = new Router({ prefix: "/auth" });
   authRouter.get("/me", auth(authHandlers.getMe));
@@ -21,6 +23,10 @@ export default (
     auth(user.getProfilePictureUploadUrl)
   );
 
+  const testRouter = new Router({ prefix: "/test" });
+  testRouter.post("/user-socket", unAuth(test.sendTestSocketEvent));
+
   app.use(authRouter.routes());
   app.use(userRouter.routes());
+  app.use(testRouter.routes());
 };

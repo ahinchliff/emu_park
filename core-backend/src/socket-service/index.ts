@@ -1,5 +1,6 @@
 import * as AWS from "aws-sdk";
 import { v4 as uuid } from "uuid";
+import { toDatabaseDate } from "../utils";
 
 const MAX_BATCH_SIZE = 25;
 
@@ -14,15 +15,10 @@ export default class SocketService implements core.backend.ISocketService {
     });
   }
 
-  public subscribeToUser = async (
-    connectionId: string,
-    userId: string,
-    connectionExpiry: string
-  ) => {
+  public subscribeToUser = async (connectionId: string, userId: string) => {
     await this.subscribeConnectionToRoom(
       connectionId,
-      this.getUserRoom(userId),
-      connectionExpiry
+      this.getUserRoom(userId)
     );
   };
 
@@ -110,14 +106,15 @@ export default class SocketService implements core.backend.ISocketService {
     this.unsubscribeConnectionFromAllRooms(connectionId);
   };
 
-  public sendTestMessage = async (room: string, message: string) => {
-    await this.emitEventToRoom(room, "test_event", { message });
+  public emitTestEventToUser = async (userId: string, message: string) => {
+    await this.emitEventToRoom(this.getUserRoom(userId), "TEST_EVENT", {
+      message,
+    });
   };
 
   private subscribeConnectionToRoom = async (
     connectionId: string,
-    room: string,
-    connectionExpiry: string
+    room: string
   ) => {
     await this.dynamoDB
       .put({
@@ -126,7 +123,7 @@ export default class SocketService implements core.backend.ISocketService {
           id: uuid(),
           connectionId,
           room,
-          connectionExpiry,
+          createdAt: toDatabaseDate(new Date()),
         },
       })
       .promise();
@@ -143,6 +140,12 @@ export default class SocketService implements core.backend.ISocketService {
         KeyConditionExpression: "room = :room",
       })
       .promise();
+
+    console.log("Emiting event to connections", {
+      room,
+      event,
+      count: usersConnectionSearchResult.Count,
+    });
 
     usersConnectionSearchResult.Items?.forEach(async (c) => {
       const data = {
@@ -162,7 +165,7 @@ export default class SocketService implements core.backend.ISocketService {
         if (error.code === "GoneException") {
           this.unsubscribeConnectionFromAllRooms(c.connectionId);
         } else {
-          // logging
+          console.log(e);
         }
       }
     });

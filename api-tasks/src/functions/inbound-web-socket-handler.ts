@@ -2,13 +2,12 @@ import ConfigService from "../../../core-backend/build/config-service";
 import Logger from "../../../core-backend/build/logger";
 import AuthService from "../../../core-backend/build/auth-service";
 import SocketService from "../../../core-backend/build/socket-service";
-import { toDatabaseDate } from "../../../core-backend/build/utils";
 
 type Config = Pick<core.backend.config.Config, "auth" | "env" | "websockets">;
 
 type EventToDataMapping = {
-  SUBSCRIBE_PERSONAL: undefined;
-  UNSUBSCRIBE_PERSONAL: undefined;
+  SUBSCRIBE_ME: undefined;
+  UNSUBSCRIBE_ME: undefined;
 };
 
 type Event = keyof EventToDataMapping;
@@ -26,7 +25,7 @@ type Handler<Token, Data> = (payload: {
   data: Data;
   socketService: core.backend.ISocketService;
   token: Token;
-}) => Promise<void>;
+}) => Promise<any>;
 
 type AuthHandler<Data> = Handler<api.AuthToken, Data>;
 
@@ -36,7 +35,7 @@ let config: Config | undefined = undefined;
 let authService: core.backend.IAuthService | undefined = undefined;
 let socketService: core.backend.ISocketService | undefined = undefined;
 
-const success = { statusCode: 200 };
+const success = new Promise((resolve) => resolve({ statusCode: 200 }));
 const error = { statusCode: 500 };
 const badRequest = (message: string) => ({
   statusCode: 400,
@@ -123,8 +122,8 @@ const onDefault = async (
       requiresAuth: boolean;
     };
   } = {
-    SUBSCRIBE_PERSONAL: { fn: onSubscribePersonal, requiresAuth: true },
-    UNSUBSCRIBE_PERSONAL: { fn: onUnsubscribePersonal, requiresAuth: true },
+    SUBSCRIBE_ME: { fn: onSubscribeMe, requiresAuth: true },
+    UNSUBSCRIBE_ME: { fn: onUnsubscribeMe, requiresAuth: true },
   };
 
   const handler = eventToFunctionMap[parsedBody.event];
@@ -147,19 +146,14 @@ const onDefault = async (
       return badRequest("Failed to decode get userId from JWT token");
     }
 
-    if (!decodedToken.expiry) {
-      logger.debug("Failed to decode get expiry from JWT token");
-      return badRequest("Failed to decode get expiry from JWT token");
-    }
-
-    await handler.fn({
+    return await handler.fn({
       connectionId,
       data: parsedBody.data,
       socketService,
       token: decodedToken,
     });
   } else {
-    await handler.fn({
+    return await handler.fn({
       connectionId,
       data: parsedBody.data,
       socketService,
@@ -180,18 +174,21 @@ const onDisconnect = async (
   }
 };
 
-const onSubscribePersonal: AuthHandler<
-  EventToDataMapping["SUBSCRIBE_PERSONAL"]
-> = async ({ socketService, connectionId, token }) => {
-  await socketService.subscribeToUser(
-    connectionId,
-    token.userId.toString(),
-    toDatabaseDate(token.expiry)
-  );
+const onSubscribeMe: AuthHandler<EventToDataMapping["SUBSCRIBE_ME"]> = async ({
+  socketService,
+  connectionId,
+  token,
+}) => {
+  try {
+    await socketService.subscribeToUser(connectionId, token.userId.toString());
+    return success;
+  } catch (e) {
+    return error;
+  }
 };
 
-const onUnsubscribePersonal: AuthHandler<
-  EventToDataMapping["SUBSCRIBE_PERSONAL"]
+const onUnsubscribeMe: AuthHandler<
+  EventToDataMapping["UNSUBSCRIBE_ME"]
 > = async ({ socketService, connectionId, token }) => {
   await socketService.unsubscribeFromUser(
     connectionId,

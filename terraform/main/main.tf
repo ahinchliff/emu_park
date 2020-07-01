@@ -1,5 +1,5 @@
 locals {
-  mysql_database_name = "lambda_terraform"
+  mysql_database_name = "project_4"
   mysql_application_user_username = "application"
   web_sockets_dynamo_table_name = "socketRoomSubscriptions"
 }
@@ -7,7 +7,7 @@ locals {
 provider "aws" {
   region  = var.aws_region
   assume_role {
-    role_arn = "arn:aws:iam::${var.aws_account_number}:role/Administrator"
+    role_arn = "arn:aws:iam::${var.aws_account_number}:role/Terraform"
   }
 }
 

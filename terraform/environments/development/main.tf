@@ -26,9 +26,9 @@ module init {
   aws_region = local.region
 } 
 
-module main {
+module stack {
   env = "development"
-  source = "../../main"
+  source = "../../stack"
   aws_account_number = local.aws_account_number
   aws_region = local.region
   mysql_master_password_encrypted = local.mysql_master_password_encrypted
@@ -36,13 +36,13 @@ module main {
 }
 
 output "api_endpoint" {
-  value = module.main.api_endpoint
+  value = module.stack.api_endpoint
 }
 
 output "database_address" {
-  value = module.main.database_address
+  value = module.stack.database_address
 }
 
 output "websocket_endpoint" {
-  value = module.main.websocket_endpoint
+  value = module.stack.websocket_endpoint
 }

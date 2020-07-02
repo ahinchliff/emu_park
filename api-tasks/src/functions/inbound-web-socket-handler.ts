@@ -3,7 +3,10 @@ import Logger from "../../../core-backend/build/logger";
 import AuthService from "../../../core-backend/build/auth-service";
 import SocketService from "../../../core-backend/build/socket-service";
 
-type Config = Pick<core.backend.config.Config, "auth" | "env" | "websockets">;
+type Config = Pick<
+  core.backend.config.Config,
+  "auth" | "environment" | "websockets"
+>;
 
 type EventToDataMapping = {
   SUBSCRIBE_ME: undefined;
@@ -43,7 +46,7 @@ const badRequest = (message: string) => ({
 });
 
 export const handler = async (event: APIGatewayWebsocketEvent) => {
-  const logger = new Logger("dev");
+  const logger = new Logger("development");
   if (!config || !authService || !socketService) {
     logger.debug("Initialising function");
     const configService = new ConfigService(logger);
@@ -61,7 +64,7 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
     });
   }
 
-  logger.setEnviroment(config.env);
+  logger.setEnviroment(config.environment);
 
   const {
     body,

@@ -1,6 +1,6 @@
 
 
-variable env {}
+variable environment {}
 variable aws_region {}
 variable mysql_application_user_password_encrypted {}
 variable mysql_application_user_username {}

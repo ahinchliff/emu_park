@@ -14,7 +14,7 @@ export default class ConfigService
     sensitiveConfigKeys: core.backend.config.SensitiveConfigKey[]
   ) => {
     const nonSensitiveKeys: core.backend.config.NonSensitiveConfigKey[] = [
-      "env",
+      "environment",
       "mysql_host",
       "mysql_port",
       "mysql_application_user_username",
@@ -58,7 +58,7 @@ export default class ConfigService
     ) as { [key in core.backend.config.ConfigKey]: any };
 
     const config: core.backend.config.Config = {
-      env: fetchedParams.env,
+      environment: fetchedParams.environment,
       auth: {
         jwtIssuer: fetchedParams.jwt_issuer,
         jwksPath: "/.well-known/jwks.json",

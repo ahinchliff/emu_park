@@ -1,4 +1,7 @@
-variable mysql_master_password_encrypted {}
-variable "database_subnet_group_name" {}
-variable "database_security_group_id" {}
+variable database_name {}
+variable master_username {}
+variable master_password_encrypted {}
+variable subnet_group_name {}
+variable security_group_id {}
+
 

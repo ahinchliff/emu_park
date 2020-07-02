@@ -32,9 +32,9 @@
 2. In `terraform/[environment]/main.tf` set the region and AWS account id.
 3. Create an s3 bucket for the terraform state using the aws cli. `aws-vault exec [profile] -- aws s3api create-bucket --bucket "[project-name]-terraform-state" --region "[region" --create-bucket-configuration LocationConstraint="[region]"`
 4. Run `yarn deploy` to create the KMS key used to encrypt sensitive config.
-5. Uncomment the modules and outputs in `terraform/[environment]/main.tf`
-6. Create strong passwords for the root and application mysql users. Encrypt these using and `yarn encrypt-config [password]` and copy the result into the local variables at the top of ``terraform/[environment]/main.tf`.
-7. In `terraform/main/main.tf` set the name of the database.
+5. Uncomment the modules and outputs in `terraform/[environment]/main.tf` and `terraform/[environment]/outputs.tf`
+6. Set environment specific config in `terraform/[environment]/main.tf`.
+7. Create strong passwords for the root and application mysql users. Encrypt these using and `yarn encrypt-config [password]` and copy the result into the local variables at the top of `terraform/[environment]/main.tf`.
 8. Run `yarn deploy` to deploy the rest of the infrastructure.
 9. Connect to the database. Using the endpoint printed to the terminal, the username `root` and the password you specified in step 6.
 10. Run the script in `data/seed/mysql/APPLIED-01-schema.sql` replacing `[project_name]`.

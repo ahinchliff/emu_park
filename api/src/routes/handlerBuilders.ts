@@ -72,7 +72,7 @@ const handlerBuilder = (
     | UnAuthRequestHandler<any, any, any, any>,
   authRequired: boolean
 ): Router.Middleware => async (ctx, next) => {
-  const logger = new Logger(config.env);
+  const logger = new Logger(config.environment);
   const start = Date.now();
   logger.debug(`----> ${ctx.method} ${ctx.url}`);
 

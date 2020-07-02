@@ -1,7 +1,7 @@
-module "env" {
+module "environment" {
   source = "../shared/config-param"
-  name = "env"
-  value = var.env
+  name = "environment"
+  value = var.environment
   sensitive = false
 }
 

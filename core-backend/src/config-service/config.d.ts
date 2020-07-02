@@ -1,6 +1,6 @@
 declare namespace core.backend.config {
   type Config = {
-    env: "dev" | "staging" | "production";
+    environment: "development" | "staging" | "production";
     aws: {
       accountId: string;
       region: string;
@@ -27,7 +27,7 @@ declare namespace core.backend.config {
   };
 
   type NonSensitiveConfigKey =
-    | "env"
+    | "environment"
     | "region"
     | "mysql_host"
     | "mysql_port"

@@ -12,7 +12,7 @@ export const handler = async (
   if (!app) {
     // At this point we don't known what enviorment we are in because we havent
     // fetched config yet. Assume dev as we are just initialising.
-    const logger = new Logger("dev", "api-init");
+    const logger = new Logger("development", "api-init");
     app = await initApp(logger);
   }
   const serverlessApp = serverlessHttp(app);

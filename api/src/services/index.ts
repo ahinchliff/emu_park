@@ -16,7 +16,7 @@ export const initServices = async (
       data: mysql.getClients(
         mysqlPool,
         logger,
-        config.env === "dev" || config.env === "staging"
+        config.environment === "development" || config.environment === "staging"
       ),
       auth,
       file,

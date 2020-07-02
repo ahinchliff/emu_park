@@ -1,12 +1,10 @@
-# Infrastructure
+# Setup
 
 - Each environment has its own AWS account.
 - The following steps need to be completed for each environment (dev, staging, production)
 - aws-vault is used to store and execute commands using aws api credentials in your local keychain.
 
-## Setup
-
-### AWS account
+## AWS account
 
 1. Create an AWS account (https://portal.aws.amazon.com/billing/signup#/start). Email must be unique to AWS but credit card and phone number can be the same as previous accounts. Signin using the root user.
 
@@ -16,7 +14,7 @@
 
 4. Create a role for Terraform (https://console.aws.amazon.com/iam/home?#/roles$new?step=type&roleType=crossAccount). Select `Another AWS account` and enter the current accounts id. Under policy select `AdministratorAccess`. This will give Terraform the same access as your user.
 
-### Local AWS access
+## Local AWS access
 
 1. When logging into the newly created user, Select IAM user. For account ID enter the alias created above. Navigate to your IAM user.
 2. Under `security crendentials` create a new access key. Delete any existing.
@@ -24,7 +22,7 @@
 4. In `~/.zprofile` create an alias to easily run terraform with your credentials. Eg `alias terraform-[projectname]='aws-vault exec [project-name] -- terraform'`
 5. Start a new terminal sessions.
 
-### Deployment
+## Deployment
 
 - Environment variables including secrets are committed to git.
 - To keep secrets secure we encrypt them using a key from AWS KMS.
@@ -38,9 +36,12 @@
 6. Create strong passwords for the root and application mysql users. Encrypt these using and `yarn encrypt-config [password]` and copy the result into the local variables at the top of ``terraform/[environment]/main.tf`.
 7. In `terraform/main/main.tf` set the name of the database.
 8. Run `yarn deploy` to deploy the rest of the infrastructure.
+9. Connect to the database. Using the endpoint printed to the terminal, the username `root` and the password you specified in step 6.
+10. Run the script in `data/seed/mysql/APPLIED-01-schema.sql` replacing `[project_name]`.
 
 ## Pulldown
 
 1. Empty all files from all S3 buckets except the bucket used for the terraform state!!!
 2. Run `yarn destory`
-3. If deploying the infrastructure again you will need to start at step 4.
+
+If deploying the infrastructure again you will need to comment out the code uncommened in step 5 and start at step 4.

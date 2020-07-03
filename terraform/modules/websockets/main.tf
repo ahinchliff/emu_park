@@ -117,8 +117,8 @@ resource "aws_lambda_permission" "lambda_can_be_invoked_by_agw" {
 resource "aws_dynamodb_table" "connections" {
   name           = var.dynamo_table_name
   billing_mode   = "PROVISIONED"
-  read_capacity  = 20
-  write_capacity = 20
+  read_capacity  = 15
+  write_capacity = 15
   hash_key       = "id"
 
   attribute {
@@ -140,8 +140,8 @@ resource "aws_dynamodb_table" "connections" {
     name               = "connectionId"
     hash_key           = "connectionId"
     range_key          = "room"
-    write_capacity     = 20
-    read_capacity      = 20
+    write_capacity     = 5
+    read_capacity      = 5
     projection_type    = "ALL"
   }
 
@@ -149,8 +149,8 @@ resource "aws_dynamodb_table" "connections" {
     name               = "room"
     hash_key           = "room"
     range_key          = "connectionId"
-    write_capacity     = 20
-    read_capacity      = 20
+    write_capacity     = 5
+    read_capacity      = 5
     projection_type    = "ALL"
   }
 

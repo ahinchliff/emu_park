@@ -6,7 +6,7 @@ output "database_address" {
   value = module.data.mysql_address
 }
 
-output "websocket_endpoint" {
-  value = module.websockets.endpoint
-}
+# output "websocket_endpoint" {
+#   value = module.websockets.endpoint
+# }
 

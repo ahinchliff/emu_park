@@ -47,7 +47,7 @@ resource "aws_cognito_user_pool_client" "web" {
     "USER_PASSWORD_AUTH"
   ]
   
-  callback_urls = [
+  callback_urls = [ 
     "http://localhost:3000/login-callback",
   ]
 
@@ -59,8 +59,8 @@ resource "aws_cognito_user_pool_domain" "main" {
   user_pool_id = aws_cognito_user_pool.users.id
 }
 
-module email_verification_email_customisation_lambda {
-  source = "../shared/lambda"
-  name = "email-verification-email-customisation"
-  source_file = "../../../.webpack/email-verification-email-customisation.js"
-}
+# module email_verification_email_customisation_lambda {
+#   source = "../shared/lambda"
+#   name = "email-verification-email-customisation"
+#   source_file = "../../../.webpack/email-verification-email-customisation.js"
+# }

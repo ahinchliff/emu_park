@@ -8,9 +8,9 @@ locals {
   # todo
   aws_account_number = "144453885675"
   # todo
-  mysql_master_password_encrypted = "AQICAHhHq1MhdnWTg+wiyO3+IjxBeUtrGjmglKfBIzLugEwkvAEf2G9CJVsewNIdpQ6mmv2jAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMq7Z7Wma9vFBxG/TpAgEQgCYGlRc5Jtqp6hsoB6TCtEMJ9Rzy1mOcEdR/wMCDC2N0rDbYTzD+mw=="
+  mysql_master_password_encrypted = "AQICAHgRg8w6BXVTjss8C78uQMnIpD8R2PQqcIHt42NIIRFzcwFiBwb2YhFudXI9FoM/oNoiAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMxfhN/FAd0+OS4iuwAgEQgCZrXQjCznzz+UuW+2+HWhx8YLOiu5Uj7SdJ7aRiasYKC4j9Cd/sow=="
   # todo
-  mysql_application_user_password_encrypted = "AQICAHhHq1MhdnWTg+wiyO3+IjxBeUtrGjmglKfBIzLugEwkvAEf2G9CJVsewNIdpQ6mmv2jAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMq7Z7Wma9vFBxG/TpAgEQgCYGlRc5Jtqp6hsoB6TCtEMJ9Rzy1mOcEdR/wMCDC2N0rDbYTzD+mw=="
+  mysql_application_user_password_encrypted = "AQICAHgRg8w6BXVTjss8C78uQMnIpD8R2PQqcIHt42NIIRFzcwFiBwb2YhFudXI9FoM/oNoiAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMxfhN/FAd0+OS4iuwAgEQgCZrXQjCznzz+UuW+2+HWhx8YLOiu5Uj7SdJ7aRiasYKC4j9Cd/sow=="
 }
 
 terraform {  

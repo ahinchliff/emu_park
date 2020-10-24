@@ -38,6 +38,8 @@
 8. Run `yarn deploy` to deploy the rest of the infrastructure.
 9. Connect to the database. Using the endpoint printed to the terminal, the username `root` and the password you specified in step 6.
 10. Run the script in `data/seed/mysql/APPLIED-01-schema.sql` replacing `[project_name]`.
+11. Create a DB user for the api. Something similar to
+    `CREATE USER 'application'@'%' IDENTIFIED BY 'Password123'; GRANT SELECT, INSERT, DELETE ON [project_name].* TO application@'%';`
 
 ## Pulldown
 

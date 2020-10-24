@@ -1,16 +1,10 @@
 resource "aws_lambda_function" "lambda" {
   function_name    = var.name
-  filename         = data.archive_file.lambda.output_path
-  source_code_hash = data.archive_file.lambda.output_base64sha256
-  handler          = "${var.name}.handler"
+  filename         = var.source_file
+  source_code_hash = filebase64sha256(var.source_file)
+  handler          = "handler.${var.name}"
   role             = aws_iam_role.lambda.arn
   runtime          = "nodejs12.x"
-}
-
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_file = var.source_file
-  output_path = "/tmp/${var.name}.zip"
 }
 
 resource "aws_iam_role" "lambda" {

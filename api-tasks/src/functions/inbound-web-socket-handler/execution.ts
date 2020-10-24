@@ -1,7 +1,15 @@
-import ConfigService from "../../../core-backend/build/config-service";
-import Logger from "../../../core-backend/build/logger";
-import AuthService from "../../../core-backend/build/auth-service";
-import SocketService from "../../../core-backend/build/socket-service";
+import { Execution } from "../generate-lambda";
+
+type Variables = {
+  routeKey: "$connect" | "$disconnect" | "$default";
+  connectionId: string;
+  data: any;
+};
+
+type Services = {
+  authService: core.backend.IAuthService;
+  socketService: core.backend.ISocketService;
+};
 
 type Config = Pick<
   core.backend.config.Config,
@@ -15,14 +23,6 @@ type EventToDataMapping = {
 
 type Event = keyof EventToDataMapping;
 
-type APIGatewayWebsocketEvent = {
-  requestContext: {
-    routeKey: "$connect" | "$disconnect" | "$default";
-    connectionId: string;
-  };
-  body: string;
-};
-
 type Handler<Token, Data> = (payload: {
   connectionId: string;
   data: Data;
@@ -32,11 +32,12 @@ type Handler<Token, Data> = (payload: {
 
 type AuthHandler<Data> = Handler<api.AuthToken, Data>;
 
-// type UnAuthHandler<Data> = Handler<undefined, Data>;
-
-let config: Config | undefined = undefined;
-let authService: core.backend.IAuthService | undefined = undefined;
-let socketService: core.backend.ISocketService | undefined = undefined;
+type InboundWebSocketHandlerExecution = Execution<
+  Variables,
+  Config,
+  Services,
+  void
+>;
 
 const success = new Promise((resolve) => resolve({ statusCode: 200 }));
 const error = { statusCode: 500 };
@@ -45,31 +46,12 @@ const badRequest = (message: string) => ({
   body: message,
 });
 
-export const handler = async (event: APIGatewayWebsocketEvent) => {
-  const logger = new Logger("development");
-  if (!config || !authService || !socketService) {
-    logger.debug("Initialising function");
-    const configService = new ConfigService(logger);
-    config = await configService.get<Config>([]);
-    if (config) {
-      authService = new AuthService(config.auth);
-      socketService = new SocketService(config.websockets);
-    }
-  }
-
-  if (!config || !authService || !socketService) {
-    return logger.error("Failed to initialise", {
-      config: !!config,
-      authService: !!authService,
-    });
-  }
-
-  logger.setEnviroment(config.environment);
-
-  const {
-    body,
-    requestContext: { routeKey, connectionId },
-  } = event;
+const InboundWebSocketHandlerExecution: InboundWebSocketHandlerExecution = async ({
+  variables,
+  services,
+  logger,
+}) => {
+  const { routeKey, connectionId, data } = variables;
 
   logger.debug("Route", { routeKey, connectionId });
 
@@ -78,15 +60,15 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
   }
 
   if (routeKey === "$disconnect") {
-    return await onDisconnect(connectionId, socketService, logger);
+    return await onDisconnect(connectionId, services.socketService, logger);
   }
 
   if (routeKey === "$default") {
     return await onDefault(
       connectionId,
-      body,
-      socketService,
-      authService,
+      data,
+      services.socketService,
+      services.authService,
       logger
     );
   }
@@ -97,27 +79,27 @@ export const handler = async (event: APIGatewayWebsocketEvent) => {
 
 const onDefault = async (
   connectionId: string,
-  body: string,
+  data: string,
   socketService: core.backend.ISocketService,
   authService: core.backend.IAuthService,
   logger: core.backend.Logger
 ) => {
-  if (!body) {
-    return logger.debug("No body");
+  if (!data) {
+    return logger.debug("No data");
   }
 
-  const parsedBody = JSON.parse(body) as {
+  const parseddata = JSON.parse(data) as {
     token?: string;
     event: Event | undefined;
     data: EventToDataMapping[Event];
   };
 
-  if (!parsedBody.event) {
-    logger.debug('Property "body" is missing on request');
-    return badRequest('Property "body" is missing on request');
+  if (!parseddata.event) {
+    logger.debug('Property "data" is missing on request');
+    return badRequest('Property "data" is missing on request');
   }
 
-  logger.debug("Event on body", { event: parsedBody.event });
+  logger.debug("Event on data", { event: parseddata.event });
 
   const eventToFunctionMap: {
     [key in Event]: {
@@ -129,15 +111,15 @@ const onDefault = async (
     UNSUBSCRIBE_ME: { fn: onUnsubscribeMe, requiresAuth: true },
   };
 
-  const handler = eventToFunctionMap[parsedBody.event];
+  const handler = eventToFunctionMap[parseddata.event];
 
   if (handler.requiresAuth) {
-    if (!parsedBody.token) {
-      logger.debug("Handler requires auth but no token on body");
-      return badRequest("Handler requires auth but no token on body");
+    if (!parseddata.token) {
+      logger.debug("Handler requires auth but no token on data");
+      return badRequest("Handler requires auth but no token on data");
     }
 
-    const decodedToken = await authService.decodeJWT(parsedBody.token, logger);
+    const decodedToken = await authService.decodeJWT(parseddata.token, logger);
 
     if (!decodedToken) {
       logger.debug("Failed to decode JWT token");
@@ -151,14 +133,14 @@ const onDefault = async (
 
     return await handler.fn({
       connectionId,
-      data: parsedBody.data,
+      data: parseddata.data,
       socketService,
       token: decodedToken,
     });
   } else {
     return await handler.fn({
       connectionId,
-      data: parsedBody.data,
+      data: parseddata.data,
       socketService,
       token: undefined,
     });
@@ -198,3 +180,5 @@ const onUnsubscribeMe: AuthHandler<
     token.userId.toString()
   );
 };
+
+export default InboundWebSocketHandlerExecution;

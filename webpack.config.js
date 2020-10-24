@@ -4,9 +4,9 @@ module.exports = {
   target: "node",
   entry: {
     "email-verification-email-customisation":
-      "./api-tasks/build/functions/email-verification-email-customisation.js",
+      "./api-tasks/build/functions/email-verification-email-customisation/index.js",
     "inbound-web-socket-handler":
-      "./api-tasks/build/functions/inbound-web-socket-handler.js",
+      "./api-tasks/build/functions/inbound-web-socket-handler/index.js",
     api: "./api/build/lambda.js",
     server: "./api/build/server.js",
     "generate-email-templates":

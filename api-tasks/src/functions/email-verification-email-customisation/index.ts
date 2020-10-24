@@ -1,4 +1,4 @@
-import generateEmailHtml from "../../../core-backend/build/email-service/generate-email-html";
+import generateEmailHtml from "../../../../core-backend/build/email-service/generate-email-html";
 
 export const handler = async (e: any, _c: any, callback: any) => {
   // const logger = new Logger("dev");

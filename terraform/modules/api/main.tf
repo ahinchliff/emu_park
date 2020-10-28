@@ -35,7 +35,7 @@ resource "aws_api_gateway_integration" "lambda" {
 module lambda {
   source = "../shared/lambda"
   name = "api"
-  source_file = "../../../api-tasks/free-4/.serverless/api.zip"
+  source_file = "../../../api/.serverless/api.zip"
 }
 
 resource "aws_lambda_permission" "api_lambda_can_be_invoked_by_agw" {

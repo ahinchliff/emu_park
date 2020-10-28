@@ -40,12 +40,12 @@ module "mysql_application_user_username" {
   sensitive = false
 }
 
-module "profile_pictures_s3_bucket_domain" {
-  source = "../shared/config-param"
-  name = "profile_pictures_s3_bucket_domain"
-  value = var.profile_pictures_s3_bucket_domain
-  sensitive = false
-}
+# module "profile_pictures_s3_bucket_domain" {
+#   source = "../shared/config-param"
+#   name = "profile_pictures_s3_bucket_domain"
+#   value = var.profile_pictures_s3_bucket_domain
+#   sensitive = false
+# }
 
 module "web_sockets_dynamo_table_name" {
   source = "../shared/config-param"
@@ -61,12 +61,12 @@ module "web_sockets_dynamo_table_name" {
 #   sensitive = false
 # }
 
-module "jwt_issuer" {
-  source = "../shared/config-param"
-  name = "jwt_issuer"
-  value = var.jwt_issuer
-  sensitive = false
-}
+# module "jwt_issuer" {
+#   source = "../shared/config-param"
+#   name = "jwt_issuer"
+#   value = var.jwt_issuer
+#   sensitive = false
+# }
 
 module "mysql_application_user_password" {
   source = "../shared/config-param"

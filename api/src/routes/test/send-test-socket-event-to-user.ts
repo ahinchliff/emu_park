@@ -8,11 +8,13 @@ const sendTestSocketEvent: UnAuthRequestHandler<
   {},
   {},
   Body,
-  { success: true }
-> = async ({ body, services }) => {
-  await services.socket.emitTestEventToUser(body.userId, "Please work");
+  data.User | undefined
+> = async ({ services }) => {
+  const user = await services.data.user.get({ userId: 1 });
 
-  return { success: true };
+  console.log('-------!!!!')
+  
+  return user;
 };
 
 export default sendTestSocketEvent;

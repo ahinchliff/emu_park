@@ -1,7 +1,7 @@
-import * as Koa from "koa";
+// import * as Koa from "koa";
 import * as Router from "@koa/router";
-import Logger from "../../../core-backend/build/logger";
-import { addErrorToContext, notAuthorized } from "../utils/errorsUtils";
+import Logger from "../../../core-backend/src/logger";
+import { addErrorToContext } from "../utils/errorsUtils";
 
 export type RequestHandlerPayload<User, Params, QueryString, Body> = {
   user: User;
@@ -49,20 +49,20 @@ export type UnAuthRequestHandler<
   Result
 >;
 
-const getDecodedJWT = async (
-  ctx: Koa.Context,
-  authService: core.backend.IAuthService,
-  logger: core.backend.Logger
-): Promise<api.AuthToken | undefined> => {
-  const authToken = ctx.get("Authorization");
-  const split = authToken && authToken.split && authToken.split("Bearer ");
-  const token = split && split[1];
-  if (!token) {
-    return undefined;
-  }
+// const getDecodedJWT = async (
+//   ctx: Koa.Context,
+//   authService: core.backend.IAuthService,
+//   logger: core.backend.Logger
+// ): Promise<api.AuthToken | undefined> => {
+//   const authToken = ctx.get("Authorization");
+//   const split = authToken && authToken.split && authToken.split("Bearer ");
+//   const token = split && split[1];
+//   if (!token) {
+//     return undefined;
+//   }
 
-  return authService.decodeJWT(token, logger);
-};
+//   return authService.decodeJWT(token, logger);
+// };
 
 const handlerBuilder = (
   config: api.Config,
@@ -70,7 +70,7 @@ const handlerBuilder = (
   handler:
     | AuthRequestHandler<any, any, any, any>
     | UnAuthRequestHandler<any, any, any, any>,
-  authRequired: boolean
+  _authRequired: boolean
 ): Router.Middleware => async (ctx, next) => {
   const logger = new Logger(config.environment);
   const start = Date.now();
@@ -78,21 +78,21 @@ const handlerBuilder = (
 
   const services = getServices(logger);
 
-  const decodedJWT = await getDecodedJWT(ctx, services.auth, logger);
+  // const decodedJWT = await getDecodedJWT(ctx, services.auth, logger);
 
   let user: data.User | undefined = undefined;
 
-  if (decodedJWT?.authId) {
-    if (ctx.url === "/auth/signup") {
-      user = decodedJWT as data.User;
-    } else {
-      user = await services.data.user.get({ authId: decodedJWT?.authId });
-    }
-  }
+  // if (decodedJWT?.authId) {
+  //   if (ctx.url === "/auth/signup") {
+  //     user = decodedJWT as data.User;
+  //   } else {
+  //     user = await services.data.user.get({ authId: decodedJWT?.authId });
+  //   }
+  // }
 
-  if (authRequired && !user) {
-    addErrorToContext(ctx, notAuthorized());
-  } else {
+  // if (authRequired && !user) {
+  //   addErrorToContext(ctx, notAuthorized());
+  // } else {
     const payload: RequestHandlerPayload<any, any, any, any> = {
       user,
       services,
@@ -110,7 +110,7 @@ const handlerBuilder = (
       ctx.status = 200;
       ctx.body = result;
     }
-  }
+  // }
   const end = Date.now();
   logger.debug(`<---- ${ctx.method} ${ctx.url} ${ctx.status} ${end - start}ms`);
   next();

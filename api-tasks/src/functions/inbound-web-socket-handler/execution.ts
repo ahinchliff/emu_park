@@ -11,10 +11,12 @@ type Services = {
   socketService: core.backend.ISocketService;
 };
 
-type Config = Pick<
-  core.backend.config.Config,
-  "auth" | "environment" | "websockets"
->;
+type Config = any;
+
+// Pick<
+//   core.backend.config.Config,
+//   "auth" | "environment" | "websockets"
+// >;
 
 type EventToDataMapping = {
   SUBSCRIBE_ME: undefined;

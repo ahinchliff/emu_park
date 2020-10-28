@@ -35,9 +35,6 @@
     {
       "path": "./core-backend"
     },
-    {
-      "path": "./mobile-app"
-    }
   ],
   "include": [
     "./api-tasks/src/**/*.d.ts",

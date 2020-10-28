@@ -24,7 +24,7 @@ export default (
   );
 
   const testRouter = new Router({ prefix: "/test" });
-  testRouter.post("/user-socket", unAuth(test.sendTestSocketEvent));
+  testRouter.post("/data", unAuth(test.sendTestSocketEvent));
 
   app.use(authRouter.routes());
   app.use(userRouter.routes());

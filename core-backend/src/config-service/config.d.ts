@@ -13,17 +13,17 @@ declare namespace core.backend.config {
       database: string;
       connectionLimit: number;
     };
-    auth: {
-      jwtIssuer: string;
-      jwksPath: string;
-    };
-    bucketNames: {
-      profilePictures: string;
-    };
-    websockets: {
-      dynamoTableName: string;
-      endpoint: string;
-    };
+    // auth: {
+    //   jwtIssuer: string;
+    //   jwksPath: string;
+    // };
+    // bucketNames: {
+    //   profilePictures: string;
+    // };
+    // websockets: {
+    //   dynamoTableName: string;
+    //   endpoint: string;
+    // };
   };
 
   type NonSensitiveConfigKey =

@@ -19,9 +19,9 @@ module data {
   master_password_encrypted = var.mysql_master_password_encrypted
 }
 
-module files {
-  source = "../modules/files"
-}
+# module files {
+#   source = "../modules/files"
+# }
 
 module config {
   source = "../modules/config"
@@ -32,15 +32,15 @@ module config {
   mysql_host = module.data.mysql_address
   mysql_port = module.data.mysql_port
   mysql_database_name = var.project_name
-  jwt_issuer = module.auth.users_user_pool_endpoint
-  profile_pictures_s3_bucket_domain = module.files.domain_names.profile_pictures
+  # jwt_issuer = module.auth.users_user_pool_endpoint
+  # profile_pictures_s3_bucket_domain = module.files.domain_names.profile_pictures
   web_sockets_dynamo_table_name = var.web_sockets_dynamo_table_name
   # web_sockets_endpoint = module.websockets.endpoint
 }
 
-module auth {
-  source = "../modules/auth"
-}
+# module auth {
+#   source = "../modules/auth"
+# }
 
 module api {
   source = "../modules/api"

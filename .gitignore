@@ -7,10 +7,10 @@ node_modules
 # Error logs
 yarn-*.log
 
-# ts
 build/
 *.tsbuildinfo
 .webpack/
+.serverless/
 
 # DS_Store
 .DS_Store

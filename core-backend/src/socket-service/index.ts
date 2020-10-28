@@ -7,7 +7,8 @@ const MAX_BATCH_SIZE = 25;
 export default class SocketService implements core.backend.ISocketService {
   private dynamoDB: AWS.DynamoDB.DocumentClient;
   private agw: AWS.ApiGatewayManagementApi;
-  constructor(private config: core.backend.config.Config["websockets"]) {
+  // core.backend.config.Config["websockets"]
+  constructor(private config: any) {
     this.dynamoDB = new AWS.DynamoDB.DocumentClient();
     this.agw = new AWS.ApiGatewayManagementApi({
       apiVersion: "2018-11-29",

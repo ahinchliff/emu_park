@@ -17,7 +17,7 @@ const signup = async ({
     email: user.email,
   });
 
-  await services.auth.setUserIdOnAuthService(user.authId, newUser.userId);
+  // await services.auth.setUserIdOnAuthService(user.authId, newUser.userId);
 
   return toApiAuthUser(newUser);
 };

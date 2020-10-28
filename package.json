@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "deploy": "yarn build && cd ./core-backend && yarn copy-email-templates-to-build && cd .. && yarn webpack && yarn terraform-apply && rm -rf .webpack && rm -rf build",
-    "encrypt-config": "aws-vault exec personal-free-4 -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
-    "terraform-apply": "cd ./terraform/environments/development && aws-vault exec personal-free-4 -- terraform init && aws-vault exec personal-free-4 -- terraform apply",
-    "destroy": "yarn webpack && cd ./terraform/environments/development && aws-vault exec personal-free-4 -- terraform destroy && rm -rf .webpack",
-    "webpack": "webpack",
+    "deploy": "yarn build && cd api && yarn package && cd ../ && yarn terraform-apply && rm -rf build",
+    "encrypt-config": "aws-vault exec gotcha-dev -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
+    "terraform-apply": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform apply",
+    "destroy": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform destroy && rm -rf .webpack",
     "build": "tsc --build && rm -f tsconfig.tsbuildinfo"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 import * as Koa from "koa";
 import app from "./app";
-import * as mysql from "../../data/build/mysql/index";
-import ConfigService from "../../core-backend/build/config-service";
+import * as mysql from "../../data/src/mysql/index";
+import ConfigService from "../../core-backend/src/config-service";
 import { initServices } from "./services";
 
 export default async (

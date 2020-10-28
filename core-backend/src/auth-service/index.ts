@@ -16,7 +16,8 @@ export interface CognitoIdToken {
 export default class CognitoAuthService implements core.backend.IAuthService {
   private jwksClient: jwks.JwksClient | undefined = undefined;
   constructor(
-    private config: core.backend.config.Config["auth"],
+    // core.backend.config.Config["auth"],
+    private config: any, 
     region?: "eu-west-1"
   ) {
     if (region) {

@@ -19,10 +19,6 @@ export default class ConfigService
       "mysql_port",
       "mysql_application_user_username",
       "mysql_database_name",
-      "jwt_issuer",
-      "profile_pictures_s3_bucket_domain",
-      "web_sockets_dynamo_table_name",
-      "web_sockets_endpoint",
     ];
     const allKeys: core.backend.config.ConfigKey[] = [
       ...sensitiveConfigKeys,
@@ -59,10 +55,10 @@ export default class ConfigService
 
     const config: core.backend.config.Config = {
       environment: fetchedParams.environment,
-      auth: {
-        jwtIssuer: fetchedParams.jwt_issuer,
-        jwksPath: "/.well-known/jwks.json",
-      },
+      // auth: {
+      //   jwtIssuer: fetchedParams.jwt_issuer,
+      //   jwksPath: "/.well-known/jwks.json",
+      // },
       aws: {
         region: fetchedParams.region,
         accountId: "todo",
@@ -75,29 +71,29 @@ export default class ConfigService
         database: fetchedParams.mysql_database_name,
         connectionLimit: 1,
       },
-      bucketNames: {
-        profilePictures: this.getBucketNameFromDomain(
-          fetchedParams.profile_pictures_s3_bucket_domain
-        ),
-      },
-      websockets: {
-        dynamoTableName: fetchedParams.web_sockets_dynamo_table_name,
-        endpoint: this.getWebsocketHttpInvokeEndpointFromWSSDomain(
-          fetchedParams.web_sockets_endpoint
-        ),
-      },
+      // bucketNames: {
+      //   profilePictures: this.getBucketNameFromDomain(
+      //     fetchedParams.profile_pictures_s3_bucket_domain
+      //   ),
+      // },
+      // websockets: {
+      //   dynamoTableName: fetchedParams.web_sockets_dynamo_table_name,
+      //   endpoint: this.getWebsocketHttpInvokeEndpointFromWSSDomain(
+      //     fetchedParams.web_sockets_endpoint
+      //   ),
+      // },
     };
 
     this.logger.debug("Successfully fetched config");
     return (config as unknown) as T;
   };
 
-  private getBucketNameFromDomain = (domain: string) => {
-    return domain.split(".")[0];
-  };
+  // private getBucketNameFromDomain = (domain: string) => {
+  //   return domain.split(".")[0];
+  // };
 
-  private getWebsocketHttpInvokeEndpointFromWSSDomain = (wssDomain: string) => {
-    const parts = wssDomain.split(":");
-    return `https:${parts[1]}`;
-  };
+  // private getWebsocketHttpInvokeEndpointFromWSSDomain = (wssDomain: string) => {
+  //   const parts = wssDomain.split(":");
+  //   return `https:${parts[1]}`;
+  // };
 }

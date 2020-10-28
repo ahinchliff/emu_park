@@ -1,22 +1,22 @@
 locals {
   # todo
-  project_name = "personal-4"
+  project_name = "gotcha-dev"
   # todo
   environment = "development"
   # todo
   region = "eu-west-1"
   # todo
-  aws_account_number = "144453885675"
+  aws_account_number = "224937332002"
   # todo
-  mysql_master_password_encrypted = "AQICAHgRg8w6BXVTjss8C78uQMnIpD8R2PQqcIHt42NIIRFzcwFiBwb2YhFudXI9FoM/oNoiAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMxfhN/FAd0+OS4iuwAgEQgCZrXQjCznzz+UuW+2+HWhx8YLOiu5Uj7SdJ7aRiasYKC4j9Cd/sow=="
+  mysql_master_password_encrypted = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwHQTyr/umPfy7fMBKmLIg4NAAAAZjBkBgkqhkiG9w0BBwagVzBVAgEAMFAGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMJt3w4Jc69Ywz9+mKAgEQgCPBlo+HwQ9FANHT9fLqAOoTLOCdOQFstfmVZqp7rHN204asBQ=="
   # todo
-  mysql_application_user_password_encrypted = "AQICAHgRg8w6BXVTjss8C78uQMnIpD8R2PQqcIHt42NIIRFzcwFiBwb2YhFudXI9FoM/oNoiAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMxfhN/FAd0+OS4iuwAgEQgCZrXQjCznzz+UuW+2+HWhx8YLOiu5Uj7SdJ7aRiasYKC4j9Cd/sow=="
+  mysql_application_user_password_encrypted = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwHQTyr/umPfy7fMBKmLIg4NAAAAZjBkBgkqhkiG9w0BBwagVzBVAgEAMFAGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMJt3w4Jc69Ywz9+mKAgEQgCPBlo+HwQ9FANHT9fLqAOoTLOCdOQFstfmVZqp7rHN204asBQ=="
 }
 
 terraform {  
   backend "s3" {
     # todo
-    bucket  = "personal-4-terraform"
+    bucket  = "gotcha-dev-terraform-state"
     encrypt = true
     key     = "terraform.tfstate"
     # todo

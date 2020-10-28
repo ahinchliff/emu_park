@@ -3,7 +3,8 @@ import * as AWS from "aws-sdk";
 export default class FileService implements core.backend.IFileService {
   private s3: AWS.S3;
   constructor(
-    private config: core.backend.config.Config["bucketNames"],
+    // core.backend.config.Config["bucketNames"],
+    private config: any,
     defaultRegion?: "eu-west-1"
   ) {
     if (defaultRegion) {

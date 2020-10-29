@@ -2,8 +2,6 @@ import * as Koa from "koa";
 import * as Router from "@koa/router";
 import { authBuilder, noAuthBuilder } from "./handlerBuilders";
 import authHandlers from "./auth";
-import user from "./user";
-import test from "./test";
 
 export default (
   app: Koa,
@@ -14,19 +12,9 @@ export default (
   const unAuth = noAuthBuilder(config, services);
 
   const authRouter = new Router({ prefix: "/auth" });
+  authRouter.post("/signup", unAuth(authHandlers.signup));
+  authRouter.post("/login", unAuth(authHandlers.login));
   authRouter.get("/me", auth(authHandlers.getMe));
-  authRouter.post("/signup", auth(authHandlers.signup));
-
-  const userRouter = new Router({ prefix: "/user" });
-  userRouter.get(
-    "/profile-picture-upload-url",
-    auth(user.getProfilePictureUploadUrl)
-  );
-
-  const testRouter = new Router({ prefix: "/test" });
-  testRouter.post("/data", unAuth(test.sendTestSocketEvent));
 
   app.use(authRouter.routes());
-  app.use(userRouter.routes());
-  app.use(testRouter.routes());
 };

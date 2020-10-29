@@ -10,14 +10,17 @@
   "dependencies": {
     "@koa/cors": "^3.0.0",
     "@koa/router": "^8.0.8",
+    "@types/uuid": "^8.3.0",
     "aws-sdk": "^2.670.0",
     "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "moment": "^2.24.0",
     "mysql2": "^2.2.5",
     "serverless": "^2.8.0",
-    "serverless-http": "^2.3.2"
+    "serverless-http": "^2.3.2",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
@@ -31,14 +34,13 @@
     "@types/node": "^10.12.18",
     "@types/serverless": "^1.72.5",
     "fork-ts-checker-webpack-plugin": "^3.0.1",
-    "serverless-plugin-typescript": "^1.1.9",
     "serverless-offline": "^6.8.0",
-    "ts-loader": "^5.3.3",
+    "serverless-plugin-typescript": "^1.1.9",
     "serverless-webpack": "^5.3.5",
     "source-map-support": "^0.5.10",
+    "ts-loader": "^5.3.3",
     "typescript": "^3.9.2",
     "webpack": "^4.29.0",
     "webpack-node-externals": "^1.7.2"
-
   }
 }

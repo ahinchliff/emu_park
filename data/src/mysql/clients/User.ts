@@ -18,7 +18,7 @@ const mapper = (row: RowDataPacket): data.User => {
   const user = rowExtractor("user", row);
   return {
     userId: user("userId"),
-    authId: user("authId"),
-    email: user("email"),
+    username: user("username"),
+    password: user("password"),
   };
 };

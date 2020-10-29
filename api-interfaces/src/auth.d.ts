@@ -1,12 +1,24 @@
 declare namespace api {
   type AuthToken = {
     userId: number;
-    email: string;
-    authId: string;
-    expiry: number;
   };
 
-  type AuthUser = { email: string } & api.User;
+  type AuthUser = {} & api.User;
 
-  type SignupBody = {};
+  type SignupRequestBody = {
+    username: string;
+  };
+
+  type SignupResponseBody = AuthUser & {
+    password: string;
+  };
+
+  type LoginRequestBody = {
+    userId: string;
+    password: string;
+  };
+
+  type LoginResponseBody = {
+    token: string;
+  };
 }

@@ -1,7 +1,8 @@
-// import * as Koa from "koa";
+import * as Koa from "koa";
 import * as Router from "@koa/router";
+import * as jwt from "jsonwebtoken";
 import Logger from "../../../core-backend/src/logger";
-import { addErrorToContext } from "../utils/errorsUtils";
+import { addErrorToContext, notAuthorized } from "../utils/errorsUtils";
 
 export type RequestHandlerPayload<User, Params, QueryString, Body> = {
   user: User;
@@ -27,7 +28,7 @@ type UnAuthRequestHandlerPayload<
 
 type RequestHandler<Payload, Result extends Object> = (
   payload: Payload
-) => Promise<Result>;
+) => Promise<Result | api.ErrorResponse>;
 
 export type AuthRequestHandler<
   Params,
@@ -49,20 +50,24 @@ export type UnAuthRequestHandler<
   Result
 >;
 
-// const getDecodedJWT = async (
-//   ctx: Koa.Context,
-//   authService: core.backend.IAuthService,
-//   logger: core.backend.Logger
-// ): Promise<api.AuthToken | undefined> => {
-//   const authToken = ctx.get("Authorization");
-//   const split = authToken && authToken.split && authToken.split("Bearer ");
-//   const token = split && split[1];
-//   if (!token) {
-//     return undefined;
-//   }
+const getDecodedJWT = async (
+  ctx: Koa.Context,
+  logger: core.backend.Logger
+): Promise<api.AuthToken | undefined> => {
+  const authToken = ctx.get("Authorization");
+  const split = authToken && authToken.split && authToken.split("Bearer ");
+  const token = split && split[1];
+  if (!token) {
+    return undefined;
+  }
 
-//   return authService.decodeJWT(token, logger);
-// };
+  try {
+    return jwt.verify(token, "superSecret") as api.AuthToken;
+  } catch (error) {
+    logger.debug(error);
+    return undefined;
+  }
+};
 
 const handlerBuilder = (
   config: api.Config,
@@ -70,7 +75,7 @@ const handlerBuilder = (
   handler:
     | AuthRequestHandler<any, any, any, any>
     | UnAuthRequestHandler<any, any, any, any>,
-  _authRequired: boolean
+  authRequired: boolean
 ): Router.Middleware => async (ctx, next) => {
   const logger = new Logger(config.environment);
   const start = Date.now();
@@ -78,21 +83,17 @@ const handlerBuilder = (
 
   const services = getServices(logger);
 
-  // const decodedJWT = await getDecodedJWT(ctx, services.auth, logger);
+  const decodedJWT = await getDecodedJWT(ctx, logger);
 
   let user: data.User | undefined = undefined;
 
-  // if (decodedJWT?.authId) {
-  //   if (ctx.url === "/auth/signup") {
-  //     user = decodedJWT as data.User;
-  //   } else {
-  //     user = await services.data.user.get({ authId: decodedJWT?.authId });
-  //   }
-  // }
+  if (decodedJWT) {
+    user = await services.data.user.get({ userId: decodedJWT.userId });
+  }
 
-  // if (authRequired && !user) {
-  //   addErrorToContext(ctx, notAuthorized());
-  // } else {
+  if (authRequired && !user) {
+    addErrorToContext(ctx, notAuthorized());
+  } else {
     const payload: RequestHandlerPayload<any, any, any, any> = {
       user,
       services,
@@ -110,7 +111,7 @@ const handlerBuilder = (
       ctx.status = 200;
       ctx.body = result;
     }
-  // }
+  }
   const end = Date.now();
   logger.debug(`<---- ${ctx.method} ${ctx.url} ${ctx.status} ${end - start}ms`);
   next();

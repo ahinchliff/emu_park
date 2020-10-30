@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS `game` (
 CREATE TABLE IF NOT EXISTS `player` (
   `player_gameId` BIGINT UNSIGNED NOT NULL,
   `player_userId` BIGINT UNSIGNED NOT NULL,
+  `player_status` ENUM ('pending', 'accepted', 'declined') DEFAULT 'pending',
+  `player_statusSetAt` TIMESTAMP NULL DEFAULT NULL,
   `player_leftAt` TIMESTAMP NULL DEFAULT NULL,
   `player_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `player_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -50,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `gameUserMission` (
   `gameUserMission_gameId` BIGINT UNSIGNED NOT NULL,
   `gameUserMission_userId` BIGINT UNSIGNED NOT NULL,
   `gameUserMission_missionId` BIGINT UNSIGNED NOT NULL,
-  `gameUserMission_status` ENUM ('pending', 'completed', 'failed'),
+  `gameUserMission_status` ENUM ('pending', 'completed', 'failed') DEFAULT 'pending',
   `gameUserMission_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gameUserMission_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`gameUserMission_gameId`,`gameUserMission_userId`, `gameUserMission_missionId`),

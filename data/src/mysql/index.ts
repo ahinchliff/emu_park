@@ -1,6 +1,9 @@
 // tslint:disable:no-submodule-imports
 import { PoolConnection, createPool, Pool } from "mysql2/promise";
 import MysqlDBTransactionClient from "./clients/DBTransaction";
+import GameClient from "./clients/Game";
+import PlayerMissionClient from "./clients/PlayerMission";
+import PlayerClient from "./clients/Player";
 import UserClient from "./clients/User";
 
 export async function initialise(
@@ -41,4 +44,7 @@ export const getClients = (
 ): data.DataClients => ({
   dbTransaction: new MysqlDBTransactionClient(pool, logger),
   user: new UserClient(pool, logger, logValues),
+  game: new GameClient(pool, logger, logValues),
+  player: new PlayerClient(pool, logger, logValues),
+  playerMission: new PlayerMissionClient(pool, logger, logValues),
 });

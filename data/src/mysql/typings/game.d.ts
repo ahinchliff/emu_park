@@ -3,12 +3,13 @@ declare namespace data {
     gameId: number;
     title: string;
     ownerId: number;
-    startedAt: string | undefined;
-    finishedAt: string | undefined;
-    toFinishAt: string | undefined;
+    startedAt: Date | undefined;
+    finishedAt: Date | undefined;
+    toFinishAt: Date | undefined;
   };
 
-  type NewGame = Pick<data.Game, "title" | "ownerId">;
+  type NewGame = Pick<data.GameTable, "title" | "ownerId">;
 
-  interface GameClient extends data.EntityClientBase<Game, NewGame> {}
+  interface GameClient
+    extends data.EntityClientBase<data.GameTable, NewGame, Game> {}
 }

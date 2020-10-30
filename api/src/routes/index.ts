@@ -2,6 +2,7 @@ import * as Koa from "koa";
 import * as Router from "@koa/router";
 import { authBuilder, noAuthBuilder } from "./handlerBuilders";
 import authHandlers from "./auth";
+import gameHandlers from "./game";
 
 export default (
   app: Koa,
@@ -16,5 +17,14 @@ export default (
   authRouter.post("/login", unAuth(authHandlers.login));
   authRouter.get("/me", auth(authHandlers.getMe));
 
+  const gameRouter = new Router({ prefix: "/game" });
+  gameRouter.post("/", auth(gameHandlers.create));
+  gameRouter.post("/:gameId/invite", auth(gameHandlers.invitePlayers));
+  gameRouter.post(
+    "/:gameId/invite/respond",
+    auth(gameHandlers.respondToInvite)
+  );
+
   app.use(authRouter.routes());
+  app.use(gameRouter.routes());
 };

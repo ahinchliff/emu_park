@@ -1,12 +1,14 @@
 declare namespace data {
-  type GamePlayer = {
-    userId: number;
-    username: string;
-    score: number;
+  type Player = {
+    userId: data.PlayerTable["userId"];
+    username: data.UserTable["username"];
+    status: data.PlayerTable["status"];
   };
 
-  type NewGamePlayer = Pick<GamePlayer, "userId"> & Pick<data.Game, "gameId">;
+  type NewPlayer = Pick<data.PlayerTable, "userId" | "gameId"> & {
+    status?: data.PlayerTable["status"];
+  };
 
-  interface GamePlayerClient
-    extends data.EntityClientBase<GamePlayer, NewGamePlayer> {}
+  interface PlayerClient
+    extends data.EntityClientBase<data.PlayerTable, NewPlayer, Player> {}
 }

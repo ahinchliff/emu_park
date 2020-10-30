@@ -1,48 +1,61 @@
 declare namespace data {
-  type UserColumns =
-    | "userId"
-    | "username"
-    | "password"
-    | "createdAt"
-    | "updatedAt";
+  type UserTable = {
+    userId: number;
+    username: string;
+    password: string;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+  };
 
-  type GameColumns =
-    | "gameId"
-    | "title"
-    | "ownerId"
-    | "startedAt"
-    | "finishedAt"
-    | "toFinishAt"
-    | "createdAt"
-    | "updatedAt";
+  type GameTable = {
+    gameId: number;
+    title: string;
+    ownerId: number;
+    startedAt: Date;
+    finishedAt: Date | undefined;
+    toFinishAt: Date | undefined;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+  };
 
-  type PlayerColumns =
-    | "gameId"
-    | "userId"
-    | "leftAt"
-    | "createdAt"
-    | "updatedAt";
+  type PlayerTable = {
+    gameId: number;
+    userId: number;
+    status: "pending" | "accepted" | "declined";
+    statusSetAt: Date | undefined;
+    leftAt: Date | undefined;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+  };
 
-  type MissionColumns =
-    | "missionId"
-    | "description"
-    | "disabled"
-    | "createdAt"
-    | "updatedAt";
+  type MissionTable = {
+    missionId: number;
+    description: string;
+    disabled: boolean;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+  };
 
-  type GamePlayerMissionColumns =
-    | "gameId"
-    | "playerId"
-    | "missionId"
-    | "status"
-    | "createdAt"
-    | "updatedAt";
+  type gameUserMissionTable = {
+    gameId: number;
+    userId: number;
+    missionId: number;
+    status: "pending" | "completed" | "failed";
+    createdAt: Date;
+    updatedAt: Date | undefined;
+  };
+
+  type UserColumns = keyof UserTable;
+  type GameColumns = keyof GameTable;
+  type PlayerColumns = keyof PlayerTable;
+  type MissionColumns = keyof MissionTable;
+  type gameUserMissionColumns = keyof gameUserMissionTable;
 
   interface ITables {
     user: { [key in UserColumns]: unknown };
     game: { [key in GameColumns]: unknown };
     player: { [key in PlayerColumns]: unknown };
     mission: { [key in MissionColumns]: unknown };
-    gamePlayerMission: { [key in GamePlayerMissionColumns]: unknown };
+    gameUserMission: { [key in gameUserMissionColumns]: unknown };
   }
 }

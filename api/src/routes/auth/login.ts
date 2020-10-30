@@ -23,7 +23,7 @@ const login: UnAuthRequestHandler<
   }
 
   const user = await services.data.user.get({
-    userId: Number(body.userId),
+    userId: body.userId,
     password: body.password,
   });
 

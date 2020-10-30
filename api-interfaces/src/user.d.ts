@@ -1,6 +1,6 @@
 declare namespace api {
   type User = {
-    id: string;
+    id: number;
     username: string;
   };
 }

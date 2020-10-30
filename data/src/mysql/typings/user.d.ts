@@ -1,11 +1,8 @@
 declare namespace data {
-  type User = {
-    userId: number;
-    username: string;
-    password: string;
-  };
+  type NewUser = Pick<data.UserTable, "username" | "password">;
 
-  type NewUser = Pick<data.User, "username" | "password">;
+  type User = Pick<data.UserTable, "userId" | "username" | "password">;
 
-  interface UserClient extends data.EntityClientBase<User, NewUser> {}
+  interface UserClient
+    extends data.EntityClientBase<data.UserTable, NewUser, User> {}
 }

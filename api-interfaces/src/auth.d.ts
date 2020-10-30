@@ -14,7 +14,7 @@ declare namespace api {
   };
 
   type LoginRequestBody = {
-    userId: string;
+    userId: number;
     password: string;
   };
 

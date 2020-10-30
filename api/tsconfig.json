@@ -3,7 +3,7 @@
   "composite": true,
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./build",
+    "outDir": "./build"
   },
   "references": [
     { "path": "../data" },
@@ -14,7 +14,7 @@
     "../data/src/**/*.d.ts",
     "../core-backend/src/**/*.d.ts",
     "../api-interfaces/src/**/*.d.ts",
-    "./src", 
+    "./src",
     "index.ts"
   ]
 }

@@ -1,17 +1,23 @@
 declare namespace data {
-  interface EntityClientBase<T, K> {
-    create(data: K, t?: data.IDBTransaction): Promise<T>;
-    createMany(data: K[], t?: data.IDBTransaction): Promise<number>;
+  interface EntityClientBase<ColumnShape, New, Return> {
+    create(data: New, t?: data.IDBTransaction): Promise<Return>;
+    createMany(data: New[], t?: data.IDBTransaction): Promise<number>;
     delete(
-      where: Partial<T>,
-      t?: data.IDBTransaction,
+      where: Partial<ColumnShape>,
+      t?: data.IDBTransaction
     ): Promise<{ success: boolean }>;
     update(
-      where: Partial<T>,
-      data: Partial<T>,
-      t?: data.IDBTransaction,
-    ): Promise<T>;
-    get(where: Partial<T>, t?: data.IDBTransaction): Promise<T | undefined>;
-    getMany(where: Partial<T>, t?: data.IDBTransaction): Promise<T[]>;
+      where: Partial<ColumnShape>,
+      data: Partial<ColumnShape>,
+      t?: data.IDBTransaction
+    ): Promise<Return>;
+    get(
+      where: Partial<ColumnShape>,
+      t?: data.IDBTransaction
+    ): Promise<Return | undefined>;
+    getMany(
+      where: Partial<ColumnShape>,
+      t?: data.IDBTransaction
+    ): Promise<Return[]>;
   }
 }

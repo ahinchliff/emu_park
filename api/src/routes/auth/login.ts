@@ -1,9 +1,9 @@
-import * as jwt from "jsonwebtoken";
 import * as Joi from "joi";
 import { notFound, validationBadRequest } from "../../utils/errorsUtils";
 import { UnAuthRequestHandler } from "../handlerBuilders";
 import { validate, ValidationSchema } from "../../utils/validationUtils";
 import { userIdValidationRule } from "../../validation/user";
+import { generateJWT } from "../../utils/authUtils";
 
 const bodyValidation: ValidationSchema<api.LoginRequestBody> = {
   userId: userIdValidationRule.required(),
@@ -15,7 +15,7 @@ const login: UnAuthRequestHandler<
   {},
   api.LoginRequestBody,
   api.LoginResponseBody
-> = async ({ services, body }) => {
+> = async ({ services, body, config }) => {
   const bodyValidationResult = await validate(body, bodyValidation);
 
   if (bodyValidationResult.isInvalid) {
@@ -33,7 +33,7 @@ const login: UnAuthRequestHandler<
 
   const authToken: api.AuthToken = { userId: user.userId };
 
-  return { token: jwt.sign(authToken, "superSecret") };
+  return { token: generateJWT(authToken, config.jwt.secret) };
 };
 
 export default login;

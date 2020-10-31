@@ -6,8 +6,8 @@ declare namespace core.backend {
     warn: (message: string, err?: any, data?: any) => void;
     error: (message: string, err: any, data?: any) => void;
     setUserId: (userId: number) => void;
-    setEnviroment: (
-      enviroment: "development" | "staging" | "production"
+    setEnvironment: (
+      enviroment: "test" | "development" | "staging" | "production"
     ) => void;
   }
 }

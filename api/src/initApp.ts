@@ -14,7 +14,7 @@ export default async (
   const config = await configService.get<api.Config>([
     "mysql_application_user_password",
   ]);
-  logger.setEnviroment(config.environment);
+  logger.setEnvironment(config.environment);
   const mysqlPool = await mysql.initialise(config.mysql, logger);
   const services = await initServices(config, mysqlPool);
   const initiaisedApp = app(config, services);

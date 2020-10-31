@@ -2,7 +2,7 @@ import * as uuid from "uuid";
 
 export default class Logger implements core.backend.Logger {
   constructor(
-    private environment: "development" | "staging" | "production",
+    private environment: "test" | "development" | "staging" | "production",
     private userId?: number | string,
     private incidentId?: string
   ) {
@@ -25,8 +25,8 @@ export default class Logger implements core.backend.Logger {
     this.incidentId = incidentId;
   };
 
-  public setEnviroment = (
-    enviroment: "development" | "staging" | "production"
+  public setEnvironment = (
+    enviroment: "test" | "development" | "staging" | "production"
   ) => (this.environment = enviroment);
 
   public silly = (message: string, data?: any): void => {
@@ -55,7 +55,9 @@ export default class Logger implements core.backend.Logger {
     err?: any,
     data?: any
   ): void => {
-    if (this.environment === "development") {
+    if (this.environment === "test") {
+      return;
+    } else if (this.environment === "development") {
       this.logDev(level, message, err, data);
     } else {
       this.logProd(level, message, err, data);

@@ -62,7 +62,7 @@ const generateLambda = <
         services = await initServices(config, logger);
       }
 
-      logger.setEnviroment(config.environment);
+      logger.setEnvironment(config.environment);
       logger.debug("starting execution");
       const variables = eventToVariables(event);
       const result = await execution({

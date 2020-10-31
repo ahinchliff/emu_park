@@ -52,6 +52,7 @@ export type UnAuthRequestHandler<
 
 const getDecodedJWT = async (
   ctx: Koa.Context,
+  config: api.Config,
   logger: core.backend.Logger
 ): Promise<api.AuthToken | undefined> => {
   const authToken = ctx.get("Authorization");
@@ -62,7 +63,7 @@ const getDecodedJWT = async (
   }
 
   try {
-    return jwt.verify(token, "superSecret") as api.AuthToken;
+    return jwt.verify(token, config.jwt.secret) as api.AuthToken;
   } catch (error) {
     logger.debug(error);
     return undefined;
@@ -83,7 +84,7 @@ const handlerBuilder = (
 
   const services = getServices(logger);
 
-  const decodedJWT = await getDecodedJWT(ctx, logger);
+  const decodedJWT = await getDecodedJWT(ctx, config, logger);
 
   let user: data.User | undefined = undefined;
 

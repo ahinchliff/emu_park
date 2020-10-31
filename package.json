@@ -7,7 +7,8 @@
     "encrypt-config": "aws-vault exec gotcha-dev -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
     "terraform-apply": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform apply",
     "destroy": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform destroy && rm -rf .webpack",
-    "build": "tsc --build && rm -f tsconfig.tsbuildinfo"
+    "build": "tsc --build && rm -f tsconfig.tsbuildinfo",
+    "up-test-env": "docker-compose up -f docker-compose-test.yml"
   },
   "dependencies": {
     "handlebars": "^4.7.6",

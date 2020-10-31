@@ -71,6 +71,7 @@ export default class ConfigService
         database: fetchedParams.mysql_database_name,
         connectionLimit: 1,
       },
+      jwt: fetchedParams.jwt_secret,
       // bucketNames: {
       //   profilePictures: this.getBucketNameFromDomain(
       //     fetchedParams.profile_pictures_s3_bucket_domain

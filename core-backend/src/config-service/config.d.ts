@@ -1,6 +1,6 @@
 declare namespace core.backend.config {
   type Config = {
-    environment: "development" | "staging" | "production";
+    environment: "test" | "development" | "staging" | "production";
     aws: {
       accountId: string;
       region: string;
@@ -12,6 +12,9 @@ declare namespace core.backend.config {
       password: string;
       database: string;
       connectionLimit: number;
+    };
+    jwt: {
+      secret: string;
     };
     // auth: {
     //   jwtIssuer: string;
@@ -38,7 +41,7 @@ declare namespace core.backend.config {
     | "web_sockets_dynamo_table_name"
     | "web_sockets_endpoint";
 
-  type SensitiveConfigKey = "mysql_application_user_password";
+  type SensitiveConfigKey = "mysql_application_user_password" | "jwt_secret";
 
   type ConfigKey = SensitiveConfigKey | NonSensitiveConfigKey;
 

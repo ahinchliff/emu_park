@@ -5,7 +5,7 @@ import routes from "./routes";
 
 const initApp = (
   config: api.Config,
-  services: (logger: any) => api.Services
+  services: (logger: core.backend.Logger) => api.Services
 ): Koa => {
   const app = new Koa();
   app.use(cors());

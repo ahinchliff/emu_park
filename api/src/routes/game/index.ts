@@ -1,9 +1,7 @@
 import create from "./create";
-import invitePlayers from "./invite-players";
-import respondToInvite from "./respond-to-invite";
+import join from "./join";
 
 export default {
   create,
-  invitePlayers,
-  respondToInvite,
+  join,
 };

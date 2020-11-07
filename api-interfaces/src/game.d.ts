@@ -25,15 +25,9 @@ declare namespace api {
 
   type CreateGameRequestBody = Pick<Game, "title" | "toFinishAt">;
 
-  type InvitePlayersRequestParams = api.Params<"gameId">;
+  type JoinGameRequestParams = api.Params<"gameId">;
 
-  type InvitePlayersRequestBody = {
-    invites: { userId: number }[];
-  };
-
-  type RespondToInviteRequestParams = api.Params<"gameId">;
-
-  type RespondToInviteRequestBody = {
-    action: "accept" | "decline";
+  type JoinGameRequestBody = {
+    joinCode: string;
   };
 }

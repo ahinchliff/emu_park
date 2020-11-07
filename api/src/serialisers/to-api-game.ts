@@ -26,8 +26,8 @@ export const toApiGame = (
     title: game.title,
     ownerId: game.ownerId,
     startedAt: game.startedAt?.toString(),
-    finishedAt: game.startedAt?.toString(),
-    toFinishAt: game.startedAt?.toString(),
+    finishedAt: game.finishedAt?.toString(),
+    toFinishAt: game.toFinishAt?.toString(),
     players: players.map((p) => ({
       userId: p.userId,
       username: p.username,

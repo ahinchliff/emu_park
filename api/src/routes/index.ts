@@ -19,11 +19,7 @@ export default (
 
   const gameRouter = new Router({ prefix: "/game" });
   gameRouter.post("/", auth(gameHandlers.create));
-  gameRouter.post("/:gameId/invite", auth(gameHandlers.invitePlayers));
-  gameRouter.post(
-    "/:gameId/invite/respond",
-    auth(gameHandlers.respondToInvite)
-  );
+  gameRouter.post("/:gameId/join", auth(gameHandlers.join));
 
   app.use(authRouter.routes());
   app.use(gameRouter.routes());

@@ -6,7 +6,7 @@ declare namespace api {
   type AuthUser = {} & api.User;
 
   type SignupRequestBody = {
-    username: string;
+    displayName: string;
   };
 
   type SignupResponseBody = AuthUser & {
@@ -14,7 +14,7 @@ declare namespace api {
   };
 
   type LoginRequestBody = {
-    userId: number;
+    username: string;
     password: string;
   };
 

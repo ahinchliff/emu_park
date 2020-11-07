@@ -3,6 +3,7 @@ declare namespace data {
     userId: number;
     username: string;
     password: string;
+    displayName: string;
     createdAt: Date;
     updatedAt: Date | undefined;
   };
@@ -11,6 +12,7 @@ declare namespace data {
     gameId: number;
     title: string;
     ownerId: number;
+    joinCode: string;
     startedAt: Date;
     finishedAt: Date | undefined;
     toFinishAt: Date | undefined;

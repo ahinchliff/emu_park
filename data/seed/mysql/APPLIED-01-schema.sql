@@ -5,8 +5,9 @@ USE `gotcha`;
 
 CREATE TABLE IF NOT EXISTS `user` (
   `user_userId` SERIAL,
-  `user_username` varchar(40) NOT NULL,
+  `user_username` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
+  `user_displayName` varchar(50) NOT NULL,
   `user_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_userId`),
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `game` (
   `game_gameId` SERIAL,
   `game_title` varchar(100) NOT NULL,
   `game_ownerId` BIGINT UNSIGNED NOT NULL,
+  `game_joinCode` varchar(100) NOT NULL,
   `game_startedAt` TIMESTAMP NULL DEFAULT NULL,
   `game_finishedAt` TIMESTAMP NULL DEFAULT NULL,
   `game_toFinishAt` TIMESTAMP NULL DEFAULT NULL,
@@ -29,8 +31,6 @@ CREATE TABLE IF NOT EXISTS `game` (
 CREATE TABLE IF NOT EXISTS `player` (
   `player_gameId` BIGINT UNSIGNED NOT NULL,
   `player_userId` BIGINT UNSIGNED NOT NULL,
-  `player_status` ENUM ('pending', 'accepted', 'declined') DEFAULT 'pending',
-  `player_statusSetAt` TIMESTAMP NULL DEFAULT NULL,
   `player_leftAt` TIMESTAMP NULL DEFAULT NULL,
   `player_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `player_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

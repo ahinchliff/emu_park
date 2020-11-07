@@ -1,11 +1,13 @@
+import * as moment from "moment";
 import { AuthRequestHandler } from "../handlerBuilders";
 import {
   gameTitleValidationRule,
   gameToFinishAtValidationRule,
 } from "../../validation/game";
 import { validate, ValidationSchema } from "../../utils/validationUtils";
-import { validationBadRequest } from "../../utils/errorsUtils";
+import { badRequest, validationBadRequest } from "../../utils/errorsUtils";
 import { toApiGame } from "../../serialisers/to-api-game";
+import { getJoinCode } from "../../utils/game";
 
 const bodyValidation: ValidationSchema<api.CreateGameRequestBody> = {
   title: gameTitleValidationRule.required(),
@@ -24,11 +26,25 @@ const create: AuthRequestHandler<
     return validationBadRequest(bodyValidationResult.errors);
   }
 
+  let toFinishAt: Date | undefined = undefined;
+
+  if (body.toFinishAt) {
+    const toFinishAtMoment = moment.utc(body.toFinishAt);
+    if (toFinishAtMoment.isBefore(moment.utc())) {
+      return badRequest("Game can't finish in the past");
+    }
+    toFinishAt = toFinishAtMoment.toDate();
+  }
+
   return services.data.dbTransaction.create(async (t) => {
+    const joinCode = await getJoinCode(services.data);
+
     const newGame = await services.data.game.create(
       {
         title: body.title,
         ownerId: user.userId,
+        joinCode,
+        toFinishAt,
       },
       t
     );
@@ -37,7 +53,6 @@ const create: AuthRequestHandler<
       {
         gameId: newGame.gameId,
         userId: user.userId,
-        status: "accepted",
       },
       t
     );

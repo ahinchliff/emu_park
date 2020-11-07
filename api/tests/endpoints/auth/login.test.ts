@@ -1,4 +1,5 @@
 import {
+  createUser,
   expectNoFoundResponse,
   expectSuccessResponse,
   initTestHelpers,
@@ -19,18 +20,13 @@ afterAll(async () => {
   await testHelpers.tearDown();
 });
 
-describe("Api -> /auth/login", () => {
+describe("Api -> POST /auth/login", () => {
   it("When valid request, expect success response", async () => {
-    const PASSWORD = "abc123";
-
-    const user = await testHelpers.dataClients.user.create({
-      username: "ant",
-      password: PASSWORD,
-    });
+    const user = await createUser({}, testHelpers);
 
     const requestBody: api.LoginRequestBody = {
-      userId: user.userId,
-      password: PASSWORD,
+      username: user.username,
+      password: "password",
     };
 
     const response = await testHelpers.api
@@ -41,13 +37,10 @@ describe("Api -> /auth/login", () => {
   });
 
   it("When wrong password, expect 404", async () => {
-    const user = await testHelpers.dataClients.user.create({
-      username: "ant",
-      password: "abc123",
-    });
+    const user = await createUser({}, testHelpers);
 
     const requestBody: api.LoginRequestBody = {
-      userId: user.userId,
+      username: user.username,
       password: "123abc",
     };
 

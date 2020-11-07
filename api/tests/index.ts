@@ -3,7 +3,7 @@ import initApp from "../src/app";
 import * as mysql from "../../data/src/mysql/index";
 import Logger from "../../core-backend/src/logger";
 import { Pool } from "mysql2/promise";
-import { generateJWT } from "../src/utils/authUtils";
+import { generateJWT, hashPassword } from "../src/utils/authUtils";
 
 const JWT_SECRET = "superSecret";
 
@@ -50,6 +50,8 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
   const api = supertest(server);
 
   const clearDatabase = async () => {
+    await mysqlPool.query("DELETE FROM player");
+    await mysqlPool.query("DELETE FROM game");
     await mysqlPool.query("DELETE FROM user");
   };
 
@@ -68,10 +70,7 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
 export const createUserAndLogin = async (
   testHelpers: TestHelpers
 ): Promise<{ user: data.User; jwt: string }> => {
-  const user = await testHelpers.dataClients.user.create({
-    username: "ant",
-    password: "abc123",
-  });
+  const user = await createUser({}, testHelpers);
 
   const jwt = generateJWT({ userId: user.userId }, JWT_SECRET);
 
@@ -79,6 +78,51 @@ export const createUserAndLogin = async (
     user,
     jwt,
   };
+};
+
+export const createUser = async (
+  data: Partial<data.User>,
+  testHelpers: TestHelpers
+) => {
+  const user: Omit<data.User, "userId"> = {
+    displayName: `display-name-${Math.random() * 100000}`,
+    username: `test-user-${Math.random() * 100000}`,
+    password: await hashPassword("password"),
+    ...data,
+  };
+
+  return testHelpers.dataClients.user.create(user);
+};
+
+export const createGame = async (
+  data: Pick<data.Game, "ownerId"> & Partial<data.Game>,
+  testHelpers: TestHelpers
+) => {
+  const game: Omit<data.Game, "gameId"> = {
+    title: `test-game-${Math.random() * 100000}`,
+    joinCode: `test-join-code-${Math.random() * 100000}`,
+    toFinishAt: undefined,
+    startedAt: undefined,
+    finishedAt: undefined,
+    ...data,
+  };
+
+  return testHelpers.dataClients.game.create(game);
+};
+
+export const createUserAndAddAsGamePlayer = async (
+  gameId: number,
+  userData: Partial<data.User>,
+  testHelpers: TestHelpers
+) => {
+  const user = await createUser(userData, testHelpers);
+
+  return testHelpers.dataClients.player.create({ userId: user.userId, gameId });
+};
+
+export const createGameWithRandomOwner = async (testHelpers: TestHelpers) => {
+  const user = await createUser({}, testHelpers);
+  return createGame({ ownerId: user.userId }, testHelpers);
 };
 
 export const expectSuccessResponse = (response: supertest.Response) => {
@@ -105,4 +149,8 @@ export const expectNoFoundResponse = (response: supertest.Response) => {
 
 export const expectNotAuthorisedResponse = (response: supertest.Response) => {
   expect(response.status).toBe(401);
+};
+
+export const expectForbiddenResponse = (response: supertest.Response) => {
+  expect(response.status).toBe(403);
 };

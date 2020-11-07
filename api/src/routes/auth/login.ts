@@ -2,11 +2,13 @@ import * as Joi from "joi";
 import { notFound, validationBadRequest } from "../../utils/errorsUtils";
 import { UnAuthRequestHandler } from "../handlerBuilders";
 import { validate, ValidationSchema } from "../../utils/validationUtils";
-import { userIdValidationRule } from "../../validation/user";
-import { generateJWT } from "../../utils/authUtils";
+import {
+  generateJWT,
+  plainTextPasswordMatchesHash,
+} from "../../utils/authUtils";
 
 const bodyValidation: ValidationSchema<api.LoginRequestBody> = {
-  userId: userIdValidationRule.required(),
+  username: Joi.string().required(),
   password: Joi.string().required(),
 };
 
@@ -23,11 +25,19 @@ const login: UnAuthRequestHandler<
   }
 
   const user = await services.data.user.get({
-    userId: body.userId,
-    password: body.password,
+    username: body.username,
   });
 
   if (!user) {
+    return notFound("user");
+  }
+
+  const correctPassword = await plainTextPasswordMatchesHash(
+    body.password,
+    user.password
+  );
+
+  if (!correctPassword) {
     return notFound("user");
   }
 

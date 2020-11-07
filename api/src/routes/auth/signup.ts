@@ -1,12 +1,13 @@
 import * as crypto from "crypto";
 import { UnAuthRequestHandler } from "../handlerBuilders";
 import { toApiAuthUser } from "../../serialisers/to-api-auth-user";
-import { badRequest, validationBadRequest } from "../../utils/errorsUtils";
+import { validationBadRequest } from "../../utils/errorsUtils";
 import { validate, ValidationSchema } from "../../utils/validationUtils";
-import { usernameValidationRule } from "../../validation/user";
+import { userDisplayNameValidationRules } from "../../validation/user";
+import { hashPassword } from "../../utils/authUtils";
 
 const bodyValidation: ValidationSchema<api.SignupRequestBody> = {
-  username: usernameValidationRule.required(),
+  displayName: userDisplayNameValidationRules.required(),
 };
 
 const signup: UnAuthRequestHandler<
@@ -15,7 +16,7 @@ const signup: UnAuthRequestHandler<
   api.SignupRequestBody,
   api.SignupResponseBody
 > = async ({ body, services }) => {
-  const { username } = body;
+  const { displayName } = body;
 
   const bodyValidationResult = await validate(body, bodyValidation);
 
@@ -23,20 +24,17 @@ const signup: UnAuthRequestHandler<
     return validationBadRequest(bodyValidationResult.errors);
   }
 
-  const userWithUsername = await services.data.user.get({ username });
-
-  if (userWithUsername) {
-    return badRequest("username taken");
-  }
-
-  const password = crypto.randomBytes(64).toString("hex");
+  const username = crypto.randomBytes(64).toString("hex");
+  const plainTextPassword = crypto.randomBytes(64).toString("hex");
+  const password = await hashPassword(plainTextPassword);
 
   const user = await services.data.user.create({
     username,
     password,
+    displayName,
   });
 
-  return { ...toApiAuthUser(user), password };
+  return { ...toApiAuthUser(user), password: plainTextPassword };
 };
 
 export default signup;

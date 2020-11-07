@@ -19,7 +19,7 @@ afterAll(async () => {
   await testHelpers.tearDown();
 });
 
-describe("Api -> /auth/me", () => {
+describe("Api -> GET /auth/me", () => {
   it("When not logged in, expect 401 response", async () => {
     const response = await testHelpers.api.get("/auth/me").send();
     expectNotAuthorisedResponse(response);

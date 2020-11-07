@@ -20,6 +20,7 @@ const mapper = (row: RowDataPacket): data.Game => {
     gameId: game("gameId"),
     title: game("title"),
     ownerId: game("ownerId"),
+    joinCode: game("joinCode"),
     startedAt: game("startedAt"),
     finishedAt: game("finishedAt"),
     toFinishAt: game("toFinishAt"),

@@ -15,17 +15,17 @@ afterAll(async () => {
 });
 
 test("Api -> Auth Flow", async () => {
-  const username = "ant";
-  const signupRequestBody: api.SignupRequestBody = { username };
+  const displayName = "ant";
+  const signupRequestBody: api.SignupRequestBody = { displayName };
   const signupResponse = await testHelpers.api
     .post("/auth/signup")
     .send(signupRequestBody);
   expectSuccessResponse(signupResponse);
   const signupResponseBody = signupResponse.body as api.SignupResponseBody;
-  const { id, password } = signupResponseBody;
+  const { username, password } = signupResponseBody;
   expect(password).toBeTruthy();
 
-  const loginRequestBody: api.LoginRequestBody = { userId: id, password };
+  const loginRequestBody: api.LoginRequestBody = { username, password };
   const loginResponse = await testHelpers.api
     .post("/auth/login")
     .send(loginRequestBody);
@@ -41,6 +41,5 @@ test("Api -> Auth Flow", async () => {
   expectSuccessResponse(getMeResponse);
 
   const getMeResponeBody: api.AuthUser = getMeResponse.body;
-  expect(getMeResponeBody.id).toBe(id);
-  expect(getMeResponeBody.username).toBe(username);
+  expect(getMeResponeBody.displayName).toBe(displayName);
 });

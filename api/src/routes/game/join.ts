@@ -12,7 +12,7 @@ const bodyValidation: ValidationSchema<api.JoinGameRequestBody> = {
   joinCode: gameJoinCodeValidationRule,
 };
 
-const create: AuthRequestHandler<
+const join: AuthRequestHandler<
   api.JoinGameRequestParams,
   {},
   api.JoinGameRequestBody,
@@ -58,7 +58,7 @@ const create: AuthRequestHandler<
 
   const players = await services.data.player.getMany({ gameId });
 
-  return toApiGame(game, players, []);
+  return toApiGame(user.userId, game, players, []);
 };
 
-export default create;
+export default join;

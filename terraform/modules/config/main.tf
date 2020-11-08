@@ -75,3 +75,10 @@ module "mysql_application_user_password" {
   sensitive = true
 }
 
+module "jwt_secret" {
+  source = "../shared/config-param"
+  name = "jwt_secret"
+  value = var.jwt_secret
+  sensitive = true
+}
+

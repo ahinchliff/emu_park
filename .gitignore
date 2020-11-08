@@ -26,3 +26,5 @@ build/
 .terraform
 *.ovpn
 
+.dev-db-migration-config.js
+

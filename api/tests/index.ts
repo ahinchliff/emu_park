@@ -1,9 +1,11 @@
+import * as moment from "moment";
 import * as supertest from "supertest";
 import initApp from "../src/app";
 import * as mysql from "../../data/src/mysql/index";
 import Logger from "../../core-backend/src/logger";
 import { Pool } from "mysql2/promise";
 import { generateJWT, hashPassword } from "../src/utils/authUtils";
+import { assignPlayersMissions } from "../../api/src/utils/game";
 
 const JWT_SECRET = "superSecret";
 
@@ -50,12 +52,13 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
   const api = supertest(server);
 
   const clearDatabase = async () => {
+    await mysqlPool.query("DELETE FROM gameUserMission");
     await mysqlPool.query("DELETE FROM player");
     await mysqlPool.query("DELETE FROM game");
     await mysqlPool.query("DELETE FROM user");
   };
 
-  return {
+  const testHelpers = {
     api,
     mysqlPool: mysqlPool as Pool,
     dataClients,
@@ -65,6 +68,10 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
       server.close();
     },
   };
+
+  await create100Missions(testHelpers);
+
+  return testHelpers;
 };
 
 export const createUserAndLogin = async (
@@ -107,7 +114,20 @@ export const createGame = async (
     ...data,
   };
 
-  return testHelpers.dataClients.game.create(game);
+  const newGame = await testHelpers.dataClients.game.create(game);
+  await testHelpers.dataClients.player.create({
+    gameId: newGame.gameId,
+    userId: data.ownerId,
+  });
+  return newGame;
+};
+
+export const addUserAsGamePlayer = async (
+  gameId: number,
+  userId: number,
+  testHelpers: TestHelpers
+) => {
+  return testHelpers.dataClients.player.create({ userId, gameId });
 };
 
 export const createUserAndAddAsGamePlayer = async (
@@ -123,6 +143,26 @@ export const createUserAndAddAsGamePlayer = async (
 export const createGameWithRandomOwner = async (testHelpers: TestHelpers) => {
   const user = await createUser({}, testHelpers);
   return createGame({ ownerId: user.userId }, testHelpers);
+};
+
+export const create100Missions = async (testHelpers: TestHelpers) => {
+  const missions: data.NewMission[] = [];
+  for (let i = 1; i < 100; i++) {
+    missions.push({
+      description: `mission #${i}`,
+    });
+  }
+
+  await testHelpers.dataClients.mission.createMany(missions);
+};
+
+export const startGame = async (gameId: number, testHelpers: TestHelpers) => {
+  const players = await testHelpers.dataClients.player.getMany({ gameId });
+  await assignPlayersMissions(gameId, players, testHelpers.dataClients);
+  await testHelpers.dataClients.game.update(
+    { gameId },
+    { startedAt: moment.utc().toDate() }
+  );
 };
 
 export const expectSuccessResponse = (response: supertest.Response) => {

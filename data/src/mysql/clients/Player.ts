@@ -44,6 +44,5 @@ const mapper = (row: RowDataPacket): data.Player => {
   return {
     userId: player("userId"),
     username: user("username"),
-    status: player("status"),
   };
 };

@@ -140,9 +140,14 @@ export default class EntityClientBase<
 
   protected queryMany = async (
     statement: SelectStatement,
-    transactionConnection?: data.IDBTransaction
+    transactionConnection?: data.IDBTransaction,
+    limit?: number
   ): Promise<Entity[]> => {
-    const [resultSet] = await this.query(statement, transactionConnection);
+    const [resultSet] = await this.query(
+      statement,
+      transactionConnection,
+      limit
+    );
 
     return resultSet.map(this.mapper);
   };

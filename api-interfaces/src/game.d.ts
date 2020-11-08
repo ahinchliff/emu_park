@@ -14,7 +14,6 @@ declare namespace api {
     userId: number;
     username: string;
     score: number;
-    status: "pending" | "accepted" | "declined";
   };
 
   type Mission = {
@@ -30,4 +29,8 @@ declare namespace api {
   type JoinGameRequestBody = {
     joinCode: string;
   };
+
+  type StartGameRequestParams = api.Params<"gameId">;
+
+  type GetGameRequestParams = api.Params<"gameId">;
 }

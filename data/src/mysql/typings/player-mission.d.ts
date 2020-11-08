@@ -7,8 +7,9 @@ declare namespace data {
   };
 
   type NewPlayerMission = {
-    missionId: data.MissionTable["missionId"];
-    userId: data.UserTable["userId"];
+    gameId: data.gameUserMissionTable["gameId"];
+    missionId: data.gameUserMissionTable["missionId"];
+    userId: data.gameUserMissionTable["userId"];
   };
 
   interface PlayerMissionClient

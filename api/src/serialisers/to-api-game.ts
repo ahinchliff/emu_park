@@ -1,4 +1,5 @@
 export const toApiGame = (
+  userId: number,
   game: data.Game,
   players: data.Player[],
   playerMissions: data.PlayerMission[]
@@ -21,6 +22,8 @@ export const toApiGame = (
     {}
   );
 
+  const myMissions = playerMissions.filter((m) => m.userId === userId);
+
   return {
     id: game.gameId,
     title: game.title,
@@ -31,9 +34,8 @@ export const toApiGame = (
     players: players.map((p) => ({
       userId: p.userId,
       username: p.username,
-      status: p.status,
       score: userIdsToScoreMap[p.userId] || 0,
     })),
-    myMissions: [],
+    myMissions,
   };
 };

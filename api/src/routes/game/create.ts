@@ -37,7 +37,7 @@ const create: AuthRequestHandler<
   }
 
   return services.data.dbTransaction.create(async (t) => {
-    const joinCode = await getJoinCode(services.data);
+    const joinCode = await getJoinCode(services.data, t);
 
     const newGame = await services.data.game.create(
       {
@@ -49,7 +49,7 @@ const create: AuthRequestHandler<
       t
     );
 
-    const ownerPlayer = await services.data.player.create(
+    await services.data.player.create(
       {
         gameId: newGame.gameId,
         userId: user.userId,
@@ -57,7 +57,14 @@ const create: AuthRequestHandler<
       t
     );
 
-    return toApiGame(newGame, [ownerPlayer], []);
+    const players = await services.data.player.getMany(
+      {
+        gameId: newGame.gameId,
+      },
+      t
+    );
+
+    return toApiGame(user.userId, newGame, players, []);
   });
 };
 

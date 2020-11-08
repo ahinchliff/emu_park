@@ -1,15 +1,46 @@
-export const getJoinCode = async (data: data.DataClients): Promise<string> => {
+export const getJoinCode = async (
+  data: data.DataClients,
+  transaction: data.IDBTransaction
+): Promise<string> => {
   const randomNumber = Math.floor(
     Math.random() * (POSSIBLE_JOIN_CODES.length + 1)
   );
 
   const joinCode = POSSIBLE_JOIN_CODES[randomNumber];
-  const gameWithUsedCode = await data.game.get({ joinCode });
+  const gameWithUsedCode = await data.game.get({ joinCode }, transaction);
   if (!gameWithUsedCode) {
     return joinCode;
   }
 
-  return getJoinCode(data);
+  return getJoinCode(data, transaction);
+};
+
+export const assignPlayersMissions = async (
+  gameId: number,
+  players: data.Player[],
+  data: data.DataClients
+) => {
+  const missions = await data.mission.getNRandomMissions(players.length * 5);
+
+  const assignedMissions: data.NewPlayerMission[] = [];
+
+  players.forEach((player, playerIndex) => {
+    const missionsForPlayer = missions.slice(
+      playerIndex * 5,
+      playerIndex * 5 + 5
+    );
+    for (const mission of missionsForPlayer) {
+      assignedMissions.push({
+        gameId,
+        userId: player.userId,
+        missionId: mission.missionId,
+      });
+    }
+  });
+
+  for (const mission of assignedMissions) {
+    await data.playerMission.create(mission);
+  }
 };
 
 const POSSIBLE_JOIN_CODES = [

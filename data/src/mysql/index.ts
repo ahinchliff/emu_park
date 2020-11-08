@@ -5,6 +5,7 @@ import GameClient from "./clients/Game";
 import PlayerMissionClient from "./clients/PlayerMission";
 import PlayerClient from "./clients/Player";
 import UserClient from "./clients/User";
+import MissionClient from "./clients/Mission";
 
 export async function initialise(
   config: data.IMysqlConfig,
@@ -47,4 +48,5 @@ export const getClients = (
   game: new GameClient(pool, logger, logValues),
   player: new PlayerClient(pool, logger, logValues),
   playerMission: new PlayerMissionClient(pool, logger, logValues),
+  mission: new MissionClient(pool, logger, logValues),
 });

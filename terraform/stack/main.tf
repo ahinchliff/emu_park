@@ -32,7 +32,7 @@ module config {
   mysql_host = module.data.mysql_address
   mysql_port = module.data.mysql_port
   mysql_database_name = var.project_name
-  # jwt_issuer = module.auth.users_user_pool_endpoint
+  jwt_secret = var.jwt_secret
   # profile_pictures_s3_bucket_domain = module.files.domain_names.profile_pictures
   web_sockets_dynamo_table_name = var.web_sockets_dynamo_table_name
   # web_sockets_endpoint = module.websockets.endpoint
@@ -45,7 +45,7 @@ module config {
 module api {
   source = "../modules/api"
   environment = var.environment
-  config_param_arns = [module.config.arns.mysql_application_user_password]
+  config_param_arns = [module.config.arns.mysql_application_user_password, module.config.arns.jwt_secret]
 }
 
 # module websockets {

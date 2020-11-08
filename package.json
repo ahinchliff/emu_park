@@ -6,9 +6,10 @@
     "deploy": "yarn build && cd api && yarn package && cd ../ && yarn terraform-apply && rm -rf build",
     "encrypt-config": "aws-vault exec gotcha-dev -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
     "terraform-apply": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform apply",
+    "terraform-init": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform init",
     "destroy": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform destroy && rm -rf .webpack",
     "build": "tsc --build && rm -f tsconfig.tsbuildinfo",
-    "up-test-env": "docker-compose up -f docker-compose-test.yml"
+    "init-dev-db": "node -e 'require(\"./data/seed/development-migration-helpers\").runMigrations()'"
   },
   "dependencies": {
     "handlebars": "^4.7.6",

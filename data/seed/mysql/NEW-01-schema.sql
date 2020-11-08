@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `player` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `mission` (
-  `mission_missionId` BIGINT UNSIGNED NOT NULL,
+  `mission_missionId` SERIAL,
   `mission_description` TEXT,
   `mission_disabled` BOOLEAN NOT NULL DEFAULT 0,
   `mission_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

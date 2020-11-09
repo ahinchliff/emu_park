@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import "mobx-react-lite/batchingForReactDom";
 import { ScreenProps } from "../../../typings/screen-props";
 import LandingScrenView, { Screen } from "./Landing_View";
 import { useFormInput } from "../../../hooks/useInputState";

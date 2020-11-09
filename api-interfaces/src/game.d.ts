@@ -6,6 +6,7 @@ declare namespace api {
     startedAt: string | undefined;
     finishedAt: string | undefined;
     toFinishAt: string | undefined;
+    joinCode: string;
     players: Player[];
     myMissions: Mission[];
   };

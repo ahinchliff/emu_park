@@ -40,4 +40,6 @@ declare namespace api {
     status: "completed" | "failed";
     againstPlayerId: number;
   };
+
+  type FinishGameRequestParams = api.Params<"gameId">;
 }

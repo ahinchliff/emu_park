@@ -26,6 +26,7 @@ export default (
     "/:gameId/mission/:missionId",
     auth(gameHandlers.markMission)
   );
+  gameRouter.post("/:gameId/finish", auth(gameHandlers.finish));
 
   app.use(authRouter.routes());
   app.use(gameRouter.routes());

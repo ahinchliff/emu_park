@@ -38,10 +38,11 @@ declare namespace data {
     updatedAt: Date | undefined;
   };
 
-  type gameUserMissionTable = {
+  type GameUserMissionTable = {
     gameId: number;
     userId: number;
     missionId: number;
+    againstPlayerId: number | undefined;
     status: "pending" | "completed" | "failed";
     createdAt: Date;
     updatedAt: Date | undefined;
@@ -51,7 +52,7 @@ declare namespace data {
   type GameColumns = keyof GameTable;
   type PlayerColumns = keyof PlayerTable;
   type MissionColumns = keyof MissionTable;
-  type gameUserMissionColumns = keyof gameUserMissionTable;
+  type gameUserMissionColumns = keyof GameUserMissionTable;
 
   interface ITables {
     user: { [key in UserColumns]: unknown };

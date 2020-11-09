@@ -33,4 +33,11 @@ declare namespace api {
   type StartGameRequestParams = api.Params<"gameId">;
 
   type GetGameRequestParams = api.Params<"gameId">;
+
+  type MarkMissionRequestParams = api.Params<"gameId" | "missionId">;
+
+  type MarkMissionRequestBody = {
+    status: "completed" | "failed";
+    againstPlayerId: number;
+  };
 }

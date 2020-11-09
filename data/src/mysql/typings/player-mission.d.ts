@@ -1,20 +1,21 @@
 declare namespace data {
   type PlayerMission = {
-    userId: data.gameUserMissionTable["userId"];
-    missionId: data.gameUserMissionTable["missionId"];
+    userId: data.GameUserMissionTable["userId"];
+    missionId: data.GameUserMissionTable["missionId"];
     description: data.MissionTable["description"];
-    status: data.gameUserMissionTable["status"];
+    againstPlayerId: data.GameUserMissionTable["againstPlayerId"];
+    status: data.GameUserMissionTable["status"];
   };
 
   type NewPlayerMission = {
-    gameId: data.gameUserMissionTable["gameId"];
-    missionId: data.gameUserMissionTable["missionId"];
-    userId: data.gameUserMissionTable["userId"];
+    gameId: data.GameUserMissionTable["gameId"];
+    missionId: data.GameUserMissionTable["missionId"];
+    userId: data.GameUserMissionTable["userId"];
   };
 
   interface PlayerMissionClient
     extends data.EntityClientBase<
-      data.gameUserMissionTable,
+      data.GameUserMissionTable,
       NewPlayerMission,
       PlayerMission
     > {}

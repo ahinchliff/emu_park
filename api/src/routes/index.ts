@@ -22,6 +22,10 @@ export default (
   gameRouter.get("/:gameId", auth(gameHandlers.get));
   gameRouter.post("/:gameId/join", auth(gameHandlers.join));
   gameRouter.post("/:gameId/start", auth(gameHandlers.start));
+  gameRouter.post(
+    "/:gameId/mission/:missionId",
+    auth(gameHandlers.markMission)
+  );
 
   app.use(authRouter.routes());
   app.use(gameRouter.routes());

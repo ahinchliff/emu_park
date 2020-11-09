@@ -7,6 +7,7 @@ import {
   validationBadRequest,
 } from "../../utils/errorsUtils";
 import { toApiGame } from "../../serialisers/to-api-game";
+import { getNumberParam } from "../../utils/general";
 
 const bodyValidation: ValidationSchema<api.JoinGameRequestBody> = {
   joinCode: gameJoinCodeValidationRule,
@@ -24,7 +25,10 @@ const join: AuthRequestHandler<
     return validationBadRequest(bodyValidationResult.errors);
   }
 
-  const gameId = Number(params.gameId);
+  const gameId = getNumberParam(params.gameId);
+  if (!gameId) {
+    return badRequest("gameId param not valid");
+  }
   const { joinCode } = body;
 
   const game = await services.data.game.get({ gameId });

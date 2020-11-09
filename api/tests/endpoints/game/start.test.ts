@@ -9,6 +9,7 @@ import {
   expectNotAuthorisedResponse,
   expectSuccessResponse,
   initTestHelpers,
+  startGame,
   TestHelpers,
 } from "../..";
 
@@ -48,6 +49,21 @@ describe("Api -> POST /game/:gameId/start", () => {
       .send();
 
     expectForbiddenResponse(response);
+  });
+
+  it("when game has started, expect general bad request response", async () => {
+    const owner = await createUserAndLogin(testHelpers);
+    const game = await createGame({ ownerId: owner.user.userId }, testHelpers);
+    await createUserAndAddAsGamePlayer(game.gameId, {}, testHelpers);
+
+    await startGame(game.gameId, testHelpers);
+
+    const response = await testHelpers.api
+      .post(`/game/${game.gameId}/start`)
+      .set({ Authorization: `Bearer ${owner.jwt}` })
+      .send();
+
+    expectGeneralBadRequestResponse(response);
   });
 
   it("When owner is the only player, expect general bad request response", async () => {

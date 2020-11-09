@@ -9,6 +9,7 @@ import {
 } from "../../utils/errorsUtils";
 import { toApiGame } from "../../serialisers/to-api-game";
 import { assignPlayersMissions } from "../../utils/game";
+import { getNumberParam } from "../../utils/general";
 
 const bodyValidation: ValidationSchema<{}> = {};
 
@@ -24,7 +25,10 @@ const start: AuthRequestHandler<
     return validationBadRequest(bodyValidationResult.errors);
   }
 
-  const gameId = Number(params.gameId);
+  const gameId = getNumberParam(params.gameId);
+  if (!gameId) {
+    return badRequest("gameId param not valid");
+  }
 
   const game = await services.data.game.get({ gameId });
 
@@ -36,6 +40,11 @@ const start: AuthRequestHandler<
   if (game.ownerId !== user.userId) {
     logger.debug("user is not owner of game", { gameId });
     return forbidden();
+  }
+
+  if (game.startedAt) {
+    logger.debug("cannot start a game that has started", { gameId });
+    return badRequest("cannot start a game that has started");
   }
 
   const players = await services.data.player.getMany({ gameId });

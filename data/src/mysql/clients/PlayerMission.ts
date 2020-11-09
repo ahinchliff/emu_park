@@ -49,6 +49,7 @@ const mapper = (row: RowDataPacket): data.PlayerMission => {
     userId: gameUserMission("userId"),
     missionId: gameUserMission("missionId"),
     description: mission("description"),
+    againstPlayerId: gameUserMission("againstPlayerId"),
     status: gameUserMission("status"),
   };
 };

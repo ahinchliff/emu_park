@@ -52,11 +52,13 @@ CREATE TABLE IF NOT EXISTS `gameUserMission` (
   `gameUserMission_gameId` BIGINT UNSIGNED NOT NULL,
   `gameUserMission_userId` BIGINT UNSIGNED NOT NULL,
   `gameUserMission_missionId` BIGINT UNSIGNED NOT NULL,
+  `gameUserMission_againstPlayerId` BIGINT UNSIGNED NULL DEFAULT NULL,
   `gameUserMission_status` ENUM ('pending', 'completed', 'failed') DEFAULT 'pending',
   `gameUserMission_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gameUserMission_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`gameUserMission_gameId`,`gameUserMission_userId`, `gameUserMission_missionId`),
   FOREIGN KEY (`gameUserMission_gameId`) REFERENCES `game`(`game_gameId`),
   FOREIGN KEY (`gameUserMission_userId`) REFERENCES `user`(`user_userId`),
-  FOREIGN KEY (`gameUserMission_missionId`) REFERENCES `mission`(`mission_missionId`)
+  FOREIGN KEY (`gameUserMission_missionId`) REFERENCES `mission`(`mission_missionId`),
+  FOREIGN KEY (`gameUserMission_againstPlayerId`) REFERENCES `user`(`user_userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

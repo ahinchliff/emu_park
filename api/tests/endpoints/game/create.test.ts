@@ -31,7 +31,7 @@ describe("Api -> POST /game", () => {
     const loginResult = await createUserAndLogin(testHelpers);
     const title = "Awesome Game";
 
-    const request: api.CreateGameRequestBody = {
+    const requestBody: api.CreateGameRequestBody = {
       title,
       toFinishAt: undefined,
     };
@@ -39,7 +39,7 @@ describe("Api -> POST /game", () => {
     const response = await testHelpers.api
       .post("/game")
       .set({ Authorization: `Bearer ${loginResult.jwt}` })
-      .send(request);
+      .send(requestBody);
 
     expectSuccessResponse(response);
 
@@ -55,7 +55,7 @@ describe("Api -> POST /game", () => {
     const loginResult = await createUserAndLogin(testHelpers);
     const title = "Awesome Game";
 
-    const request: api.CreateGameRequestBody = {
+    const requestBody: api.CreateGameRequestBody = {
       title,
       toFinishAt: "2022-01-01T00:00:00+0000",
     };
@@ -63,7 +63,7 @@ describe("Api -> POST /game", () => {
     const response = await testHelpers.api
       .post("/game")
       .set({ Authorization: `Bearer ${loginResult.jwt}` })
-      .send(request);
+      .send(requestBody);
 
     expectSuccessResponse(response);
 
@@ -79,7 +79,7 @@ describe("Api -> POST /game", () => {
     const loginResult = await createUserAndLogin(testHelpers);
     const title = "Awesome Game";
 
-    const request: api.CreateGameRequestBody = {
+    const requestBody: api.CreateGameRequestBody = {
       title,
       toFinishAt: "1999-01-01T00:00:00+0000",
     };
@@ -87,7 +87,7 @@ describe("Api -> POST /game", () => {
     const response = await testHelpers.api
       .post("/game")
       .set({ Authorization: `Bearer ${loginResult.jwt}` })
-      .send(request);
+      .send(requestBody);
 
     expectGeneralBadRequestResponse(response);
   });

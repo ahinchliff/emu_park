@@ -15,6 +15,7 @@ declare namespace core.backend.config {
     };
     jwt: {
       secret: string;
+      validForInHours: number;
     };
     // auth: {
     //   jwtIssuer: string;
@@ -36,7 +37,6 @@ declare namespace core.backend.config {
     | "mysql_port"
     | "mysql_application_user_username"
     | "mysql_database_name"
-    | "jwt_issuer"
     | "profile_pictures_s3_bucket_domain"
     | "web_sockets_dynamo_table_name"
     | "web_sockets_endpoint";

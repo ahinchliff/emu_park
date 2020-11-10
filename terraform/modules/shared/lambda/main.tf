@@ -33,14 +33,11 @@ resource "aws_iam_role_policy" "role_policy" {
 data "aws_iam_policy_document" "policy" {
   statement {
     actions = [
+      "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = [aws_cloudwatch_log_group.logs.arn]
+    resources = ["arn:aws:logs:*:*:*"]
+    
   }
-}
-
-resource "aws_cloudwatch_log_group" "logs" {
-  name              = "/aws/lambda/${aws_lambda_function.lambda.function_name}"
-  retention_in_days = 60
 }

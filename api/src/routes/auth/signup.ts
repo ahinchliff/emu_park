@@ -1,6 +1,5 @@
 import * as crypto from "crypto";
 import { UnAuthRequestHandler } from "../handlerBuilders";
-import { toApiAuthUser } from "../../serialisers/to-api-auth-user";
 import { validationBadRequest } from "../../utils/errorsUtils";
 import { validate, ValidationSchema } from "../../utils/validationUtils";
 import { userDisplayNameValidationRules } from "../../validation/user";
@@ -34,7 +33,7 @@ const signup: UnAuthRequestHandler<
     displayName,
   });
 
-  return { ...toApiAuthUser(user), password: plainTextPassword };
+  return { username: user.username, password: plainTextPassword };
 };
 
 export default signup;

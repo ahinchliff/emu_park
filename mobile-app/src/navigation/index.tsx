@@ -38,14 +38,21 @@ const MainStack = createStackNavigator<AuthStackParamList>();
 
 const MainNavigation: React.FC = () => {
   const { authStore } = useStores();
-  const tesst = () => (
+  const test = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Button title="Logout" onPress={authStore.logout} />
+      <Button
+        title="Logout"
+        onPress={() => {
+          authStore.logout();
+
+          console.log("logging out");
+        }}
+      />
     </View>
   );
   return (
     <MainStack.Navigator headerMode="none">
-      <MainStack.Screen name="Landing" component={tesst} />
+      <MainStack.Screen name="Landing" component={test} />
     </MainStack.Navigator>
   );
 };

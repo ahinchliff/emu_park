@@ -4,7 +4,7 @@ export default {
   colors: {
     black: "#000000",
     white: "#FFFFFF",
-    primary: "#F9FAFB",
+    primary: "#6ab04c",
   },
   screen: Dimensions.get("screen"),
   standardPadding: {

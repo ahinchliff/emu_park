@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, AppState, AppStateStatus } from "react-native";
 import { registerRootComponent, AppLoading } from "expo";
+import * as Font from "expo-font";
+import { FredokaOne_400Regular } from "@expo-google-fonts/fredoka-one";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeProvider } from "react-native-elements";
@@ -26,10 +28,10 @@ const App: React.FC = () => {
 
   const initApp = async () => {
     initReactToAppStateChange();
-    await initAuth();
-    if (state.authStore.me) {
-      state.authStore.subscribeToUserEvents();
-    }
+    const initAuthPromise = initAuth();
+    const loadFontPromise = Font.loadAsync({ FredokaOne_400Regular });
+    await initAuthPromise;
+    await loadFontPromise;
   };
 
   if (appInitialising) {

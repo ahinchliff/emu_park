@@ -1,31 +1,26 @@
 import React from "react";
-import { Input, IconProps, InputProps } from "react-native-elements";
+import { View, TextInput, TextInputProps } from "react-native";
+import { variables } from "../../styles";
 
-export type Props = {
-  icon: IconProps["name"];
-  value: string;
-  onChangeText: InputProps["onChangeText"];
-  placeholder?: InputProps["placeholder"];
-  autoCapitalize?: InputProps["autoCapitalize"];
-  secureTextEntry?: InputProps["secureTextEntry"];
-};
+export type Props = TextInputProps;
 
 const InputView: React.FC<Props> = (props) => (
-  <Input
-    {...props}
-    inputContainerStyle={{ borderBottomWidth: 0 }}
-    containerStyle={{ margin: 0 }}
-    leftIconContainerStyle={{
-      paddingRight: 10,
+  <View
+    style={{
+      borderBottomWidth: 4,
+      borderBottomColor: variables.colors.black,
+      paddingBottom: 5,
     }}
-    leftIcon={{
-      type: "font-awesome",
-      name: props.icon,
-      color: "#A5A6A7",
-      size: props.icon === "envelope" ? 20 : undefined,
-    }}
-    errorStyle={{ height: 0 }}
-  />
+  >
+    <TextInput
+      {...props}
+      style={{
+        color: variables.colors.black,
+        fontSize: 30,
+        fontFamily: "FredokaOne_400Regular",
+      }}
+    />
+  </View>
 );
 
 export default InputView;

@@ -20,8 +20,16 @@ export default class Api extends ApiClientBase {
     });
   }
 
-  public signup = async (user: api.SignupBody): Promise<api.AuthUser> => {
-    return this.post<api.AuthUser>("/auth/signup", user);
+  public signup = async (
+    user: api.SignupRequestBody
+  ): Promise<api.SignupResponseBody> => {
+    return this.post<api.SignupResponseBody>("/auth/signup", user);
+  };
+
+  public login = async (
+    data: api.LoginRequestBody
+  ): Promise<api.LoginResponseBody> => {
+    return this.post<api.LoginResponseBody>("/auth/login", data);
   };
 
   public getMe = async (): Promise<api.AuthUser> => {

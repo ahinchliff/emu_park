@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import * as Joi from "joi";
 import { notFound, validationBadRequest } from "../../utils/errorsUtils";
 import { UnAuthRequestHandler } from "../handlerBuilders";
@@ -43,7 +44,14 @@ const login: UnAuthRequestHandler<
 
   const authToken: api.AuthToken = { userId: user.userId };
 
-  return { token: generateJWT(authToken, config.jwt.secret) };
+  return {
+    token: generateJWT(
+      authToken,
+      config.jwt.secret,
+      config.jwt.validForInHours
+    ),
+    expiry: moment.utc().add(config.jwt.validForInHours, "hours").toISOString(),
+  };
 };
 
 export default login;

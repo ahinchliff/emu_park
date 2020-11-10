@@ -9,6 +9,7 @@
     "build": "tsc --build"
   },
   "dependencies": {
+    "@expo-google-fonts/fredoka-one": "^0.1.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.6",
     "@react-native-community/viewpager": "4.1.6",
@@ -18,13 +19,14 @@
     "axios": "^0.21.0",
     "axios-retry": "^3.1.9",
     "expo": "^39.0.0",
+    "expo-font": "~8.3.0",
     "expo-secure-store": "~9.2.0",
     "mobx": "^6.0.3",
     "mobx-react-lite": "^3.1.5",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-safe-area-context": "3.1.4",

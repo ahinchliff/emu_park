@@ -73,6 +73,7 @@ export default class ConfigService
       },
       jwt: {
         secret: fetchedParams.jwt_secret,
+        validForInHours: 24 * 7,
       },
       // bucketNames: {
       //   profilePictures: this.getBucketNameFromDomain(

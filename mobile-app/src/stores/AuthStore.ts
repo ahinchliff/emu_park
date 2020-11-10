@@ -1,77 +1,70 @@
-import { action, observable } from "mobx";
+import { action, observable, makeObservable } from "mobx";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import BaseStore from "./BaseStore";
-import { Api, Auth, IAuthClient, Sockets } from "../clients";
+import { Api, Sockets } from "../clients";
 
+const USER_USERNAME_LOCAL_STORE_KEY = "user-username";
+const USER_PASSWORD_LOCAL_STORE_KEY = "user-password";
 const AUTH_TOKEN_LOCAL_STORE_KEY = "auth-token";
-const REFRESH_TOKEN_LOCAL_STORE_KEY = "refresh-token";
 const AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY = "auth-token-expiry";
-const USER_EMAIL_ADDRESS_LOCAL_STORE_KEY = "user-email-address";
 const CHECK_TOKEN_EXPIRY_INTERVAL_IN_MILLISECONDS = 300000; // five minutes
 
-type AuthTokens = {
-  authToken: string;
-  refreshToken: string;
-  decodedData: {
-    expiry: string;
-    email: string;
-  };
+type AuthDetails = {
+  token: string;
+  expiry: string;
 };
 
 export default class AuthStore extends BaseStore {
-  private authClient: IAuthClient;
-  private authTokens: AuthTokens | undefined;
+  private authDetails: AuthDetails | undefined;
   private authTokenExpiryIntervalTimer: number | undefined;
 
-  @observable
-  public me: api.AuthUser | undefined;
+  public me: api.AuthUser | undefined = undefined;
 
   constructor(api: Api, sockets: Sockets) {
     super(api, sockets);
-    this.authClient = new Auth();
-    this.listenForTestMessages();
+    makeObservable(this, {
+      me: observable,
+      initAuth: action,
+      logout: action,
+      onAuthDetailsChange: action,
+    });
   }
 
-  public signup = async (email: string, password: string) =>
-    this.authClient.signup(email, password);
-
-  @action
-  public confirmEmailAndLogin = async (
-    email: string,
-    password: string,
-    code: string
-  ) => {
-    await this.authClient.confirmEmail(email, code);
-    const loginResult = await this.authClient.login(email, password);
-    await this.onSetTokens(loginResult, true);
-    this.me = await this.api.signup({
-      email,
-    });
-    // when we signup on the api we set some additional data on the auth service.
-    // we need to refetch the JWT so we have this additonal data.
-    await this.login(email, password);
+  public signup = async (data: api.SignupRequestBody) => {
+    const signupResult = await this.api.signup(data);
+    await SecureStore.setItemAsync(
+      USER_USERNAME_LOCAL_STORE_KEY,
+      signupResult.username
+    );
+    await SecureStore.setItemAsync(
+      USER_PASSWORD_LOCAL_STORE_KEY,
+      signupResult.password
+    );
   };
 
-  public login = async (email: string, password: string): Promise<void> => {
-    const result = await this.authClient.login(email, password);
-    await this.onSetTokens(result);
+  public login = async () => {
+    const username = await SecureStore.getItemAsync(
+      USER_USERNAME_LOCAL_STORE_KEY
+    );
+    const password = await SecureStore.getItemAsync(
+      USER_PASSWORD_LOCAL_STORE_KEY
+    );
+
+    if (!username || !password) {
+      throw new Error(
+        "trying to login when no username or password in secure store"
+      );
+    }
+    const loginResult = await this.api.login({ username, password });
+    await this.onAuthDetailsChange(loginResult);
   };
-
-  public resendConfirmationEmail = async (email: string) =>
-    this.authClient.resendConfirmEmail(email);
-
-  public requestPasswordResetCode = async (email: string) =>
-    this.authClient.requestPasswordResetCode(email);
-
-  public resetPassword = async (
-    email: string,
-    code: string,
-    newPassword: string
-  ) => this.authClient.resetPassword(email, code, newPassword);
 
   public initAuth = async () => {
     await this.initAuthTokens();
+    if (this.authDetails) {
+      this.me = await this.api.getMe();
+    }
     this.startAuthTokenExpiryCheck();
   };
 
@@ -79,85 +72,42 @@ export default class AuthStore extends BaseStore {
     clearInterval(this.authTokenExpiryIntervalTimer);
   };
 
-  @action
-  private initAuthTokens = async () => {
-    const authTokens = await this.getAuthTokensFromLocalStore();
-    if (!authTokens) {
-      return console.log("AuthStore - No tokens in local store.");
-    }
-
-    if (
-      this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
-        authTokens.decodedData.expiry
-      )
-    ) {
-      console.log(
-        "AuthStore - Auth token is expiring soon or has already expired. Attempting to refresh session with refresh token."
-      );
-
-      try {
-        await this.refreshSession(authTokens);
-
-        console.log(
-          "AuthStore - Successfully refreshed session and fetched user."
-        );
-      } catch (e) {
-        console.log("AuthStore - Failed to refresh session.");
-        await this.logout();
-      }
-    } else {
-      console.log(
-        "AuthStore - Auth token is valid for at least ten more minutes. Using current auth token."
-      );
-      this.onSetTokens(authTokens);
-    }
-  };
-
-  @action
   public logout = async () => {
     this.me = undefined;
     this.api.clearAuthorization();
+    await SecureStore.deleteItemAsync(USER_USERNAME_LOCAL_STORE_KEY);
+    await SecureStore.deleteItemAsync(USER_PASSWORD_LOCAL_STORE_KEY);
     await SecureStore.deleteItemAsync(AUTH_TOKEN_LOCAL_STORE_KEY);
-    await SecureStore.deleteItemAsync(REFRESH_TOKEN_LOCAL_STORE_KEY);
     await SecureStore.deleteItemAsync(AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY);
-    await SecureStore.deleteItemAsync(USER_EMAIL_ADDRESS_LOCAL_STORE_KEY);
   };
 
-  public subscribeToUserEvents = () => {
-    if (this.me) {
-      this.sockets.subscribe("ME");
+  private initAuthTokens = async () => {
+    const authDetails = await this.getAuthTokensFromLocalStore();
+
+    if (!authDetails) {
+      return console.log("AuthStore - No tokens in local store.");
+    }
+
+    if (this.authTokenHasExpiredOrExpiresInLessThan3Days(authDetails.expiry)) {
+      await this.login();
+    } else {
+      await this.onAuthDetailsChange(authDetails);
     }
   };
 
-  private refreshSession = async (authTokens: AuthTokens) => {
-    const result = await this.authClient.refreshSession(
-      authTokens.decodedData.email,
-      authTokens.refreshToken
-    );
-
-    await this.onSetTokens(result);
+  public onAuthDetailsChange = async (authDetails: AuthDetails) => {
+    this.authDetails = authDetails;
+    await this.saveAuthTokensToLocalStore(authDetails);
+    this.api.setAuthorization(authDetails.token);
+    this.me = await this.api.getMe();
   };
 
-  private authTokenHasExpiredOrExpiresInLessThenTenMinutes = (
+  private authTokenHasExpiredOrExpiresInLessThan3Days = (
     expiryString: string
   ): boolean => {
-    const inTenMinutes = moment().add(10, "minutes");
+    const inThreeDays = moment().add(3, "days");
     const expiry = moment(expiryString);
-    return !expiry.isAfter(inTenMinutes);
-  };
-
-  @action
-  private onSetTokens = async (
-    authTokens: AuthTokens,
-    withoutFetchUser?: boolean
-  ) => {
-    this.authTokens = authTokens;
-    await this.saveAuthTokensToLocalStore(authTokens);
-    this.api.setAuthorization(authTokens.authToken);
-    this.sockets.setAuthorization(authTokens.authToken);
-    if (!withoutFetchUser) {
-      this.me = await this.api.getMe();
-    }
+    return !expiry.isAfter(inThreeDays);
   };
 
   private startAuthTokenExpiryCheck = () => {
@@ -172,77 +122,44 @@ export default class AuthStore extends BaseStore {
       );
 
       const authTokens =
-        this.authTokens || (await this.getAuthTokensFromLocalStore());
+        this.authDetails || (await this.getAuthTokensFromLocalStore());
       if (
         authTokens &&
-        this.authTokenHasExpiredOrExpiresInLessThenTenMinutes(
-          authTokens.decodedData.expiry
-        )
+        this.authTokenHasExpiredOrExpiresInLessThan3Days(authTokens.expiry)
       ) {
         console.log("AuthStore - Auth token is about to expire. Refreshing...");
-        try {
-          this.refreshSession(authTokens);
-        } catch (e) {
-          console.log("AuthStore - Failed to refresh auth tokens.");
-          this.logout();
-        }
+        this.login();
       }
     }, CHECK_TOKEN_EXPIRY_INTERVAL_IN_MILLISECONDS);
   };
 
-  private saveAuthTokensToLocalStore = async (authTokens: AuthTokens) => {
+  private saveAuthTokensToLocalStore = async (authTokens: AuthDetails) => {
     await SecureStore.setItemAsync(
       AUTH_TOKEN_LOCAL_STORE_KEY,
-      authTokens.authToken
-    );
-    await SecureStore.setItemAsync(
-      REFRESH_TOKEN_LOCAL_STORE_KEY,
-      authTokens.refreshToken
+      authTokens.token
     );
     await SecureStore.setItemAsync(
       AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY,
-      authTokens.decodedData.expiry
-    );
-    await SecureStore.setItemAsync(
-      USER_EMAIL_ADDRESS_LOCAL_STORE_KEY,
-      authTokens.decodedData.email
+      authTokens.expiry
     );
   };
 
   private getAuthTokensFromLocalStore = async (): Promise<
-    AuthTokens | undefined
+    AuthDetails | undefined
   > => {
-    const authToken = await SecureStore.getItemAsync(
-      AUTH_TOKEN_LOCAL_STORE_KEY
-    );
-    const refreshToken = await SecureStore.getItemAsync(
-      REFRESH_TOKEN_LOCAL_STORE_KEY
-    );
+    const token = await SecureStore.getItemAsync(AUTH_TOKEN_LOCAL_STORE_KEY);
+
     const expiry = await SecureStore.getItemAsync(
       AUTH_TOKEN_EXPIRY_LOCAL_STORE_KEY
     );
-    const email = await SecureStore.getItemAsync(
-      USER_EMAIL_ADDRESS_LOCAL_STORE_KEY
-    );
 
-    if (authToken && refreshToken && expiry && email) {
+    if (token && expiry) {
       return {
-        authToken,
-        refreshToken,
-        decodedData: {
-          expiry,
-          email,
-        },
+        token,
+        expiry,
       };
     }
 
     return undefined;
-  };
-
-  private listenForTestMessages = () => {
-    console.log("listening for test event");
-    this.sockets.addOnEvent("TEST_EVENT", (body: any) => {
-      console.log(body);
-    });
   };
 }

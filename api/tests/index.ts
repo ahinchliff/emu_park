@@ -34,6 +34,7 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
     },
     jwt: {
       secret: JWT_SECRET,
+      validForInHours: 1,
     },
   };
 
@@ -79,7 +80,7 @@ export const createUserAndLogin = async (
 ): Promise<{ user: data.User; jwt: string }> => {
   const user = await createUser({}, testHelpers);
 
-  const jwt = generateJWT({ userId: user.userId }, JWT_SECRET);
+  const jwt = generateJWT({ userId: user.userId }, JWT_SECRET, 1);
 
   return {
     user,

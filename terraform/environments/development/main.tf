@@ -13,6 +13,7 @@ locals {
   mysql_application_user_password_encrypted = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwHO6QBKBaAGa3vodt1cgFHQAAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDG2ZnsnKq1/KGGOyVgIBEIBDP+1IQm2x5w/eRXV1/eMRLxK2ExfhwWy6ocpfkOjo2lO7qnK1VeFfrnxzTByxj+HaZOA83+e+5LRhHwKy861/QBC4IA=="
   # todo
   jwt_secret = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwEV6lfaYE1V1b+e1TGvyxRIAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMv+k8GIGqXq47eksOAgEQgCb+T18m7Fk2swTOyp/ivceBEsHCW2jzEG9pJhe8FWJdTvxWBXlL9w=="
+
 }
 
 terraform {  

@@ -1,11 +1,14 @@
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 
 export const generateJWT = (
   authToken: api.AuthToken,
-  signingSecret: string
+  signingSecret: string,
+  validForInHours: number
 ): string => {
-  return jwt.sign(authToken, signingSecret);
+  return jwt.sign(authToken, signingSecret, {
+    expiresIn: `${validForInHours} hours`,
+  });
 };
 
 export const hashPassword = async (password: string) => {

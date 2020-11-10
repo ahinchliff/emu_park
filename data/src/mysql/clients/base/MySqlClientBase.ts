@@ -39,27 +39,31 @@ export default class MySQLClientBase {
     dbTransaction?: IMySQLTransaction,
     limit?: number
   ): Promise<[RowDataPacket[], FieldPacket[]]> {
-    const connOrPool = dbTransaction ? dbTransaction.connection : this.pool;
-
     const sql = statement.toParams();
     const sqlText = limit ? `${sql.text} LIMIT 0,${limit}` : sql.text;
 
     this.logFormattedSQL(sqlText, sql.values);
 
-    return connOrPool.query<RowDataPacket[]>(sqlText, sql.values);
+    return this.executeQuery<RowDataPacket[]>(
+      sqlText,
+      sql.values,
+      dbTransaction
+    );
   }
 
   protected async mutate(
     statement: Statement,
     dbTransaction?: IMySQLTransaction
   ): Promise<OkPacket> {
-    const connOrPool = dbTransaction ? dbTransaction.connection : this.pool;
-
     const sql = statement.toParams();
 
     this.logFormattedSQL(sql.text, sql.values);
 
-    const [resultSet] = await connOrPool.query<OkPacket>(sql.text, sql.values);
+    const [resultSet] = await this.executeQuery<OkPacket>(
+      sql.text,
+      sql.values,
+      dbTransaction
+    );
     return resultSet;
   }
 
@@ -90,15 +94,15 @@ export default class MySQLClientBase {
     this.logFormattedSQL(itemSqlWithPaging, itemSql.values);
     this.logFormattedSQL(countSql.text, countSql.values);
 
-    const connOrPool = dbTransaction ? dbTransaction.connection : this.pool;
-
-    const itemResult = connOrPool.query<RowDataPacket[]>(
+    const itemResult = this.executeQuery<RowDataPacket[]>(
       itemSqlWithPaging,
-      itemSql.values
+      itemSql.values,
+      dbTransaction
     );
-    const countResult = connOrPool.query<RowDataPacket[]>(
+    const countResult = this.executeQuery<RowDataPacket[]>(
       countSql.text,
-      countSql.values
+      countSql.values,
+      dbTransaction
     );
 
     const [items] = await itemResult;
@@ -141,15 +145,16 @@ export default class MySQLClientBase {
     this.logFormattedSQL(itemSqlWithPaging, itemSql.values);
     this.logFormattedSQL(countSql.text, countSql.values);
 
-    const connOrPool = dbTransaction ? dbTransaction.connection : this.pool;
-
-    const itemResult = connOrPool.query<RowDataPacket[]>(
+    const itemResult = this.executeQuery<RowDataPacket[]>(
       itemSqlWithPaging,
-      itemSql.values
+      itemSql.values,
+      dbTransaction
     );
-    const countResult = connOrPool.query<RowDataPacket[]>(
+
+    const countResult = this.executeQuery<RowDataPacket[]>(
       countSql.text,
-      countSql.values
+      countSql.values,
+      dbTransaction
     );
 
     const [items] = await itemResult;
@@ -171,5 +176,21 @@ export default class MySQLClientBase {
     } else {
       this.logger.debug("executing sql", { sql: _sqlString });
     }
+  };
+
+  private executeQuery = async <
+    T = RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[]
+  >(
+    query: string,
+    values: any[],
+    transaction: IMySQLTransaction | undefined
+  ): Promise<[T, FieldPacket[]]> => {
+    this.logFormattedSQL(query, values);
+    const start = Date.now();
+    const connOrPool = transaction ? transaction.connection : this.pool;
+    const result = await connOrPool.query<any>(query, values);
+    const end = Date.now();
+    this.logger.debug("sql executed", { sql: query, time: `${end - start}ms` });
+    return result;
   };
 }

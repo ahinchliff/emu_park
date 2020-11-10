@@ -5,7 +5,7 @@ export type InputProps<T> = {
   onChangeText(value: T): void;
 };
 
-export const useFormInput = <T>(initialValue: T): InputProps<T> => {
+const useInputState = <T>(initialValue: T): InputProps<T> => {
   const [value, setValue] = useState<T>(initialValue);
 
   const onChangeText = (value: T) => {
@@ -19,3 +19,5 @@ export const useFormInput = <T>(initialValue: T): InputProps<T> => {
 
   return props;
 };
+
+export default useInputState;

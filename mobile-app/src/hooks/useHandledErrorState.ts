@@ -6,7 +6,7 @@ export type HandledErrorState<T> = {
   clear(): void;
 };
 
-export const useHandledErrorState = <T>(): HandledErrorState<T> => {
+const useHandledErrorState = <T>(): HandledErrorState<T> => {
   const [error, setError] = useState<T | undefined>();
 
   const set = (e: T) => setError(e);
@@ -20,3 +20,5 @@ export const useHandledErrorState = <T>(): HandledErrorState<T> => {
 
   return props;
 };
+
+export default useHandledErrorState;

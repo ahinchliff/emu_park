@@ -1,5 +1,5 @@
 import React from "react";
-import { useSafeArea } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { variables } from "../../styles";
 import { View, ViewStyle } from "react-native";
 import HorizontalSpacer from "../HorizontalSpacer";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 const ScreenWrapper_View: React.FC<Props> = (props) => {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   const style = {
     backgroundColor: variables.colors.primary,

@@ -9,7 +9,8 @@ declare namespace api {
     displayName: string;
   };
 
-  type SignupResponseBody = AuthUser & {
+  type SignupResponseBody = {
+    username: string;
     password: string;
   };
 
@@ -20,5 +21,6 @@ declare namespace api {
 
   type LoginResponseBody = {
     token: string;
+    expiry: string;
   };
 }

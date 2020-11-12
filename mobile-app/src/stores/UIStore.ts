@@ -1,13 +1,21 @@
-import { action, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
+import { Api, Sockets } from "../clients";
 import BaseStore from "./BaseStore";
 
-export default class AuthStore extends BaseStore {
+export default class UIStore extends BaseStore {
   @observable
   public unhandledError: any;
 
-  @action
+  constructor(api: Api, sockets: Sockets) {
+    super(api, sockets);
+    makeObservable(this, {
+      unhandledError: observable,
+      setUnhandledError: action,
+      clearUnhandledError: action,
+    });
+  }
+
   public setUnhandledError = (error: any) => (this.unhandledError = error);
 
-  @action
   public clearUnhandledError = () => (this.unhandledError = undefined);
 }

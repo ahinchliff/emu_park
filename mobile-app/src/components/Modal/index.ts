@@ -1,2 +1,3 @@
 import MessageModal from "./MessageModal_View";
-export { MessageModal };
+import BaseModal from "./BaseModal_View";
+export { MessageModal, BaseModal };

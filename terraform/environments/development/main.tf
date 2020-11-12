@@ -4,26 +4,24 @@ locals {
   # todo
   environment = "development"
   # todo
-  region = "eu-west-1"
+  region = "ap-southeast-2"
   # todo
   aws_account_number = "224937332002"
   # todo
-  mysql_master_password_encrypted = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwHO6QBKBaAGa3vodt1cgFHQAAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDG2ZnsnKq1/KGGOyVgIBEIBDP+1IQm2x5w/eRXV1/eMRLxK2ExfhwWy6ocpfkOjo2lO7qnK1VeFfrnxzTByxj+HaZOA83+e+5LRhHwKy861/QBC4IA=="
+  mysql_master_password_encrypted = "AQICAHh1yrp9pQ939j23jnVrLa9GjU8dG0hGQF34Tdco2Ue+owFcFUM0Y1F1ztUcaAvTfv74AAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDLwXLwvpX04MUBIITgIBEIBDn+rpu/eM8e8zIzVB7I/FI8gxD5Npk/g2kYTewlgFyHmdzcvpgjDMz+onGvTNfMtlfFcx2erNExO2+XNnjru1RZXsBw=="
   # todo
-  mysql_application_user_password_encrypted = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwHO6QBKBaAGa3vodt1cgFHQAAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDG2ZnsnKq1/KGGOyVgIBEIBDP+1IQm2x5w/eRXV1/eMRLxK2ExfhwWy6ocpfkOjo2lO7qnK1VeFfrnxzTByxj+HaZOA83+e+5LRhHwKy861/QBC4IA=="
+  mysql_application_user_password_encrypted = "AQICAHh1yrp9pQ939j23jnVrLa9GjU8dG0hGQF34Tdco2Ue+owFcFUM0Y1F1ztUcaAvTfv74AAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDLwXLwvpX04MUBIITgIBEIBDn+rpu/eM8e8zIzVB7I/FI8gxD5Npk/g2kYTewlgFyHmdzcvpgjDMz+onGvTNfMtlfFcx2erNExO2+XNnjru1RZXsBw=="
   # todo
-  jwt_secret = "AQICAHj/obQlGl3Yeuv/htGjcwLnCLHhRgY4BNCqSE8Jc5SWAwEV6lfaYE1V1b+e1TGvyxRIAAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMv+k8GIGqXq47eksOAgEQgCb+T18m7Fk2swTOyp/ivceBEsHCW2jzEG9pJhe8FWJdTvxWBXlL9w=="
+  jwt_secret = "AQICAHh1yrp9pQ939j23jnVrLa9GjU8dG0hGQF34Tdco2Ue+owHmQz25O4pU8qg4723PQuY4AAAAaTBnBgkqhkiG9w0BBwagWjBYAgEAMFMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMPDNGWT6Zxqdsbr21AgEQgCa7P6zNaiE+tX15WHi6+hakpcseF1V4y+EmrgVXiwkJmytN5h7TCQ=="
 
 }
 
 terraform {  
   backend "s3" {
-    # todo
-    bucket  = "gotcha-dev-terraform-state"
+    bucket  = "gotcha-development-terraform-state"
     encrypt = true
     key     = "terraform.tfstate"
-    # todo
-    region  = "eu-west-1"
+    region  = "ap-southeast-2"
   }
 }
 

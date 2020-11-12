@@ -18,10 +18,10 @@
 //   constructor(
 //     // core.backend.config.Config["auth"],
 //     private config: any,
-//     region?: "eu-west-1"
+//     region?: "ap-southeast-2"
 //   ) {
 //     if (region) {
-//       AWS.config.update({ region: "eu-west-1" });
+//       AWS.config.update({ region: "ap-southeast-2" });
 //     }
 //     const jwksUri = `https://${config.jwtIssuer}${config.jwksPath}`;
 //     if (!this.jwksClient) {
@@ -69,7 +69,7 @@
 //       cognitoISP.adminUpdateUserAttributes(
 //         {
 //           UserAttributes: [{ Name: `custom:${attribute}`, Value: value }],
-//           UserPoolId: "eu-west-1_PQ8PetY0c",
+//           UserPoolId: "ap-southeast-2_PQ8PetY0c",
 //           Username: authId,
 //         },
 //         (err) => {

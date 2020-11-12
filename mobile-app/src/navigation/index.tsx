@@ -1,10 +1,9 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { View } from "react-native";
 import Landing from "./screens/Landing/Landing_Logic";
+import Home from "./screens/Home/Home_Logic";
 import { observer } from "mobx-react-lite";
 import useStores from "../hooks/useStores";
-import { Button } from "../components";
 
 const Navigation: React.FC = () => {
   const { authStore } = useStores();
@@ -31,28 +30,15 @@ const AuthNavigation: React.FC = () => {
 };
 
 export type MainStackParamList = {
-  Landing: undefined;
+  Home: undefined;
 };
 
-const MainStack = createStackNavigator<AuthStackParamList>();
+const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainNavigation: React.FC = () => {
-  const { authStore } = useStores();
-  const test = () => (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Button
-        title="Logout"
-        onPress={() => {
-          authStore.logout();
-
-          console.log("logging out");
-        }}
-      />
-    </View>
-  );
   return (
     <MainStack.Navigator headerMode="none">
-      <MainStack.Screen name="Landing" component={test} />
+      <MainStack.Screen name="Home" component={Home} />
     </MainStack.Navigator>
   );
 };

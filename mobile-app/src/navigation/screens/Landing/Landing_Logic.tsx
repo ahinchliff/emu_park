@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { ScreenProps } from "../../../typings/screen-props";
+import { AuthStackScreenProps } from "../../../typings/screen-props";
 import LandingScrenView from "./Landing_View";
 import { useInputState, useStores } from "../../../hooks";
 
-type Props = ScreenProps<"Landing">;
+type Props = AuthStackScreenProps<"Landing">;
 
 const LandingScreen: React.FC<Props> = () => {
   const { authStore } = useStores();

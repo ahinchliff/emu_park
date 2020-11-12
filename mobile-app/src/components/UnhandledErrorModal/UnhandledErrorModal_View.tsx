@@ -19,10 +19,9 @@ const UnhandledErrorModal: React.FC<Props> = (props) => {
   if (!props.isShown || !props.error) {
     return null;
   }
-  console.log(props.error);
   return (
     <BaseModal
-      isShown={props.isShown}
+      show={props.isShown}
       title="oops, something went wrong!"
       onClose={props.onClose}
     >
@@ -32,7 +31,9 @@ const UnhandledErrorModal: React.FC<Props> = (props) => {
       </Text>
       <HorizontalSpacer height={20} />
       <Text style={{ fontSize: 10 }}>Time: {moment.utc().format()} UTC</Text>
-      <Text style={{ fontSize: 10 }}>Code: {props.error.code}</Text>
+      {props.error.code && (
+        <Text style={{ fontSize: 10 }}>Code: {props.error.code}</Text>
+      )}
       <Text style={{ fontSize: 10 }}>Message: {props.error.message}</Text>
     </BaseModal>
   );

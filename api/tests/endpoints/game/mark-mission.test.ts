@@ -6,7 +6,7 @@ import {
   createUserAndLogin,
   expectForbiddenResponse,
   expectGeneralBadRequestResponse,
-  expectNoFoundResponse,
+  expectNotFoundResponse,
   expectNotAuthorisedResponse,
   expectSuccessResponse,
   initTestHelpers,
@@ -143,7 +143,7 @@ describe("Api -> POST /game/:gameId/mission/:missionId", () => {
       .set({ Authorization: `Bearer ${user.jwt}` })
       .send(requestBody);
 
-    expectNoFoundResponse(response);
+    expectNotFoundResponse(response);
   });
 
   it("When mission doesn't belong to user, expect 403 response", async () => {

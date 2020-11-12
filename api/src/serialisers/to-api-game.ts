@@ -40,3 +40,16 @@ export const toApiGame = (
     myMissions,
   };
 };
+
+export const toApiGameSearchResult = (
+  game: data.Game
+): api.GameSearchResult => {
+  return {
+    id: game.gameId,
+    title: game.title,
+    ownerId: game.ownerId,
+    startedAt: game.startedAt?.toString(),
+    finishedAt: game.finishedAt?.toString(),
+    toFinishAt: game.toFinishAt?.toString(),
+  };
+};

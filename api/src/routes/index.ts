@@ -19,8 +19,9 @@ export default (
 
   const gameRouter = new Router({ prefix: "/game" });
   gameRouter.post("/", auth(gameHandlers.create));
+  gameRouter.get("/", auth(gameHandlers.myGames));
+  gameRouter.post("/join", auth(gameHandlers.join));
   gameRouter.get("/:gameId", auth(gameHandlers.get));
-  gameRouter.post("/:gameId/join", auth(gameHandlers.join));
   gameRouter.post("/:gameId/start", auth(gameHandlers.start));
   gameRouter.post(
     "/:gameId/mission/:missionId",

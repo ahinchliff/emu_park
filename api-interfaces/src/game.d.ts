@@ -11,6 +11,11 @@ declare namespace api {
     myMissions: Mission[];
   };
 
+  type GameSearchResult = Pick<
+    Game,
+    "id" | "title" | "ownerId" | "startedAt" | "finishedAt" | "toFinishAt"
+  >;
+
   type Player = {
     userId: number;
     username: string;
@@ -24,8 +29,6 @@ declare namespace api {
   };
 
   type CreateGameRequestBody = Pick<Game, "title" | "toFinishAt">;
-
-  type JoinGameRequestParams = api.Params<"gameId">;
 
   type JoinGameRequestBody = {
     joinCode: string;

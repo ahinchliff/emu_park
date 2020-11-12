@@ -7,41 +7,33 @@ import {
   validationBadRequest,
 } from "../../utils/errorsUtils";
 import { toApiGame } from "../../serialisers/to-api-game";
-import { getNumberParam } from "../../utils/general";
 
 const bodyValidation: ValidationSchema<api.JoinGameRequestBody> = {
   joinCode: gameJoinCodeValidationRule,
 };
 
 const join: AuthRequestHandler<
-  api.JoinGameRequestParams,
+  {},
   {},
   api.JoinGameRequestBody,
   api.Game
-> = async ({ user, params, body, services, logger }) => {
+> = async ({ user, body, services, logger }) => {
   const bodyValidationResult = await validate(body, bodyValidation);
 
   if (bodyValidationResult.isInvalid) {
     return validationBadRequest(bodyValidationResult.errors);
   }
 
-  const gameId = getNumberParam(params.gameId);
-  if (!gameId) {
-    return badRequest("gameId param not valid");
-  }
   const { joinCode } = body;
 
-  const game = await services.data.game.get({ gameId });
+  const game = await services.data.game.get({ joinCode });
 
   if (!game) {
-    logger.debug("game not found", { gameId });
+    logger.debug("game not found", { joinCode });
     return notFound("game");
   }
 
-  if (game.joinCode !== joinCode) {
-    logger.debug("join code is not valid for game", { gameId, joinCode });
-    return badRequest("join code not valid for game");
-  }
+  const { gameId } = game;
 
   if (game.startedAt) {
     logger.debug("cant join a game that has started", { gameId });

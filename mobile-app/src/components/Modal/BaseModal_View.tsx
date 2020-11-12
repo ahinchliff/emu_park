@@ -1,56 +1,110 @@
-import React, { ReactNode, Fragment } from "react";
-import { Text } from "react-native";
-import { Overlay } from "react-native-elements";
-import HorizontalSpacer from "../HorizontalSpacer";
-import Button from "../Button";
+import React, { ReactNode, useRef, useEffect, useState } from "react";
+import {
+  Animated,
+  Pressable,
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { variables } from "../../styles";
+import MainText from "../MainText";
+import { useStores } from "mobile-app/src/hooks";
 
 export type Props = {
-  isShown: boolean;
+  show: boolean;
   children: ReactNode;
   title?: string;
   onClose?(): void;
 };
 
 const Modal: React.FC<Props> = (props) => {
+  const yPosition = useRef(new Animated.Value(variables.screen.height)).current;
+
+  const onClose = () => {
+    Animated.timing(yPosition, {
+      toValue: variables.screen.height,
+      duration: 500,
+      useNativeDriver: false,
+    }).start(props.onClose);
+  };
+
+  useEffect(() => {
+    Animated.timing(yPosition, {
+      toValue: props.show ? 0 : variables.screen.height,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [props.show]);
+
+  if (!props.show) {
+    return null;
+  }
+
   return (
-    <Overlay
-      isVisible={props.isShown}
-      animationType="fade"
-      overlayStyle={{
-        backgroundColor: "white",
-        borderRadius: 10,
-        width: "80%",
-        paddingHorizontal: 15,
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-      }}
-    >
-      <Fragment>
-        {props.title && (
-          <Fragment>
-            <Text
-              style={{ fontSize: 22, fontWeight: "500", textAlign: "center" }}
-            >
-              {props.title}
-            </Text>
-            <HorizontalSpacer height={10} />
-          </Fragment>
-        )}
-        {props.children}
-        {props.onClose && (
-          <Fragment>
-            <HorizontalSpacer height={20} />
-            <Button title="Close" onPress={props.onClose} icon="times" />
-          </Fragment>
-        )}
-      </Fragment>
-    </Overlay>
+    <BlurView intensity={70} style={[StyleSheet.absoluteFill]}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: yPosition,
+            zIndex: 2,
+            height: "100%",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: variables.colors.white,
+              borderRadius: 10,
+              width: "80%",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 1,
+                height: 2,
+              },
+              shadowOpacity: 0.5,
+              shadowRadius: 3.84,
+            }}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ flex: 1, paddingTop: 30, paddingLeft: 30 }}>
+                {props.title && (
+                  <MainText
+                    removeShadow={true}
+                    style={{ fontSize: 28, color: variables.colors.black }}
+                  >
+                    {props.title}
+                  </MainText>
+                )}
+              </View>
+              <View style={{ paddingRight: 15, paddingTop: 10 }}>
+                <Pressable
+                  onPressIn={onClose}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed ? "black" : "#f0932b",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: 50,
+                      width: 50,
+                      borderRadius: 55,
+                      shadowColor: "#000",
+                    },
+                  ]}
+                >
+                  <FontAwesome name="times" size={24} color="white" />
+                </Pressable>
+              </View>
+            </View>
+            <View style={{ padding: 30 }}>{props.children}</View>
+          </View>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </BlurView>
   );
 };
 

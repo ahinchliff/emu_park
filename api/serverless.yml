@@ -1,10 +1,10 @@
 service: gotcha
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 provider:
   name: aws
   runtime: nodejs12.x
-  region: eu-west-1
+  region: ap-southeast-2
 
 plugins:
   - serverless-webpack

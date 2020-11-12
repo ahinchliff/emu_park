@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   View,
-  Text,
   Pressable,
   KeyboardAvoidingView,
   Keyboard,
@@ -9,7 +8,12 @@ import {
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { variables } from "../../../styles";
-import { HorizontalSpacer, Input, ScreenWrapper } from "../../../components";
+import {
+  HorizontalSpacer,
+  Input,
+  MainText,
+  ScreenWrapper,
+} from "../../../components";
 import { InputProps } from "../../../hooks/useInputState";
 
 type Props = {
@@ -36,37 +40,17 @@ const LandingScreenView: React.FC<Props> = (props) => {
       <KeyboardAvoidingView behavior="position">
         <Pressable onPressIn={Keyboard.dismiss}>
           <HorizontalSpacer height={40} />
-          <Text
-            style={{
-              fontFamily: "FredokaOne_400Regular",
-              fontSize: 80,
-              color: "white",
-              textShadowColor: "rgba(0, 0, 0, 0.75)",
-              textShadowOffset: { width: -1, height: 1 },
-              textShadowRadius: 10,
-              textAlign: "center",
-            }}
-          >
+          <MainText style={{ fontSize: 80, textAlign: "center" }}>
             Gotcha!
-          </Text>
+          </MainText>
           <HorizontalSpacer height={30} />
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 30,
-              fontFamily: "FredokaOne_400Regular",
-              textShadowColor: "rgba(0, 0, 0, 0.75)",
-              textShadowOffset: { width: -1, height: 1 },
-              textShadowRadius: 10,
-              color: "white",
-            }}
-          >
+          <MainText style={{ fontSize: 30, textAlign: "center" }}>
             What do your mates call you?
-          </Text>
+          </MainText>
           <HorizontalSpacer height={45} />
           <Input
             {...props.displayNameInputState}
-            placeholder="ant"
+            placeholder="nickname"
             autoCapitalize="none"
             editable={!props.loading || props.signupSuccessful}
           />

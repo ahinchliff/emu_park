@@ -3,9 +3,9 @@ import * as AWS from "aws-sdk";
 export default class ConfigService
   implements core.backend.config.IConfigService {
   private ssm: AWS.SSM;
-  constructor(private logger: core.backend.Logger, region?: "eu-west-1") {
+  constructor(private logger: core.backend.Logger, region?: "ap-southeast-2") {
     if (region) {
-      AWS.config.update({ region: "eu-west-1" });
+      AWS.config.update({ region: "ap-southeast-2" });
     }
     this.ssm = new AWS.SSM();
   }
@@ -69,7 +69,7 @@ export default class ConfigService
         user: fetchedParams.mysql_application_user_username,
         password: fetchedParams.mysql_application_user_password,
         database: fetchedParams.mysql_database_name,
-        connectionLimit: 1,
+        connectionLimit: 10,
       },
       jwt: {
         secret: fetchedParams.jwt_secret,

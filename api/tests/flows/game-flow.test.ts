@@ -44,17 +44,17 @@ test("Api -> Game Flow", async () => {
   };
 
   const joinGamePlayerTwoResponse = await testHelpers.api
-    .post(`/game/${createGameResponseBody.id}/join`)
+    .post(`/game/join`)
     .set({ Authorization: `Bearer ${playerTwo.jwt}` })
     .send(joinGameRequestBody);
 
   const joinGamePlayerThreeResponse = await testHelpers.api
-    .post(`/game/${createGameResponseBody.id}/join`)
+    .post(`/game/join`)
     .set({ Authorization: `Bearer ${playerThree.jwt}` })
     .send(joinGameRequestBody);
 
   const joinGamePlayerFourResponse = await testHelpers.api
-    .post(`/game/${createGameResponseBody.id}/join`)
+    .post(`/game/join`)
     .set({ Authorization: `Bearer ${playerFour.jwt}` })
     .send(joinGameRequestBody);
 

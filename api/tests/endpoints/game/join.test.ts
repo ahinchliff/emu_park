@@ -1,7 +1,7 @@
 import {
   createGameWithRandomOwner,
   createUserAndLogin,
-  expectGeneralBadRequestResponse,
+  expectNotFoundResponse,
   expectNotAuthorisedResponse,
   expectSuccessResponse,
   initTestHelpers,
@@ -22,15 +22,13 @@ afterAll(async () => {
   await testHelpers.tearDown();
 });
 
-describe("Api -> POST /game/:gameId/join", () => {
+describe("Api -> POST /game/join", () => {
   it("When not logged in, expect 401 response", async () => {
     const game = await createGameWithRandomOwner(testHelpers);
     const requestBody: api.JoinGameRequestBody = {
       joinCode: game.joinCode,
     };
-    const response = await testHelpers.api
-      .post(`/game/${game.gameId}/join`)
-      .send(requestBody);
+    const response = await testHelpers.api.post(`/game/join`).send(requestBody);
     expectNotAuthorisedResponse(response);
   });
 
@@ -43,7 +41,7 @@ describe("Api -> POST /game/:gameId/join", () => {
     };
 
     const response = await testHelpers.api
-      .post(`/game/${game.gameId}/join`)
+      .post(`/game/join`)
       .set({ Authorization: `Bearer ${joiningUser.jwt}` })
       .send(requestBody);
 
@@ -56,19 +54,19 @@ describe("Api -> POST /game/:gameId/join", () => {
     ).toBeTruthy();
   });
 
-  it("When join code is incorrect, expect general bad request", async () => {
+  it("When join code is incorrect, expect not found", async () => {
     const joiningUser = await createUserAndLogin(testHelpers);
-    const game = await createGameWithRandomOwner(testHelpers);
+    await createGameWithRandomOwner(testHelpers);
 
     const requestBody: api.JoinGameRequestBody = {
       joinCode: "this is wrong",
     };
 
     const response = await testHelpers.api
-      .post(`/game/${game.gameId}/join`)
+      .post(`/game/join`)
       .set({ Authorization: `Bearer ${joiningUser.jwt}` })
       .send(requestBody);
 
-    expectGeneralBadRequestResponse(response);
+    expectNotFoundResponse(response);
   });
 });

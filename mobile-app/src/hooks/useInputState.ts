@@ -5,10 +5,16 @@ export type InputProps<T> = {
   onChangeText(value: T): void;
 };
 
-const useInputState = <T>(initialValue: T): InputProps<T> => {
+const useInputState = <T>(
+  initialValue: T,
+  onChange?: (value: T) => void
+): InputProps<T> => {
   const [value, setValue] = useState<T>(initialValue);
 
   const onChangeText = (value: T) => {
+    if (onChange) {
+      onChange(value);
+    }
     setValue(value);
   };
 

@@ -5,10 +5,10 @@ export default class FileService implements core.backend.IFileService {
   constructor(
     // core.backend.config.Config["bucketNames"],
     private config: any,
-    defaultRegion?: "eu-west-1"
+    defaultRegion?: "ap-southeast-2"
   ) {
     if (defaultRegion) {
-      AWS.config.update({ region: "eu-west-1" });
+      AWS.config.update({ region: "ap-southeast-2" });
     }
     this.s3 = new AWS.S3();
   }

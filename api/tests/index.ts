@@ -184,7 +184,7 @@ export const expectGeneralBadRequestResponse = (
   expect(response.body?.type).toBe("general");
 };
 
-export const expectNoFoundResponse = (response: supertest.Response) => {
+export const expectNotFoundResponse = (response: supertest.Response) => {
   expect(response.status).toBe(404);
 };
 

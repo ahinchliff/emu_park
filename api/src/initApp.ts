@@ -6,7 +6,7 @@ import { initServices } from "./services";
 
 export default async (
   logger: core.backend.Logger,
-  region?: "eu-west-1"
+  region?: "ap-southeast-2"
 ): Promise<Koa> => {
   logger.debug("Initialising api");
   const configService = new ConfigService(logger, region);

@@ -1,6 +1,6 @@
 import {
   createUser,
-  expectNoFoundResponse,
+  expectNotFoundResponse,
   expectSuccessResponse,
   initTestHelpers,
   TestHelpers,
@@ -48,6 +48,6 @@ describe("Api -> POST /auth/login", () => {
       .post("/auth/login")
       .send(requestBody);
 
-    expectNoFoundResponse(response);
+    expectNotFoundResponse(response);
   });
 });

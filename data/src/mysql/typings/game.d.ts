@@ -15,5 +15,7 @@ declare namespace data {
   >;
 
   interface GameClient
-    extends data.EntityClientBase<data.GameTable, NewGame, Game> {}
+    extends data.EntityClientBase<data.GameTable, NewGame, Game> {
+    myGames(userId: number, t?: data.IDBTransaction): Promise<data.Game[]>;
+  }
 }

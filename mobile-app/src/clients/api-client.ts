@@ -35,4 +35,20 @@ export default class Api extends ApiClientBase {
   public getMe = async (): Promise<api.AuthUser> => {
     return this.get<api.AuthUser>("/auth/me");
   };
+
+  public getMyGames = async (): Promise<api.GameSearchResult[]> => {
+    return this.get<api.GameSearchResult[]>("/game");
+  };
+
+  public createGame = async (
+    data: api.CreateGameRequestBody
+  ): Promise<api.Game> => {
+    return this.post<api.Game>("/game", data);
+  };
+
+  public joinGame = async (
+    data: api.JoinGameRequestBody
+  ): Promise<api.Game> => {
+    return this.post<api.Game>("/game/join", data);
+  };
 }

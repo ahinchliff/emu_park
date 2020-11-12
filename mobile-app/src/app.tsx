@@ -16,7 +16,7 @@ import { UnhandledErrorModal } from "./components";
 
 const api = new Api(config, (e, url) => {
   console.log(e, url);
-  throw e;
+  throw e.response ? e.response.data : e;
 });
 
 const sockets = new Sockets(config);
@@ -86,7 +86,12 @@ const initReactToAppStateChange = () => {
 
 const initAuth = () =>
   new Promise(async (resolve) => {
-    await state.authStore.initAuth();
+    try {
+      await state.authStore.initAuth();
+    } catch (e) {
+      console.log("failed to init auth");
+      // state.authStore.logout();
+    }
     // we want the loading screen to display for an extra half second
     // so that the auth state has time to propagate
     setTimeout(() => resolve(), 500);

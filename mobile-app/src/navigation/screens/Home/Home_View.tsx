@@ -32,7 +32,7 @@ type Props = {
   joinCodeInputState: InputProps<string>;
   joinCodeInvalid: boolean;
   joinGame(): Promise<void>;
-  logout(): Promise<void>;
+  goToGame(gameId: number): void;
 };
 
 const HomeScreenView: React.FC<Props> = (props) => {
@@ -140,18 +140,10 @@ const GameList: React.FC<Props> = (props) => {
       data={props.myGames.data}
       renderItem={({ item }) => {
         const status = getGameStatus(item);
-        const statusToStatusTextMap = {
-          playing: "Playing!",
-          waiting: "Waiting to begin",
-          finished: "Finished",
-        };
-        const statusToStatusColorMap = {
-          playing: "#686de0",
-          waiting: "#535c68",
-          finished: "#eb4d4b",
-        };
+
         return (
           <Pressable
+            onPress={() => props.goToGame(item.id)}
             style={{
               backgroundColor: "white",
               marginBottom: 15,
@@ -171,7 +163,7 @@ const GameList: React.FC<Props> = (props) => {
             <View
               style={{
                 width: 90,
-                backgroundColor: statusToStatusColorMap[status],
+                backgroundColor: status.color,
                 justifyContent: "center",
                 borderTopRightRadius: 10,
                 borderBottomRightRadius: 10,
@@ -185,7 +177,7 @@ const GameList: React.FC<Props> = (props) => {
                   textAlign: "center",
                 }}
               >
-                {statusToStatusTextMap[status]}
+                {status.displayText}
               </Text>
             </View>
           </Pressable>

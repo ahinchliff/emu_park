@@ -9,6 +9,7 @@ import {
   validationBadRequest,
 } from "../../utils/errorsUtils";
 import { getNumberParam } from "../../utils/general";
+import { toApiGame } from "../../serialisers/to-api-game";
 
 const bodyValidation: ValidationSchema<api.MarkMissionRequestBody> = {
   status: gameMissionStatusRule.required(),
@@ -19,12 +20,16 @@ const markMission: AuthRequestHandler<
   api.MarkMissionRequestParams,
   {},
   api.MarkMissionRequestBody,
-  api.SuccessResponse
+  api.Game
 > = async ({ user, params, body, services, logger }) => {
   const bodyValidationResult = await validate(body, bodyValidation);
 
   if (bodyValidationResult.isInvalid) {
     return validationBadRequest(bodyValidationResult.errors);
+  }
+
+  if (body.againstPlayerId === user.userId) {
+    return badRequest("cant get yourself");
   }
 
   const gameId = getNumberParam(params.gameId);
@@ -90,7 +95,13 @@ const markMission: AuthRequestHandler<
     { status: body.status, againstPlayerId: body.againstPlayerId }
   );
 
-  return { success: true };
+  const players = await services.data.player.getMany({ gameId });
+
+  const missions = await services.data.playerMission.getMany({
+    gameId,
+  });
+
+  return toApiGame(user.userId, game, players, missions);
 };
 
 export default markMission;

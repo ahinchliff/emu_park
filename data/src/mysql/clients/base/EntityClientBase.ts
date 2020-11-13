@@ -100,7 +100,7 @@ export default class EntityClientBase<
 
     await this.mutate(statement, transactionConnection);
 
-    return (this.get(where) as any) as Entity;
+    return (this.get(where, transactionConnection) as any) as Entity;
   }
 
   public async get(

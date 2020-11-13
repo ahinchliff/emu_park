@@ -36,6 +36,10 @@ export default class Api extends ApiClientBase {
     return this.get<api.AuthUser>("/auth/me");
   };
 
+  public getGame = async (gameId: number): Promise<api.Game> => {
+    return this.get<api.Game>(`/game/${gameId}`);
+  };
+
   public getMyGames = async (): Promise<api.GameSearchResult[]> => {
     return this.get<api.GameSearchResult[]>("/game");
   };
@@ -50,5 +54,21 @@ export default class Api extends ApiClientBase {
     data: api.JoinGameRequestBody
   ): Promise<api.Game> => {
     return this.post<api.Game>("/game/join", data);
+  };
+
+  public startGame = async (gameId: number): Promise<api.Game> => {
+    return this.post<api.Game>(`/game/${gameId}/start`);
+  };
+
+  public markMission = async (
+    gameId: number,
+    missionId: number,
+    data: api.MarkMissionRequestBody
+  ): Promise<api.Game> => {
+    return this.post<api.Game>(`/game/${gameId}/mission/${missionId}`, data);
+  };
+
+  public finishGame = async (gameId: number): Promise<api.Game> => {
+    return this.post<api.Game>(`/game/${gameId}/finish`);
   };
 }

@@ -18,7 +18,8 @@ export const getJoinCode = async (
 export const assignPlayersMissions = async (
   gameId: number,
   players: data.Player[],
-  data: data.DataClients
+  data: data.DataClients,
+  transaction?: data.IDBTransaction
 ) => {
   const missions = await data.mission.getNRandomMissions(players.length * 5);
 
@@ -38,9 +39,7 @@ export const assignPlayersMissions = async (
     }
   });
 
-  for (const mission of assignedMissions) {
-    await data.playerMission.create(mission);
-  }
+  await data.playerMission.createMany(assignedMissions, transaction);
 };
 
 const POSSIBLE_JOIN_CODES = [

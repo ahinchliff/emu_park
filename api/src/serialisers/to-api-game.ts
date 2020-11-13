@@ -34,7 +34,7 @@ export const toApiGame = (
     joinCode: game.joinCode,
     players: players.map((p) => ({
       userId: p.userId,
-      username: p.username,
+      displayName: p.displayName,
       score: userIdsToScoreMap[p.userId] || 0,
     })),
     myMissions,

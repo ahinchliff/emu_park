@@ -1,7 +1,7 @@
 declare namespace data {
   type Player = {
     userId: data.PlayerTable["userId"];
-    username: data.UserTable["username"];
+    displayName: data.UserTable["displayName"];
   };
 
   type NewPlayer = Pick<data.PlayerTable, "userId" | "gameId">;

@@ -54,7 +54,7 @@ const start: AuthRequestHandler<
   }
 
   return services.data.dbTransaction.create(async (t) => {
-    await assignPlayersMissions(gameId, players, services.data);
+    await assignPlayersMissions(gameId, players, services.data, t);
 
     const updatedGame = await services.data.game.update(
       { gameId },

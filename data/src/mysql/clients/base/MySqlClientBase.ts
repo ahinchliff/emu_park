@@ -42,8 +42,6 @@ export default class MySQLClientBase {
     const sql = statement.toParams();
     const sqlText = limit ? `${sql.text} LIMIT 0,${limit}` : sql.text;
 
-    this.logFormattedSQL(sqlText, sql.values);
-
     return this.executeQuery<RowDataPacket[]>(
       sqlText,
       sql.values,
@@ -56,8 +54,6 @@ export default class MySQLClientBase {
     dbTransaction?: IMySQLTransaction
   ): Promise<OkPacket> {
     const sql = statement.toParams();
-
-    this.logFormattedSQL(sql.text, sql.values);
 
     const [resultSet] = await this.executeQuery<OkPacket>(
       sql.text,
@@ -90,9 +86,6 @@ export default class MySQLClientBase {
     ).toParams();
 
     const itemSqlWithPaging = `${itemSql.text} LIMIT ${from},${pageSizeNum}`;
-
-    this.logFormattedSQL(itemSqlWithPaging, itemSql.values);
-    this.logFormattedSQL(countSql.text, countSql.values);
 
     const itemResult = this.executeQuery<RowDataPacket[]>(
       itemSqlWithPaging,
@@ -141,9 +134,6 @@ export default class MySQLClientBase {
     const countSql = getParams(countProjection || select("COUNT(*) as count"));
 
     const itemSqlWithPaging = `${itemSql.text} LIMIT 0,${pageSizeNum + 1}`;
-
-    this.logFormattedSQL(itemSqlWithPaging, itemSql.values);
-    this.logFormattedSQL(countSql.text, countSql.values);
 
     const itemResult = this.executeQuery<RowDataPacket[]>(
       itemSqlWithPaging,

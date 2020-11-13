@@ -7,7 +7,7 @@ import { toApiError } from "../../../utils";
 
 type Props = MainStackScreenProps<"Home">;
 
-const HomeScreen: React.FC<Props> = () => {
+const HomeScreen: React.FC<Props> = (props) => {
   const { authStore, gameStore, uiStore } = useStores();
   const [showCreateGameModal, setShowCreateGameModal] = useState<boolean>(
     false
@@ -29,11 +29,15 @@ const HomeScreen: React.FC<Props> = () => {
   const createGame = async () => {
     setCreatingGame(true);
     try {
-      await gameStore.createGame({
+      const game = await gameStore.createGame({
         title: gameTitleInputState.value,
         toFinishAt: undefined,
       });
       setShowCreateGameModal(false);
+      props.navigation.navigate("Game", {
+        gameId: game.id,
+        dontFetchOnMount: true,
+      });
     } catch (err) {
       uiStore.setUnhandledError(err);
     }
@@ -43,10 +47,14 @@ const HomeScreen: React.FC<Props> = () => {
   const joinGame = async () => {
     setJoiningGame(true);
     try {
-      await gameStore.joinGame({
+      const game = await gameStore.joinGame({
         joinCode: joinCodeInputState.value,
       });
       setShowJoinGameModal(false);
+      props.navigation.navigate("Game", {
+        gameId: game.id,
+        dontFetchOnMount: true,
+      });
     } catch (err) {
       const apiError = toApiError(err);
       if (
@@ -67,6 +75,11 @@ const HomeScreen: React.FC<Props> = () => {
 
   const toggleJoinGameModal = () => setShowJoinGameModal(!showJoinGameModal);
 
+  const goToGame = (gameId: number) =>
+    props.navigation.navigate("Game", {
+      gameId,
+    });
+
   return (
     <HomeScreenView
       user={authStore.me!}
@@ -82,7 +95,7 @@ const HomeScreen: React.FC<Props> = () => {
       joinCodeInputState={joinCodeInputState}
       joinGame={joinGame}
       joinCodeInvalid={joinCodeInvalid}
-      logout={authStore.logout}
+      goToGame={goToGame}
     />
   );
 };

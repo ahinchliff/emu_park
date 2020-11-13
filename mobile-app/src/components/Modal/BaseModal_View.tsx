@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useEffect, useState } from "react";
+import React, { ReactNode, useRef, useEffect } from "react";
 import {
   Animated,
   Pressable,
@@ -10,7 +10,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { variables } from "../../styles";
 import MainText from "../MainText";
-import { useStores } from "mobile-app/src/hooks";
 
 export type Props = {
   show: boolean;

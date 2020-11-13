@@ -18,7 +18,7 @@ declare namespace api {
 
   type Player = {
     userId: number;
-    username: string;
+    displayName: string;
     score: number;
   };
 

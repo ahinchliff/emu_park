@@ -43,6 +43,6 @@ const mapper = (row: RowDataPacket): data.Player => {
   const user = rowExtractor("user", row);
   return {
     userId: player("userId"),
-    username: user("username"),
+    displayName: user("displayName"),
   };
 };

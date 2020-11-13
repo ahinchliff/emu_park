@@ -1,13 +1,29 @@
 export const getGameStatus = (
   game: api.Game | api.GameSearchResult
-): "finished" | "playing" | "waiting" => {
+): {
+  status: "finished" | "playing" | "waiting";
+  color: string;
+  displayText: string;
+} => {
   if (game.finishedAt) {
-    return "finished";
+    return {
+      status: "finished",
+      color: "#eb4d4b",
+      displayText: "Finished",
+    };
   }
 
   if (game.startedAt) {
-    return "playing";
+    return {
+      status: "playing",
+      color: "#686de0",
+      displayText: "Playing!",
+    };
   }
 
-  return "waiting";
+  return {
+    status: "waiting",
+    color: "#535c68",
+    displayText: "Waiting to begin",
+  };
 };

@@ -17,16 +17,16 @@ declare namespace core.backend.config {
       secret: string;
       validForInHours: number;
     };
+    websockets: {
+      dynamoTableName: string;
+      endpoint: string;
+    };
     // auth: {
     //   jwtIssuer: string;
     //   jwksPath: string;
     // };
     // bucketNames: {
     //   profilePictures: string;
-    // };
-    // websockets: {
-    //   dynamoTableName: string;
-    //   endpoint: string;
     // };
   };
 

@@ -1,6 +1,5 @@
 import * as Koa from "koa";
 import * as Router from "@koa/router";
-import * as jwt from "jsonwebtoken";
 import Logger from "../../../core-backend/src/logger";
 import { addErrorToContext, notAuthorized } from "../utils/errorsUtils";
 
@@ -52,22 +51,13 @@ export type UnAuthRequestHandler<
 
 const getDecodedJWT = async (
   ctx: Koa.Context,
-  config: api.Config,
+  services: api.Services,
   logger: core.backend.Logger
 ): Promise<api.AuthToken | undefined> => {
   const authToken = ctx.get("Authorization");
   const split = authToken && authToken.split && authToken.split("Bearer ");
   const token = split && split[1];
-  if (!token) {
-    return undefined;
-  }
-
-  try {
-    return jwt.verify(token, config.jwt.secret) as api.AuthToken;
-  } catch (error) {
-    logger.debug(error);
-    return undefined;
-  }
+  return services.auth.decodeJWT(token, logger);
 };
 
 const handlerBuilder = (
@@ -84,7 +74,7 @@ const handlerBuilder = (
 
   const services = getServices(logger);
 
-  const decodedJWT = await getDecodedJWT(ctx, config, logger);
+  const decodedJWT = await getDecodedJWT(ctx, services, logger);
 
   let user: data.User | undefined = undefined;
 

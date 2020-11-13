@@ -7,7 +7,7 @@ export type AWSEvent = {
 };
 
 type ExecutionConfig = Partial<core.backend.config.Config> &
-  Pick<core.backend.config.Config, "environment">;
+  Pick<core.backend.config.Config, "environment" | "jwt">;
 
 export type InitServices<Config, Services> = (
   config: Config,

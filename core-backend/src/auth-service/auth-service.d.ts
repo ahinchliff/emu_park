@@ -3,6 +3,11 @@ declare namespace core.backend {
     decodeJWT(
       token: string,
       logger: core.backend.Logger
-    ): Promise<api.AuthToken | undefined>;
+    ): Promise<
+      | {
+          userId: number;
+        }
+      | undefined
+    >;
   }
 }

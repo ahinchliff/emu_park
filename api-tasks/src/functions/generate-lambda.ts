@@ -1,6 +1,6 @@
 import { Callback, Context, Handler } from "aws-lambda";
-import Logger from "../../../core-backend/build/logger";
-import ConfigService from "../../../core-backend/build/config-service";
+import Logger from "../../../core-backend/src/logger";
+import ConfigService from "../../../core-backend/src/config-service";
 
 export type AWSEvent = {
   incidentId: string;

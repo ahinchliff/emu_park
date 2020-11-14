@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "deploy": "yarn build && cd api && yarn package && cd ../ && yarn terraform-apply && rm -rf build",
+    "deploy": "yarn build && cd api && yarn package && cd ../api-tasks && yarn package && cd ../ && yarn terraform-apply && rm -rf build",
     "encrypt-config": "aws-vault exec gotcha-dev -- sh ./terraform/scripts/encrypt-terraform-secret.sh",
     "terraform-apply": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform apply",
     "terraform-init": "cd ./terraform/environments/development && aws-vault exec gotcha-dev -- terraform init",

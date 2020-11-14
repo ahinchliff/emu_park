@@ -101,7 +101,11 @@ const markMission: AuthRequestHandler<
     gameId,
   });
 
-  return toApiGame(user.userId, game, players, missions);
+  const apiGame = toApiGame(user.userId, game, players, missions);
+
+  await services.socket.emitGameUpdate(game.gameId, apiGame);
+
+  return apiGame;
 };
 
 export default markMission;

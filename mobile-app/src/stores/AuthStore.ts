@@ -29,6 +29,7 @@ export default class AuthStore extends BaseStore {
       logout: action,
       onAuthDetailsChange: action,
     });
+    this.listenForTestMessages();
   }
 
   public signup = async (data: api.SignupRequestBody) => {
@@ -99,6 +100,7 @@ export default class AuthStore extends BaseStore {
     this.authDetails = authDetails;
     await this.saveAuthTokensToLocalStore(authDetails);
     this.api.setAuthorization(authDetails.token);
+    this.sockets.setAuthorization(authDetails.token);
     this.me = await this.api.getMe();
   };
 
@@ -161,5 +163,18 @@ export default class AuthStore extends BaseStore {
     }
 
     return undefined;
+  };
+
+  public subscribeToUserEvents = () => {
+    if (this.me) {
+      this.sockets.subscribe("ME");
+    }
+  };
+
+  private listenForTestMessages = () => {
+    console.log("listening for test event");
+    this.sockets.addOnEvent("TEST_EVENT", (body: any) => {
+      console.log(body);
+    });
   };
 }

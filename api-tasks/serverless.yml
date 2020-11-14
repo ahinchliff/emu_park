@@ -8,7 +8,6 @@ provider:
 
 plugins:
   - serverless-webpack
-  - serverless-offline
 
 package:
   individually: true
@@ -19,9 +18,5 @@ custom:
     includeModules: true
 
 functions:
-  api:
-    handler: src/index.api
-    events:
-      - http:
-          path: /{proxy+}
-          method: ANY
+  inbound-websockets:
+    handler: src/functions/inbound-websockets/index.handler

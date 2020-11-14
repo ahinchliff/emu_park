@@ -35,7 +35,7 @@ module config {
   jwt_secret = var.jwt_secret
   # profile_pictures_s3_bucket_domain = module.files.domain_names.profile_pictures
   web_sockets_dynamo_table_name = var.web_sockets_dynamo_table_name
-  # web_sockets_endpoint = module.websockets.endpoint
+  web_sockets_endpoint = module.websockets.endpoint
 }
 
 # module auth {
@@ -46,13 +46,16 @@ module api {
   source = "../modules/api"
   environment = var.environment
   config_param_arns = [module.config.arns.mysql_application_user_password, module.config.arns.jwt_secret]
+  web_sockets_dynamo_table_arn = module.websockets.dynamodb_table_arn
+  web_sockets_apigw_arn = module.websockets.apigw_arn
 }
 
-# module websockets {
-#   source = "../modules/websockets"
-#   environment = var.environment
-#   dynamo_table_name = var.web_sockets_dynamo_table_name
-# }
+module websockets {
+  source = "../modules/websockets"
+  environment = var.environment
+  dynamo_table_name = var.web_sockets_dynamo_table_name
+  config_param_arns = [module.config.arns.jwt_secret]
+}
 
 # module queue_tasks {
 #   source = "../modules/queue-tasks"

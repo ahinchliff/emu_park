@@ -57,7 +57,11 @@ const finish: AuthRequestHandler<
     gameId,
   });
 
-  return toApiGame(user.userId, finishedGame, players, missions);
+  const apiGame = toApiGame(user.userId, finishedGame, players, missions);
+
+  await services.socket.emitGameUpdate(game.gameId, apiGame);
+
+  return apiGame;
 };
 
 export default finish;

@@ -1,7 +1,7 @@
 import * as mysql from "../../../data/src/mysql/index";
 // import FileService from "../../../core-backend/src/file-service";
 import AuthService from "../../../core-backend/src/auth-service";
-// import SocketService from "../../../core-backend/src/socket-service";
+import SocketService from "../../../core-backend/src/socket-service";
 
 export const initServices = async (
   config: api.Config,
@@ -9,7 +9,7 @@ export const initServices = async (
 ): Promise<(logger: core.backend.Logger) => api.Services> => {
   const auth = new AuthService(config.jwt);
   // const file = new FileService(config.bucketNames);
-  // const socket = new SocketService(config.websockets);
+  const socket = new SocketService(config.websockets);
 
   return (logger: core.backend.Logger) => {
     return {
@@ -20,7 +20,7 @@ export const initServices = async (
       ),
       auth,
       // file,
-      // socket,
+      socket,
     };
   };
 };

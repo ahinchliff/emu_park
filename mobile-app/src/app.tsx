@@ -32,6 +32,10 @@ const App: React.FC = () => {
     const loadFontPromise = Font.loadAsync({ FredokaOne_400Regular });
     await initAuthPromise;
     await loadFontPromise;
+
+    if (state.authStore.me) {
+      state.authStore.subscribeToUserEvents();
+    }
   };
 
   if (appInitialising) {

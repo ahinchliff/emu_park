@@ -31,6 +31,10 @@ const GameScreen: React.FC<Props> = (props) => {
       }
     };
     fetchGame();
+    gameStore.subscripeToGameEvents(gameId);
+    return () => {
+      gameStore.unsubscribeFromGameEvents(gameId);
+    };
   }, [gameId]);
 
   const game = gameStore.games.get(gameId);

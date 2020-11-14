@@ -19,6 +19,12 @@ type Config = Pick<
 type EventToDataMapping = {
   SUBSCRIBE_ME: undefined;
   UNSUBSCRIBE_ME: undefined;
+  SUBSCRIBE_GAME: {
+    gameId: number;
+  };
+  UNSUBSCRIBE_GAME: {
+    gameId: number;
+  };
 };
 
 type Event = keyof EventToDataMapping;
@@ -109,6 +115,8 @@ const onDefault = async (
   } = {
     SUBSCRIBE_ME: { fn: onSubscribeMe, requiresAuth: true },
     UNSUBSCRIBE_ME: { fn: onUnsubscribeMe, requiresAuth: true },
+    SUBSCRIBE_GAME: { fn: onSubscribeToGame, requiresAuth: true },
+    UNSUBSCRIBE_GAME: { fn: onUnsubscribeFromGame, requiresAuth: true },
   };
 
   const handler = eventToFunctionMap[parseddata.event];
@@ -165,7 +173,7 @@ const onSubscribeMe: AuthHandler<EventToDataMapping["SUBSCRIBE_ME"]> = async ({
   token,
 }) => {
   try {
-    await socketService.subscribeToUser(connectionId, token.userId.toString());
+    await socketService.subscribeToUser(connectionId, token.userId);
     return success;
   } catch (e) {
     return error;
@@ -175,10 +183,26 @@ const onSubscribeMe: AuthHandler<EventToDataMapping["SUBSCRIBE_ME"]> = async ({
 const onUnsubscribeMe: AuthHandler<
   EventToDataMapping["UNSUBSCRIBE_ME"]
 > = async ({ socketService, connectionId, token }) => {
-  await socketService.unsubscribeFromUser(
-    connectionId,
-    token.userId.toString()
-  );
+  await socketService.unsubscribeFromUser(connectionId, token.userId);
+  return success;
+};
+
+const onSubscribeToGame: AuthHandler<
+  EventToDataMapping["SUBSCRIBE_GAME"]
+> = async ({ socketService, connectionId, data }) => {
+  try {
+    await socketService.subscribeToGame(connectionId, data.gameId);
+    return success;
+  } catch (e) {
+    return error;
+  }
+};
+
+const onUnsubscribeFromGame: AuthHandler<
+  EventToDataMapping["UNSUBSCRIBE_GAME"]
+> = async ({ socketService, connectionId, data }) => {
+  await socketService.unsubscribeFromGame(connectionId, data.gameId);
+  return success;
 };
 
 export default InboundWebSocketHandlerExecution;

@@ -70,14 +70,16 @@ resource "aws_apigatewayv2_route" "default" {
 
 module inbound_web_socket_handler {
   source = "../shared/lambda"
-  name = "inbound-web-socket-handler"
-  source_file = "../../../.webpack/inbound-web-socket-handler.js"
+  name = "websocket-handler"
+  handler = "src/functions/inbound-websockets/index.handler"
+  source_file = "../../../api-tasks/.serverless/inbound-websockets.zip"
 }
 
 module "config_access" {
   source = "../shared/config-access-policy"
   resource_name = "inbound_web_socket_handler"
   resource_role_id = module.inbound_web_socket_handler.role
+  param_arns = var.config_param_arns
 }
 
 

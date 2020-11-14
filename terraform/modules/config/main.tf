@@ -54,12 +54,12 @@ module "web_sockets_dynamo_table_name" {
   sensitive = false
 }
 
-# module "web_sockets_endpoint" {
-#   source = "../shared/config-param"
-#   name = "web_sockets_endpoint"
-#   value = var.web_sockets_endpoint
-#   sensitive = false
-# }
+module "web_sockets_endpoint" {
+  source = "../shared/config-param"
+  name = "web_sockets_endpoint"
+  value = var.web_sockets_endpoint
+  sensitive = false
+}
 
 # module "jwt_issuer" {
 #   source = "../shared/config-param"

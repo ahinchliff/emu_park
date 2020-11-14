@@ -54,7 +54,11 @@ const join: AuthRequestHandler<
 
   const players = await services.data.player.getMany({ gameId });
 
-  return toApiGame(user.userId, game, players, []);
+  const apiGame = toApiGame(user.userId, game, players, []);
+
+  await services.socket.emitGameUpdate(game.gameId, apiGame);
+
+  return apiGame;
 };
 
 export default join;

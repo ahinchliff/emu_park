@@ -4,7 +4,9 @@ export default class Sockets {
   private subscriptions: { event: string; data: any }[] = [];
   private onEventHandlers: { event: string; fn: any }[] = [];
 
-  constructor(protected config: config.Config) {}
+  constructor(protected config: config.Config) {
+    this.connect();
+  }
 
   public addOnEvent = async (event: string, fn: any) => {
     this.onEventHandlers = [...this.onEventHandlers, { event, fn }];
@@ -34,13 +36,14 @@ export default class Sockets {
     await this.send(unsubscribeEvent, data);
   };
 
-  public send = async (event: string, _data?: any) => {
+  public send = async (event: string, data?: any) => {
     const connection = await this.getConnection();
     console.log(`SocketClient - Sending "${event}"`);
     connection.send(
       JSON.stringify({
         event,
         token: this.authToken,
+        data,
       })
     );
   };

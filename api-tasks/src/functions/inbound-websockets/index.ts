@@ -1,8 +1,8 @@
 import { Handler } from "aws-lambda";
 import generateLambda, { AWSEvent } from "../generate-lambda";
 import InboundWebSocketHandlerExecution from "./execution";
-import AuthService from "../../../../core-backend/build/auth-service";
-import SocketService from "../../../../core-backend/build/socket-service";
+import AuthService from "../../../../core-backend/src/auth-service";
+import SocketService from "../../../../core-backend/src/socket-service";
 
 type APIGatewaySocketEvent = AWSEvent & {
   requestContext: {
@@ -13,7 +13,7 @@ type APIGatewaySocketEvent = AWSEvent & {
 };
 
 export const handler: Handler<APIGatewaySocketEvent, void> = generateLambda({
-  sensitiveConfig: [],
+  sensitiveConfig: ["jwt_secret"],
   initServices: async (config) => ({
     authService: new AuthService(config.jwt),
     socketService: new SocketService(config.websockets),

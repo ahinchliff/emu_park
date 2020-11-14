@@ -17,6 +17,7 @@ export default class GameStore extends BaseStore {
       fetchMyGames: action,
       startGame: action,
     });
+    this.listenForGameUpdateEvents();
   }
 
   public fetchGame = async (gameId: number) => {
@@ -115,6 +116,24 @@ export default class GameStore extends BaseStore {
         data: addToOrReplaceInArray(game, this.myGames.data),
         loading: false,
       };
+    });
+  };
+
+  public subscripeToGameEvents = (gameId: number) =>
+    this.sockets.subscribe("GAME", { gameId });
+
+  public unsubscribeFromGameEvents = (gameId: number) =>
+    this.sockets.unsubscribe("GAME", { gameId });
+
+  private listenForGameUpdateEvents = () => {
+    this.sockets.addOnEvent("GAME_UPDATE", (game: api.Game) => {
+      runInAction(() => {
+        this.games.set(game.id, game);
+        this.myGames = {
+          data: addToOrReplaceInArray(game, this.myGames.data),
+          loading: false,
+        };
+      });
     });
   };
 }

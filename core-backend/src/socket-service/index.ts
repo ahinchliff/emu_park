@@ -16,17 +16,31 @@ export default class SocketService implements core.backend.ISocketService {
     });
   }
 
-  public subscribeToUser = async (connectionId: string, userId: string) => {
+  public subscribeToUser = async (connectionId: string, userId: number) => {
     await this.subscribeConnectionToRoom(
       connectionId,
       this.getUserRoom(userId)
     );
   };
 
-  public unsubscribeFromUser = async (connectionId: string, userId: string) => {
+  public unsubscribeFromUser = async (connectionId: string, userId: number) => {
     await this.unsubscribeConnectionFromRoom(
       connectionId,
       this.getUserRoom(userId)
+    );
+  };
+
+  public subscribeToGame = async (connectionId: string, gameId: number) => {
+    await this.subscribeConnectionToRoom(
+      connectionId,
+      this.getGameRoom(gameId)
+    );
+  };
+
+  public unsubscribeFromGame = async (connectionId: string, gameId: number) => {
+    await this.unsubscribeConnectionFromRoom(
+      connectionId,
+      this.getGameRoom(gameId)
     );
   };
 
@@ -107,10 +121,14 @@ export default class SocketService implements core.backend.ISocketService {
     this.unsubscribeConnectionFromAllRooms(connectionId);
   };
 
-  public emitTestEventToUser = async (userId: string, message: string) => {
+  public emitTestEventToUser = async (userId: number, message: string) => {
     await this.emitEventToRoom(this.getUserRoom(userId), "TEST_EVENT", {
       message,
     });
+  };
+
+  public emitGameUpdate = async (gameId: number, game: api.Game) => {
+    await this.emitEventToRoom(this.getGameRoom(gameId), "GAME_UPDATE", game);
   };
 
   private subscribeConnectionToRoom = async (
@@ -142,13 +160,15 @@ export default class SocketService implements core.backend.ISocketService {
       })
       .promise();
 
-    console.log("Emiting event to connections", {
-      room,
-      event,
-      count: usersConnectionSearchResult.Count,
-    });
-
-    usersConnectionSearchResult.Items?.forEach(async (c) => {
+    console.log(
+      `Emiting event to ${usersConnectionSearchResult.Items?.length} connections`,
+      {
+        room,
+        event,
+        body,
+      }
+    );
+    for (const connection of usersConnectionSearchResult.Items || []) {
       const data = {
         event,
         body,
@@ -157,20 +177,22 @@ export default class SocketService implements core.backend.ISocketService {
       try {
         await this.agw
           .postToConnection({
-            ConnectionId: c.connectionId,
+            ConnectionId: connection.connectionId,
             Data: JSON.stringify(data),
           })
           .promise();
       } catch (e) {
         const error = e as AWS.AWSError;
         if (error.code === "GoneException") {
-          this.unsubscribeConnectionFromAllRooms(c.connectionId);
+          console.log("connection is gone. Unsubscribing from all rooms");
+          await this.unsubscribeConnectionFromAllRooms(connection.connectionId);
         } else {
           console.log(e);
         }
       }
-    });
+    }
   };
 
-  private getUserRoom = (userId: string | number) => `USER_${userId}`;
+  private getUserRoom = (userId: number) => `USER_${userId}`;
+  private getGameRoom = (gameId: number) => `GAME_${gameId}`;
 }

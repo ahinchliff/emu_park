@@ -6,6 +6,8 @@ import Logger from "../../core-backend/src/logger";
 import { Pool } from "mysql2/promise";
 import { generateJWT, hashPassword } from "../src/utils/authUtils";
 import { assignPlayersMissions } from "../../api/src/utils/game";
+import AuthService from "core-backend/src/auth-service";
+import MockSocketService from "./MockSocketService";
 
 const JWT_SECRET = "superSecret";
 
@@ -36,6 +38,10 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
       secret: JWT_SECRET,
       validForInHours: 1,
     },
+    websockets: {
+      endpoint: "",
+      dynamoTableName: "",
+    },
   };
 
   const logger = new Logger("test");
@@ -45,6 +51,8 @@ export const initTestHelpers = async (): Promise<TestHelpers> => {
 
   const services = (_logger: core.backend.Logger): api.Services => ({
     data: dataClients,
+    auth: new AuthService(config.jwt),
+    socket: new MockSocketService(),
   });
 
   const app = initApp(config, services);

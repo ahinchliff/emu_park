@@ -69,7 +69,16 @@ const start: AuthRequestHandler<
       t
     );
 
-    return toApiGame(user.userId, updatedGame, players, createdMissions);
+    const apiGame = toApiGame(
+      user.userId,
+      updatedGame,
+      players,
+      createdMissions
+    );
+
+    await services.socket.emitGameUpdate(game.gameId, apiGame);
+
+    return apiGame;
   });
 };
 

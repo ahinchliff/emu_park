@@ -35,7 +35,35 @@ resource "aws_api_gateway_integration" "lambda" {
 module lambda {
   source = "../shared/lambda"
   name = "api"
+  handler = "src/index.api"
   source_file = "../../../api/.serverless/api.zip"
+}
+
+resource "aws_iam_role_policy" "lambda_can_access_websockets_policy" {
+  name   = "api_access_websocket_dynamodb"
+  role   = module.lambda.role
+  policy = data.aws_iam_policy_document.lambda_can_access_websockets_policy.json
+}
+
+data "aws_iam_policy_document" "lambda_can_access_websockets_policy" {
+  statement {
+    actions = [
+      "dynamodb:Query",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem",
+    ]
+    resources = [var.web_sockets_dynamo_table_arn, "${var.web_sockets_dynamo_table_arn}/index/*"]
+  }
+
+  statement {
+    actions = [
+      "execute-api:ManageConnections"
+    ]
+    resources = [
+      "${var.web_sockets_apigw_arn}/*/@connections/{connectionId}"
+    ]
+  }
 }
 
 resource "aws_lambda_permission" "api_lambda_can_be_invoked_by_agw" {

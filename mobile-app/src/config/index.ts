@@ -8,10 +8,11 @@ const isEnvironment = (env: ReleaseChannel): boolean =>
   (releaseChannel || "").indexOf(env as string) === 0;
 
 const devConfig: config.Config = {
-  apiEndpoint: "http://localhost:3000/dev",
+  apiEndpoint:
+    "https://fcau42vxcc.execute-api.ap-southeast-2.amazonaws.com/development",
   authEndpoint: "",
   socketEndpoint:
-    "wss://bi56oaf3tj.execute-api.ap-southeast-2.amazonaws.com/live",
+    "wss://h08zh2mkk8.execute-api.ap-southeast-2.amazonaws.com/development",
 };
 
 const stagingConfig: config.Config = {

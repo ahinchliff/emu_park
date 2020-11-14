@@ -2,7 +2,7 @@ resource "aws_lambda_function" "lambda" {
   function_name    = var.name
   filename         = var.source_file
   source_code_hash = filebase64sha256(var.source_file)
-  handler          = "handler.${var.name}"
+  handler          = var.handler
   role             = aws_iam_role.lambda.arn
   runtime          = "nodejs12.x"
 }

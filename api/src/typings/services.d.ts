@@ -3,6 +3,6 @@ declare namespace api {
     data: data.DataClients;
     auth: core.backend.IAuthService;
     // file: core.backend.IFileService;
-    // socket: core.backend.ISocketService;
+    socket: core.backend.ISocketService;
   };
 }

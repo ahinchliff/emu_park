@@ -16,9 +16,13 @@ const myGames: AuthRequestHandler<{}, {}, {}, api.GameSearchResult[]> = async ({
     return validationBadRequest(bodyValidationResult.errors);
   }
 
-  const games = await services.data.game.myGames(user.userId);
+  const games = await services.data.gameSearch.myGames(user.userId);
 
-  return games.map(toApiGameSearchResult);
+  const usersMissions = await services.data.playerMission.getMany({
+    userId: user.userId,
+  });
+
+  return games.map((g) => toApiGameSearchResult(g, usersMissions));
 };
 
 export default myGames;

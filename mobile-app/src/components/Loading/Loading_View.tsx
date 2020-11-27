@@ -13,11 +13,11 @@ const LoadingView: React.FC<Props> = (props) => {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: variables.colors.primary,
+        backgroundColor: variables.colors.yellow,
         ...props.style,
       }}
     >
-      <ActivityIndicator size="large" color={variables.colors.white} />
+      <ActivityIndicator size="small" color={variables.colors.black} />
     </View>
   );
 };

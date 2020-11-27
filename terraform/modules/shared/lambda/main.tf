@@ -5,6 +5,7 @@ resource "aws_lambda_function" "lambda" {
   handler          = var.handler
   role             = aws_iam_role.lambda.arn
   runtime          = "nodejs12.x"
+  timeout          = var.timeout
 }
 
 resource "aws_iam_role" "lambda" {

@@ -102,8 +102,6 @@ export default class Sockets {
 
     const data = JSON.parse(message.data) as { event?: string; body?: any };
 
-    console.log(data);
-
     if (!data.event) {
       return console.log(
         "SocketClient - Message received but with no message.data.event"

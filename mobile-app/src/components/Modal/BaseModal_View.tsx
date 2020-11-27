@@ -1,20 +1,12 @@
 import React, { ReactNode, useRef, useEffect } from "react";
-import {
-  Animated,
-  Pressable,
-  View,
-  StyleSheet,
-  KeyboardAvoidingView,
-} from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { Animated, View, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { BlurView } from "expo-blur";
 import { variables } from "../../styles";
-import MainText from "../MainText";
+import { TextButton } from "../TextButton";
 
 export type Props = {
   show: boolean;
   children: ReactNode;
-  title?: string;
   onClose?(): void;
 };
 
@@ -42,7 +34,7 @@ const Modal: React.FC<Props> = (props) => {
   }
 
   return (
-    <BlurView intensity={70} style={[StyleSheet.absoluteFill]}>
+    <BlurView intensity={90} tint="dark" style={[StyleSheet.absoluteFill]}>
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <Animated.View
           style={{
@@ -53,50 +45,28 @@ const Modal: React.FC<Props> = (props) => {
             width: "100%",
             justifyContent: "center",
             alignItems: "center",
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 1,
+              height: 2,
+            },
+            shadowOpacity: 0.5,
+            shadowRadius: 3.84,
           }}
         >
           <View
             style={{
-              backgroundColor: variables.colors.white,
               borderRadius: 10,
+              backgroundColor: variables.colors.yellow,
               width: "80%",
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 1,
-                height: 2,
-              },
-              shadowOpacity: 0.5,
-              shadowRadius: 3.84,
+              borderColor: variables.colors.black,
+              borderWidth: 2,
             }}
           >
             <View style={{ flexDirection: "row" }}>
-              <View style={{ flex: 1, paddingTop: 30, paddingLeft: 30 }}>
-                {props.title && (
-                  <MainText
-                    removeShadow={true}
-                    style={{ fontSize: 28, color: variables.colors.black }}
-                  >
-                    {props.title}
-                  </MainText>
-                )}
-              </View>
+              <View style={{ flex: 1, paddingTop: 30, paddingLeft: 30 }}></View>
               <View style={{ paddingRight: 15, paddingTop: 10 }}>
-                <Pressable
-                  onPressIn={onClose}
-                  style={({ pressed }) => [
-                    {
-                      backgroundColor: pressed ? "black" : "#f0932b",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: 50,
-                      width: 50,
-                      borderRadius: 55,
-                      shadowColor: "#000",
-                    },
-                  ]}
-                >
-                  <FontAwesome name="times" size={24} color="white" />
-                </Pressable>
+                <TextButton onPress={onClose} text="CLOSE" />
               </View>
             </View>
             <View style={{ padding: 30 }}>{props.children}</View>

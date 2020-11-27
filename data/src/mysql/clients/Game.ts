@@ -1,7 +1,6 @@
 import { Pool, RowDataPacket } from "mysql2/promise";
-import { select } from "sql-bricks";
 import EntityClientBase from "./base/EntityClientBase";
-import { prepareObjectForSql, rowExtractor, on, table } from "./utils";
+import { rowExtractor } from "./utils";
 
 export default class GameClient
   extends EntityClientBase<"game", data.Game, data.NewGame>
@@ -13,19 +12,6 @@ export default class GameClient
   ) {
     super("game", pool, logger, logValues, mapper, "gameId");
   }
-
-  public myGames = async (
-    userId: number,
-    t?: data.IDBTransaction
-  ): Promise<data.Game[]> => {
-    const sql = select()
-      .from(this.tableName)
-      .leftJoin(table("player"))
-      .on(on("game", "player", "gameId"))
-      .where(prepareObjectForSql("player", { userId }));
-
-    return this.queryMany(sql, t);
-  };
 }
 
 const mapper = (row: RowDataPacket): data.Game => {

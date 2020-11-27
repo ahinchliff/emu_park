@@ -70,10 +70,15 @@ const HomeScreen: React.FC<Props> = (props) => {
     setJoiningGame(false);
   };
 
-  const toggleCreateGameModal = () =>
+  const toggleCreateGameModal = () => {
+    gameTitleInputState.onChangeText("");
     setShowCreateGameModal(!showCreateGameModal);
+  };
 
-  const toggleJoinGameModal = () => setShowJoinGameModal(!showJoinGameModal);
+  const toggleJoinGameModal = () => {
+    joinCodeInputState.onChangeText("");
+    setShowJoinGameModal(!showJoinGameModal);
+  };
 
   const goToGame = (gameId: number) =>
     props.navigation.navigate("Game", {

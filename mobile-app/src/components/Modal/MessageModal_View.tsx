@@ -8,7 +8,7 @@ export type Props = {
 
 const MessageModal: React.FC<Props> = (props) => {
   return (
-    <BaseModal show={props.show} onClose={props.onClose} title={props.title}>
+    <BaseModal show={props.show} onClose={props.onClose}>
       <Text style={{ fontSize: 15, textAlign: "center" }}>{props.message}</Text>
     </BaseModal>
   );

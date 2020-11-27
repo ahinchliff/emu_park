@@ -16,8 +16,8 @@ const InputView: React.FC<Props> = (props) => (
       {...props}
       style={{
         color: variables.colors.black,
-        fontSize: 30,
-        fontFamily: "FredokaOne_400Regular",
+        fontWeight: "bold",
+        fontSize: 18,
       }}
     />
   </View>

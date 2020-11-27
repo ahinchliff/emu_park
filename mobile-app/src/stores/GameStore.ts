@@ -25,7 +25,10 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: addToOrReplaceInArray(game, this.myGames.data),
+        data: addToOrReplaceInArray(
+          gameToGameSearchResult(game),
+          this.myGames.data
+        ),
         loading: false,
       };
     });
@@ -62,7 +65,7 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: [...this.myGames.data, game],
+        data: [...this.myGames.data, gameToGameSearchResult(game)],
         loading: false,
       };
     });
@@ -74,7 +77,7 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: [...this.myGames.data, game],
+        data: [...this.myGames.data, gameToGameSearchResult(game)],
         loading: false,
       };
     });
@@ -86,7 +89,10 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: addToOrReplaceInArray(game, this.myGames.data),
+        data: addToOrReplaceInArray(
+          gameToGameSearchResult(game),
+          this.myGames.data
+        ),
         loading: false,
       };
     });
@@ -102,7 +108,10 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: addToOrReplaceInArray(game, this.myGames.data),
+        data: addToOrReplaceInArray(
+          gameToGameSearchResult(game),
+          this.myGames.data
+        ),
         loading: false,
       };
     });
@@ -113,7 +122,10 @@ export default class GameStore extends BaseStore {
     runInAction(() => {
       this.games.set(game.id, game);
       this.myGames = {
-        data: addToOrReplaceInArray(game, this.myGames.data),
+        data: addToOrReplaceInArray(
+          gameToGameSearchResult(game),
+          this.myGames.data
+        ),
         loading: false,
       };
     });
@@ -130,7 +142,10 @@ export default class GameStore extends BaseStore {
       runInAction(() => {
         this.games.set(game.id, game);
         this.myGames = {
-          data: addToOrReplaceInArray(game, this.myGames.data),
+          data: addToOrReplaceInArray(
+            gameToGameSearchResult(game),
+            this.myGames.data
+          ),
           loading: false,
         };
       });
@@ -151,4 +166,21 @@ const addToOrReplaceInArray = <T extends { id: number }>(
   currentItems.splice(indexOfCurrentItem, 1, item);
 
   return currentItems;
+};
+
+const gameToGameSearchResult = (game: api.Game): api.GameSearchResult => {
+  const completed = game.myMissions.filter((m) => m.status === "completed")
+    .length;
+  const pending = game.myMissions.filter((m) => m.status === "pending").length;
+  const failed = game.myMissions.filter((m) => m.status === "failed").length;
+
+  return {
+    ...game,
+    playerCount: game.players.length,
+    missionState: {
+      completed,
+      pending,
+      failed,
+    },
+  };
 };

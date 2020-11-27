@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, AppState, AppStateStatus } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { registerRootComponent, AppLoading } from "expo";
 import * as Font from "expo-font";
 import { FredokaOne_400Regular } from "@expo-google-fonts/fredoka-one";
@@ -36,6 +37,8 @@ const App: React.FC = () => {
     if (state.authStore.me) {
       state.authStore.subscribeToUserEvents();
     }
+
+    // state.authStore.logout();
   };
 
   if (appInitialising) {
@@ -59,6 +62,7 @@ const App: React.FC = () => {
           </storeContext.Provider>
         </SafeAreaProvider>
       </ThemeProvider>
+      <StatusBar style="dark" />
     </View>
   );
 };

@@ -126,22 +126,22 @@ test("Api -> Game Flow", async () => {
   expect(
     getPlayerFourGameResponseBodySecond.players.find(
       (p) => p.userId === playerOne.user.userId
-    )!.score
+    )!.missionState.completed
   ).toBe(1);
   expect(
     getPlayerFourGameResponseBodySecond.players.find(
       (p) => p.userId === playerTwo.user.userId
-    )!.score
+    )!.missionState.completed
   ).toBe(0);
   expect(
     getPlayerFourGameResponseBodySecond.players.find(
       (p) => p.userId === playerThree.user.userId
-    )!.score
+    )!.missionState.completed
   ).toBe(0);
   expect(
     getPlayerFourGameResponseBodySecond.players.find(
       (p) => p.userId === playerFour.user.userId
-    )!.score
+    )!.missionState.completed
   ).toBe(0);
 
   const finishGameResponse = await testHelpers.api

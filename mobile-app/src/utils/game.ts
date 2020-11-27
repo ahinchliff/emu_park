@@ -27,3 +27,5 @@ export const getGameStatus = (
     displayText: "Waiting to begin",
   };
 };
+
+export const playerCount = (_game: api.Game | api.GameSearchResult) => 3;

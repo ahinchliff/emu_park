@@ -7,7 +7,7 @@ type EmailInputProps = Omit<Props, "placeholder" | "icon" | "autoCapitalize">;
 export const EmailInput: React.FC<EmailInputProps> = (props) => (
   <Input
     placeholder="john.smith@gmail.com"
-    icon="envelope"
+    // icon="envelope"
     autoCapitalize="none"
     {...props}
   />
@@ -20,7 +20,7 @@ type PasswordInputProps = Omit<
 
 export const PasswordInput: React.FC<PasswordInputProps> = (props) => (
   <Input
-    icon="lock"
+    // icon="lock"
     placeholder="********"
     autoCapitalize="none"
     secureTextEntry={true}

@@ -2,27 +2,9 @@ export const toApiGame = (
   userId: number,
   game: data.Game,
   players: data.Player[],
-  playerMissions: data.PlayerMission[]
+  gameMissions: data.PlayerMission[]
 ): api.Game => {
-  const userIdsToScoreMap = playerMissions.reduce(
-    (
-      progress: { [key: number]: number },
-      playerMission: data.PlayerMission
-    ) => {
-      if (playerMission.status === "completed") {
-        const score: number = (progress[playerMission.userId] || 0) + 1;
-        return {
-          ...progress,
-          [playerMission.userId]: score,
-        };
-      } else {
-        return progress;
-      }
-    },
-    {}
-  );
-
-  const myMissions = playerMissions.filter((m) => m.userId === userId);
+  const myMissions = gameMissions.filter((m) => m.userId === userId);
 
   return {
     id: game.gameId,
@@ -35,21 +17,45 @@ export const toApiGame = (
     players: players.map((p) => ({
       userId: p.userId,
       displayName: p.displayName,
-      score: userIdsToScoreMap[p.userId] || 0,
+      missionState: missionsToMissionState(
+        gameMissions.filter((m) => m.userId === p.userId)
+      ),
     })),
     myMissions,
   };
 };
 
 export const toApiGameSearchResult = (
-  game: data.Game
+  game: data.GameSearch,
+  userMissions: data.PlayerMission[]
 ): api.GameSearchResult => {
+  const missionsForThisGame = userMissions.filter((m) => m.gameId);
+  const missionState = missionsToMissionState(missionsForThisGame);
+
   return {
     id: game.gameId,
     title: game.title,
     ownerId: game.ownerId,
+    playerCount: game.playerCount,
+    missionState,
     startedAt: game.startedAt?.toString(),
     finishedAt: game.finishedAt?.toString(),
     toFinishAt: game.toFinishAt?.toString(),
+  };
+};
+
+const missionsToMissionState = (
+  missions: data.PlayerMission[]
+): api.MissionState => {
+  const completed = missions.filter((m) => m.status === "completed").length;
+
+  const pending = missions.filter((m) => m.status === "pending").length;
+
+  const failed = missions.filter((m) => m.status === "failed").length;
+
+  return {
+    completed,
+    pending,
+    failed,
   };
 };

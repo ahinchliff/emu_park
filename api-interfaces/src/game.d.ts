@@ -14,12 +14,21 @@ declare namespace api {
   type GameSearchResult = Pick<
     Game,
     "id" | "title" | "ownerId" | "startedAt" | "finishedAt" | "toFinishAt"
-  >;
+  > & {
+    playerCount: number;
+    missionState: MissionState;
+  };
 
   type Player = {
     userId: number;
     displayName: string;
-    score: number;
+    missionState: MissionState;
+  };
+
+  type MissionState = {
+    completed: number;
+    pending: number;
+    failed: number;
   };
 
   type Mission = {

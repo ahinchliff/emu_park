@@ -1,5 +1,6 @@
 declare namespace data {
   type PlayerMission = {
+    gameId: data.GameUserMissionTable["gameId"];
     userId: data.GameUserMissionTable["userId"];
     missionId: data.GameUserMissionTable["missionId"];
     description: data.MissionTable["description"];

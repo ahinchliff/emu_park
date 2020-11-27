@@ -37,6 +37,7 @@ module lambda {
   name = "api"
   handler = "src/index.api"
   source_file = "../../../api/.serverless/api.zip"
+  timeout = 10
 }
 
 resource "aws_iam_role_policy" "lambda_can_access_websockets_policy" {

@@ -47,6 +47,7 @@ const mapper = (row: RowDataPacket): data.PlayerMission => {
   const mission = rowExtractor("mission", row);
   return {
     userId: gameUserMission("userId"),
+    gameId: gameUserMission("gameId"),
     missionId: gameUserMission("missionId"),
     description: mission("description"),
     againstPlayerId: gameUserMission("againstPlayerId"),

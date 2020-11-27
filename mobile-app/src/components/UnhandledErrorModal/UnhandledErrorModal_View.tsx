@@ -22,7 +22,7 @@ const UnhandledErrorModal: React.FC<Props> = (props) => {
   return (
     <BaseModal
       show={props.isShown}
-      title="oops, something went wrong!"
+      // title="oops, something went wrong!"
       onClose={props.onClose}
     >
       <Text>

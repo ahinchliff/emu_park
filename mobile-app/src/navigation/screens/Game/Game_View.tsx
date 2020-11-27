@@ -1,19 +1,33 @@
 import * as React from "react";
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import { MaterialIcons, FontAwesome, Entypo } from "@expo/vector-icons";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  TextStyle,
+  View,
+} from "react-native";
+import { FontAwesome, Entypo } from "@expo/vector-icons";
 import { Picker } from "@react-native-community/picker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  Header,
   BaseModal,
   HorizontalSpacer,
   Loading,
-  MainText,
   ScreenWrapper,
+  Row,
+  Button,
+  IconDetails,
+  MissionState,
+  TextButton,
+  ListItemWithTitle,
+  ListItem,
 } from "../../../components";
 import { variables } from "../../../styles";
 import { getGameStatus } from "../../../utils";
 
-export type Tab = "players" | "missions";
+export type Tab = "players" | "missions" | "timeline";
 
 export type MarkMission = api.Mission & {
   againstPlayerId: number | undefined;
@@ -40,43 +54,10 @@ const GameScreenView: React.FC<Props> = (props) => {
   return (
     <ScreenWrapper
       style={{
-        backgroundColor: variables.colors.primary,
+        backgroundColor: variables.colors.yellow,
       }}
       removeBottomSafeArea={true}
     >
-      <View style={{ flexDirection: "row", padding: 20, alignItems: "center" }}>
-        <Pressable
-          onPress={props.goBack}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? "black" : "#f0932b",
-              justifyContent: "center",
-              alignItems: "center",
-              height: 36,
-              width: 36,
-              borderRadius: 18,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-            },
-          ]}
-        >
-          <MaterialIcons
-            name="arrow-back"
-            size={24}
-            color={variables.colors.white}
-          />
-        </Pressable>
-        {props.game && (
-          <MainText style={{ marginLeft: 20, fontSize: 25 }}>
-            {props.game.title}
-          </MainText>
-        )}
-      </View>
       <Content {...props} />
       <MarkMissionModal
         me={props.me}
@@ -99,9 +80,7 @@ const Content: React.FC<Props> = (props) => {
   if (!props.game) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <MainText style={{ textAlign: "center" }}>
-          Something has gone wrong :(
-        </MainText>
+        <Text style={{ textAlign: "center" }}>Something has gone wrong :(</Text>
       </View>
     );
   }
@@ -110,27 +89,58 @@ const Content: React.FC<Props> = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, paddingHorizontal: 0 }}>
-        <View style={{ backgroundColor: status.color, paddingVertical: 10 }}>
-          <MainText style={{ textAlign: "center" }} removeShadow={true}>
-            {status.displayText}
-          </MainText>
-        </View>
-        <HorizontalSpacer height={20} />
+      <View
+        style={{
+          paddingHorizontal: variables.standardPadding.horizontal,
+        }}
+      >
+        <Header
+          hideIcon={true}
+          leftButton={{
+            text: "BACK",
+            onPress: props.goBack,
+          }}
+          rightComponent={
+            <View style={{ justifyContent: "flex-end" }}>
+              <IconDetails
+                icon="status"
+                details={status.displayText}
+                color={variables.colors.black}
+              />
+            </View>
+          }
+        />
+      </View>
+      <HorizontalSpacer height={10} />
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: variables.standardPadding.horizontal,
+        }}
+      >
         <View
           style={{
             flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <TabButton
-            text="Players"
+            text="PLAYERS"
+            textAlign="left"
             selected={props.selectedTab === "players"}
             onPress={() => props.changeTab("players")}
           />
           <TabButton
-            text="Missions"
+            text="MISSIONS"
+            textAlign="center"
             selected={props.selectedTab === "missions"}
             onPress={() => props.changeTab("missions")}
+          />
+          <TabButton
+            text="TIMELINE"
+            textAlign="right"
+            selected={props.selectedTab === "timeline"}
+            onPress={() => props.changeTab("timeline")}
           />
         </View>
 
@@ -164,6 +174,7 @@ const Content: React.FC<Props> = (props) => {
 
 const TabButton: React.FC<{
   text: string;
+  textAlign: TextStyle["textAlign"];
   selected: boolean;
   onPress(): void;
 }> = (props) => {
@@ -173,12 +184,10 @@ const TabButton: React.FC<{
       style={() => [
         {
           justifyContent: "center",
-          alignItems: "center",
-          width: "50%",
         },
       ]}
     >
-      {({ pressed }) => (
+      {() => (
         <View
           style={[
             {
@@ -186,20 +195,20 @@ const TabButton: React.FC<{
               borderBottomWidth: 4,
               paddingHorizontal: 5,
               borderBottomColor: props.selected
-                ? variables.colors.white
-                : variables.colors.primary,
+                ? variables.colors.black
+                : variables.colors.yellow,
             },
           ]}
         >
-          <MainText
+          <Text
             style={{
-              fontSize: 20,
-              textAlign: "center",
-              color: pressed ? variables.colors.black : variables.colors.white,
+              textAlign: props.textAlign,
+              color: variables.colors.black,
+              fontWeight: "bold",
             }}
           >
             {props.text}
-          </MainText>
+          </Text>
         </View>
       )}
     </Pressable>
@@ -213,12 +222,10 @@ const PlayerList: React.FC<{ game: api.Game; me: api.AuthUser }> = (props) => {
     return (
       <View>
         <HorizontalSpacer height={30} />
-        <MainText
-          style={{ fontSize: 20, paddingHorizontal: 20, textAlign: "center" }}
-        >
-          No one has joined the game yet {String.fromCodePoint(0x1f61e)}
+        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+          No one has joined your game yet {String.fromCodePoint(0x1f61e)}.
           Friends can join using the code below {String.fromCodePoint(0x1f447)}
-        </MainText>
+        </Text>
       </View>
     );
   }
@@ -226,54 +233,28 @@ const PlayerList: React.FC<{ game: api.Game; me: api.AuthUser }> = (props) => {
   return (
     <FlatList
       data={props.game.players}
-      contentContainerStyle={{
-        padding: 15,
-      }}
-      renderItem={({ item }) => {
-        return (
-          <View
-            style={{
-              backgroundColor: "white",
-              marginBottom: 15,
-              borderRadius: 10,
-              flexDirection: "row",
-            }}
-          >
-            <View style={{ flex: 1, padding: 15 }}>
-              <MainText
-                style={{ color: "black", fontSize: 23 }}
-                removeShadow={true}
-              >
-                {item.displayName}
-              </MainText>
-            </View>
-            <View
-              style={{
-                width: 90,
-                backgroundColor: variables.colors.black,
-                justifyContent: "center",
-                borderTopRightRadius: 10,
-                borderBottomRightRadius: 10,
-              }}
-            >
-              <MainText
-                removeShadow={true}
-                style={{
-                  color: "white",
-                  fontSize: 15,
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
-              >
-                {item.score}
-              </MainText>
-            </View>
-          </View>
-        );
-      }}
+      contentContainerStyle={{ paddingTop: 20 }}
+      renderItem={({ item }) => (
+        <Player player={item} gameStarted={!!props.game.startedAt} />
+      )}
       keyExtractor={(item) => item.userId.toString()}
       showsVerticalScrollIndicator={false}
     />
+  );
+};
+
+const Player: React.FC<{ player: api.Player; gameStarted: boolean }> = (
+  props
+) => {
+  return (
+    <Row style={{ paddingBottom: 10 }}>
+      <Text style={{ fontWeight: "bold" }}>{props.player.displayName}</Text>
+      <MissionState
+        missionState={props.player.missionState}
+        started={props.gameStarted}
+        pressed={false}
+      />
+    </Row>
   );
 };
 
@@ -288,81 +269,78 @@ const MissionList: React.FC<{
     return (
       <View>
         <HorizontalSpacer height={30} />
-        <MainText
-          style={{ fontSize: 20, paddingHorizontal: 20, textAlign: "center" }}
-        >
+        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
           You will be assigned missions once {owner?.displayName} starts the
           game {String.fromCodePoint(0x1f554)}
-        </MainText>
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={{ paddingHorizontal: 15, flex: 1 }}>
+    <>
       <HorizontalSpacer height={20} />
-      <MainText
-        style={{ fontSize: 30, color: variables.colors.black }}
-        removeShadow={true}
-      >
+      <Text style={{ color: variables.colors.black, fontWeight: "bold" }}>
         Get someone to...
-      </MainText>
+      </Text>
       <HorizontalSpacer height={20} />
       <FlatList
         data={props.game.myMissions}
         contentContainerStyle={{ flex: 1 }}
-        renderItem={({ item }) => {
-          return (
-            <Pressable
-              disabled={item.status !== "pending" || !!props.game.finishedAt}
-              onPress={() =>
-                props.setSelectedMission({
-                  ...item,
-                  againstPlayerId: undefined,
-                })
-              }
-              style={{
-                backgroundColor: "white",
-                marginBottom: 15,
-                borderRadius: 10,
-                flexDirection: "row",
-                padding: 15,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <MainText
-                  style={{ color: "black", fontSize: 14 }}
-                  removeShadow={true}
-                >
-                  {item.description}
-                </MainText>
-              </View>
-              {item.status === "pending" && (
-                <View
-                  style={{
-                    height: 25,
-                    width: 25,
-                    borderWidth: 2,
-                    borderColor: variables.colors.black,
-                    borderRadius: 5,
-                  }}
-                />
-              )}
-              {item.status === "failed" && (
-                <FontAwesome name="times" size={25} color="#eb4d4b" />
-              )}
-              {item.status === "completed" && (
-                <Entypo name="check" size={25} color="#6ab04c" />
-              )}
-            </Pressable>
-          );
-        }}
+        renderItem={({ item }) => (
+          <Mission
+            mission={item}
+            onPress={() =>
+              props.setSelectedMission({
+                ...item,
+                againstPlayerId: undefined,
+              })
+            }
+          />
+        )}
         keyExtractor={(item) => item.missionId.toString()}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </>
+  );
+};
+
+const Mission: React.FC<{
+  mission: api.Mission;
+  onPress(): void;
+}> = (props) => {
+  return (
+    <ListItem onPress={props.onPress}>
+      {({ pressed }) => {
+        const color = pressed
+          ? variables.colors.yellow
+          : variables.colors.black;
+        return (
+          <Row style={{ alignItems: "center" }}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={{ color }}>{props.mission.description}</Text>
+            </View>
+            {props.mission.status === "pending" && (
+              <View
+                style={{
+                  height: 25,
+                  width: 25,
+                  borderWidth: 2,
+                  borderColor: color,
+                  borderRadius: 5,
+                }}
+              />
+            )}
+            {props.mission.status === "failed" && (
+              <FontAwesome name="times" size={25} color="#eb4d4b" />
+            )}
+            {props.mission.status === "completed" && (
+              <Entypo name="check" size={25} color="#6ab04c" />
+            )}
+          </Row>
+        );
+      }}
+    </ListItem>
   );
 };
 
@@ -376,14 +354,21 @@ const JoinCode: React.FC<{ game: api.Game }> = (props) => {
   return (
     <View
       style={{
-        backgroundColor: "#22a6b3",
+        backgroundColor: variables.colors.black,
         padding: 15,
         paddingBottom: 15 + insets.bottom,
       }}
     >
-      <MainText style={{ fontSize: 20, textAlign: "center" }}>
+      <Text
+        style={{
+          fontSize: 20,
+          textAlign: "center",
+          color: variables.colors.yellow,
+          fontWeight: "bold",
+        }}
+      >
         {props.game.joinCode}
-      </MainText>
+      </Text>
     </View>
   );
 };
@@ -401,25 +386,12 @@ const StartGameButton: React.FC<{
   }
 
   return (
-    <Pressable
+    <GameActionButton
+      text="START GAME"
       onPress={props.onPress}
-      style={({ pressed }) => [
-        {
-          backgroundColor: pressed ? "black" : "#f0932b",
-          justifyContent: "center",
-          alignItems: "center",
-          paddingVertical: 15,
-        },
-      ]}
-    >
-      {props.loading ? (
-        <ActivityIndicator size="small" color={variables.colors.white} />
-      ) : (
-        <MainText style={{ fontSize: 20, textAlign: "center" }}>
-          Start game!
-        </MainText>
-      )}
-    </Pressable>
+      loading={props.loading}
+      withInserts={true}
+    />
   );
 };
 
@@ -429,8 +401,6 @@ const FinishGameButton: React.FC<{
   onPress: Props["finishGame"];
   loading: Props["finishingGame"];
 }> = (props) => {
-  const insets = useSafeAreaInsets();
-
   const isOwner = props.game.ownerId === props.me.id;
 
   if (!isOwner || !props.game.startedAt || props.game.finishedAt) {
@@ -438,24 +408,49 @@ const FinishGameButton: React.FC<{
   }
 
   return (
+    <GameActionButton
+      text="FINISH GAME"
+      onPress={props.onPress}
+      loading={props.loading}
+      withInserts={true}
+    />
+  );
+};
+
+const GameActionButton: React.FC<{
+  text: string;
+  onPress: Props["finishGame"];
+  loading: Props["finishingGame"];
+  withInserts: boolean;
+}> = (props) => {
+  const insets = useSafeAreaInsets();
+
+  return (
     <Pressable
       onPress={props.onPress}
-      style={({ pressed }) => [
+      disabled={props.loading}
+      style={() => [
         {
-          backgroundColor: pressed ? "black" : "#f0932b",
+          backgroundColor: variables.colors.black,
           justifyContent: "center",
           alignItems: "center",
           paddingVertical: 15,
-          paddingBottom: 15 + insets.bottom,
+          paddingBottom: 15 + (props.withInserts ? insets.bottom : 0),
         },
       ]}
     >
       {props.loading ? (
         <ActivityIndicator size="small" color={variables.colors.white} />
       ) : (
-        <MainText style={{ fontSize: 20, textAlign: "center" }}>
-          Finish Game
-        </MainText>
+        <TextButton
+          style={{
+            fontSize: 20,
+            textAlign: "center",
+            color: variables.colors.white,
+          }}
+          onPress={props.onPress}
+          text={props.text}
+        />
       )}
     </Pressable>
   );
@@ -477,76 +472,38 @@ const MarkMissionModal: React.FC<{
 
   return (
     <BaseModal show={!!props.selectedMission} onClose={props.close}>
-      <MainText style={{ color: variables.colors.black }} removeShadow={true}>
+      <Text style={{ color: variables.colors.black, fontWeight: "bold" }}>
         {props.selectedMission?.description}
-      </MainText>
+      </Text>
       <HorizontalSpacer height={40} />
       <View style={{ flexDirection: "row" }}>
-        <Pressable
+        <SuccessFailureButton
           onPress={() =>
             props.setSelectedMission({
               ...props.selectedMission!,
               status: "completed",
             })
           }
-          style={({ pressed }) => [
-            {
-              backgroundColor:
-                pressed || props.selectedMission?.status === "completed"
-                  ? "#f0932b"
-                  : "#535c68",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: 15,
-              flex: 1,
-            },
-          ]}
-        >
-          <MainText
-            style={{ color: variables.colors.black }}
-            removeShadow={true}
-          >
-            Got! {String.fromCodePoint(0x1f389)}
-          </MainText>
-        </Pressable>
+          selected={props.selectedMission?.status === "completed"}
+          text="GOT"
+        />
+
         <View style={{ width: 5 }} />
-        <Pressable
+        <SuccessFailureButton
           onPress={() =>
             props.setSelectedMission({
               ...props.selectedMission!,
               status: "failed",
             })
           }
-          style={({ pressed }) => [
-            {
-              backgroundColor:
-                pressed || props.selectedMission?.status === "failed"
-                  ? "#f0932b"
-                  : "#535c68",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingVertical: 15,
-              flex: 1,
-            },
-          ]}
-        >
-          <MainText
-            style={{ color: variables.colors.black }}
-            removeShadow={true}
-          >
-            Failed {String.fromCodePoint(0x1f44e)}
-          </MainText>
-        </Pressable>
+          selected={props.selectedMission?.status === "failed"}
+          text="FAILED"
+        />
       </View>
-      <HorizontalSpacer height={20} />
+      <HorizontalSpacer height={30} />
       {moreThanOneOtherPlayer && (
         <>
-          <MainText
-            style={{ color: variables.colors.black }}
-            removeShadow={true}
-          >
-            Who against?
-          </MainText>
+          <Text style={{ fontWeight: "bold" }}>Who against?</Text>
           <Picker
             selectedValue={props.selectedMission?.againstPlayerId}
             onValueChange={(value) => {
@@ -566,30 +523,52 @@ const MarkMissionModal: React.FC<{
           </Picker>
         </>
       )}
-      <Pressable
+      <Button
         onPress={props.submit}
+        loading={props.markingMission}
         disabled={
           props.selectedMission?.status! === "pending" || props.markingMission
         }
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? "black" : "#22a6b3",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingVertical: 15,
-            width: "100%",
-          },
-        ]}
       >
-        {props.markingMission ? (
-          <ActivityIndicator size="small" color={variables.colors.white} />
-        ) : (
-          <MainText style={{ fontSize: 20, textAlign: "center" }}>
-            Submit
-          </MainText>
-        )}
-      </Pressable>
+        SUBMIT
+      </Button>
     </BaseModal>
+  );
+};
+
+const SuccessFailureButton: React.FC<{
+  text: string;
+  selected: boolean;
+  onPress(): void;
+}> = (props) => {
+  return (
+    <Pressable
+      onPress={props.onPress}
+      style={() => [
+        {
+          backgroundColor: props.selected
+            ? variables.colors.black
+            : variables.colors.yellow,
+          borderWidth: 2,
+          borderColor: variables.colors.black,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingVertical: 15,
+          flex: 1,
+        },
+      ]}
+    >
+      <Text
+        style={{
+          fontWeight: "bold",
+          color: props.selected
+            ? variables.colors.yellow
+            : variables.colors.black,
+        }}
+      >
+        {props.text}
+      </Text>
+    </Pressable>
   );
 };
 

@@ -9,6 +9,7 @@ declare namespace api {
     joinCode: string;
     players: Player[];
     myMissions: Mission[];
+    events: Event[];
   };
 
   type GameSearchResult = Pick<
@@ -36,6 +37,45 @@ declare namespace api {
     description: string;
     status: "pending" | "completed" | "failed";
   };
+
+  type EventBase = {
+    id: number;
+    eventType: "joinedGame" | "gameStarted" | "gameFinished" | "markedMission";
+    createdAt: string;
+  };
+
+  type JoinGameEvent = EventBase & {
+    eventType: "joinedGame";
+    data: {
+      userId: number;
+    };
+  };
+
+  type GameStartedEvent = EventBase & {
+    eventType: "gameStarted";
+    data: undefined;
+  };
+
+  type GameFinishedEvent = EventBase & {
+    eventType: "gameFinished";
+    data: undefined;
+  };
+
+  type MarkedMissionEvent = EventBase & {
+    eventType: "markedMission";
+    data: {
+      userId: number;
+      againstPlayerId: number;
+      missionId: number;
+      success: boolean;
+    };
+  };
+
+  type Event =
+    | JoinGameEvent
+    | GameStartedEvent
+    | GameFinishedEvent
+    | MarkedMissionEvent;
 
   type CreateGameRequestBody = Pick<Game, "title" | "toFinishAt">;
 

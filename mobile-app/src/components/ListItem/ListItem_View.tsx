@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import { variables } from "../../styles";
 
 export type Props = {

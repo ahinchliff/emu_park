@@ -51,13 +51,27 @@ const finish: AuthRequestHandler<
     { finishedAt: moment.utc().toDate() }
   );
 
+  await services.data.gameEvent.create({
+    gameId: game.gameId,
+    eventType: "gameFinished",
+    data: undefined,
+  });
+
   const players = await services.data.player.getMany({ gameId });
 
   const missions = await services.data.playerMission.getMany({
     gameId,
   });
 
-  const apiGame = toApiGame(user.userId, finishedGame, players, missions);
+  const events = await services.data.gameEvent.getMany({ gameId });
+
+  const apiGame = toApiGame(
+    user.userId,
+    finishedGame,
+    players,
+    missions,
+    events
+  );
 
   await services.socket.emitGameUpdate(game.gameId, apiGame);
 

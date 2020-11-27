@@ -6,6 +6,7 @@ declare namespace data {
     player: data.PlayerClient;
     playerMission: data.PlayerMissionClient;
     mission: data.MissionClient;
+    gameEvent: data.GameEventClient;
     dbTransaction: data.IDBTransactionClient;
   }
 }

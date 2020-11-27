@@ -62,6 +62,15 @@ const start: AuthRequestHandler<
       t
     );
 
+    await services.data.gameEvent.create(
+      {
+        gameId: game.gameId,
+        eventType: "gameStarted",
+        data: undefined,
+      },
+      t
+    );
+
     const createdMissions = await services.data.playerMission.getMany(
       {
         gameId,
@@ -69,11 +78,14 @@ const start: AuthRequestHandler<
       t
     );
 
+    const events = await services.data.gameEvent.getMany({ gameId }, t);
+
     const apiGame = toApiGame(
       user.userId,
       updatedGame,
       players,
-      createdMissions
+      createdMissions,
+      events
     );
 
     await services.socket.emitGameUpdate(game.gameId, apiGame);

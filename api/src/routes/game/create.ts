@@ -64,7 +64,7 @@ const create: AuthRequestHandler<
       t
     );
 
-    return toApiGame(user.userId, newGame, players, []);
+    return toApiGame(user.userId, newGame, players, [], []);
   });
 };
 

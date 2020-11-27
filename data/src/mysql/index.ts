@@ -7,6 +7,7 @@ import PlayerClient from "./clients/Player";
 import UserClient from "./clients/User";
 import MissionClient from "./clients/Mission";
 import GameSearchClient from "./clients/GameSearch";
+import GameEventClient from "./clients/GameEvent";
 
 export async function initialise(
   config: data.IMysqlConfig,
@@ -22,6 +23,7 @@ export async function initialise(
         user: config.user,
         password: config.password,
         database: config.database,
+        timezone: "utc",
       });
 
       pool.getConnection().then(
@@ -51,4 +53,5 @@ export const getClients = (
   player: new PlayerClient(pool, logger, logValues),
   playerMission: new PlayerMissionClient(pool, logger, logValues),
   mission: new MissionClient(pool, logger, logValues),
+  gameEvent: new GameEventClient(pool, logger, logValues),
 });

@@ -17,6 +17,10 @@ const GameScreen: React.FC<Props> = (props) => {
   >(undefined);
   const [markingMission, setMarkingMission] = useState<boolean>(false);
   const [finishingGame, setFinishingGame] = useState<boolean>(false);
+  const [showStartGameModal, setShowStartGameModal] = useState<boolean>(false);
+  const [showFinishGameModal, setShowFinishGameModal] = useState<boolean>(
+    false
+  );
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -46,6 +50,7 @@ const GameScreen: React.FC<Props> = (props) => {
     if (game) {
       try {
         await gameStore.startGame(game.id);
+        setShowStartGameModal(false);
       } catch (err) {
         uiStore.setUnhandledError(err);
       }
@@ -84,12 +89,17 @@ const GameScreen: React.FC<Props> = (props) => {
       try {
         await gameStore.finishGame(game.id);
         setSelectedMission(undefined);
+        setShowFinishGameModal(false);
       } catch (err) {
         uiStore.setUnhandledError(err);
       }
     }
     setFinishingGame(false);
   };
+
+  const toggleStartGameModal = () => setShowStartGameModal(!showStartGameModal);
+  const toggleFinishGameModal = () =>
+    setShowFinishGameModal(!showFinishGameModal);
 
   return (
     <GameScreenView
@@ -107,6 +117,10 @@ const GameScreen: React.FC<Props> = (props) => {
       markingMission={markingMission}
       finishGame={finishGame}
       finishingGame={finishingGame}
+      showStartGameModal={showStartGameModal}
+      toggleShowStartGameModal={toggleStartGameModal}
+      showFinishGameModal={showFinishGameModal}
+      toggleShowFinishGameModal={toggleFinishGameModal}
     />
   );
 };

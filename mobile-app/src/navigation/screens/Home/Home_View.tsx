@@ -77,7 +77,7 @@ const GameList: React.FC<Props> = (props) => {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         {props.myGames.loading ? (
-          <ActivityIndicator size="large" color="white" />
+          <ActivityIndicator size="small" color={variables.colors.black} />
         ) : (
           <Text
             style={{ textAlign: "center", fontSize: 18, fontWeight: "bold" }}

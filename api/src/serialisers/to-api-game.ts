@@ -2,7 +2,8 @@ export const toApiGame = (
   userId: number,
   game: data.Game,
   players: data.Player[],
-  gameMissions: data.PlayerMission[]
+  gameMissions: data.PlayerMission[],
+  events: data.GameEvent[]
 ): api.Game => {
   const myMissions = gameMissions.filter((m) => m.userId === userId);
 
@@ -22,6 +23,14 @@ export const toApiGame = (
       ),
     })),
     myMissions,
+    events: events.map((e) => {
+      return {
+        id: e.gameEventId,
+        eventType: e.eventType,
+        data: e.data as any,
+        createdAt: e.createdAt.toISOString(),
+      };
+    }),
   };
 };
 
@@ -29,7 +38,9 @@ export const toApiGameSearchResult = (
   game: data.GameSearch,
   userMissions: data.PlayerMission[]
 ): api.GameSearchResult => {
-  const missionsForThisGame = userMissions.filter((m) => m.gameId);
+  const missionsForThisGame = userMissions.filter(
+    (m) => m.gameId === game.gameId
+  );
   const missionState = missionsToMissionState(missionsForThisGame);
 
   return {

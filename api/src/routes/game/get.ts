@@ -43,7 +43,9 @@ const get: AuthRequestHandler<
     gameId,
   });
 
-  return toApiGame(user.userId, game, players, missions);
+  const events = await services.data.gameEvent.getMany({ gameId });
+
+  return toApiGame(user.userId, game, players, missions, events);
 };
 
 export default get;

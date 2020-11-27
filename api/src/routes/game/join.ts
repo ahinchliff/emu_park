@@ -52,9 +52,19 @@ const join: AuthRequestHandler<
 
   await services.data.player.create({ gameId, userId: user.userId });
 
+  await services.data.gameEvent.create({
+    gameId: game.gameId,
+    eventType: "joinedGame",
+    data: {
+      userId: user.userId,
+    },
+  });
+
   const players = await services.data.player.getMany({ gameId });
 
-  const apiGame = toApiGame(user.userId, game, players, []);
+  const events = await services.data.gameEvent.getMany({ gameId });
+
+  const apiGame = toApiGame(user.userId, game, players, [], events);
 
   await services.socket.emitGameUpdate(game.gameId, apiGame);
 

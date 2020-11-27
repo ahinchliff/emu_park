@@ -62,3 +62,14 @@ CREATE TABLE IF NOT EXISTS `gameUserMission` (
   FOREIGN KEY (`gameUserMission_missionId`) REFERENCES `mission`(`mission_missionId`),
   FOREIGN KEY (`gameUserMission_againstPlayerId`) REFERENCES `user`(`user_userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `gameEvent` (
+  `gameEvent_gameEventId` SERIAL,
+  `gameEvent_gameId` BIGINT UNSIGNED NOT NULL,
+  `gameEvent_eventType` ENUM ('joinedGame', 'gameStarted', 'gameFinished', 'markedMission') NOT NULL,
+  `gameEvent_data` JSON NULL DEFAULT NULL,
+  `gameEvent_createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gameEvent_updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gameEvent_gameEventId`),
+  FOREIGN KEY (`gameEvent_gameId`) REFERENCES `game`(`game_gameId`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,12 +1,6 @@
 import * as React from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  Text,
-  TextStyle,
-  View,
-} from "react-native";
+import moment from "moment";
+import { FlatList, Pressable, Text, TextStyle, View } from "react-native";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
 import { Picker } from "@react-native-community/picker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,7 +15,6 @@ import {
   IconDetails,
   MissionState,
   TextButton,
-  ListItemWithTitle,
   ListItem,
 } from "../../../components";
 import { variables } from "../../../styles";
@@ -42,12 +35,16 @@ type Props = {
   markingMission: boolean;
   selectedMission: MarkMission | undefined;
   finishingGame: boolean;
+  showStartGameModal: boolean;
+  showFinishGameModal: boolean;
   finishGame(): Promise<void>;
   startGame(): Promise<void>;
   changeTab(tab: Tab): void;
   setSelectedMission(mission: MarkMission | undefined): void;
   markMission(): Promise<void>;
   goBack(): void;
+  toggleShowStartGameModal(): void;
+  toggleShowFinishGameModal(): void;
 };
 
 const GameScreenView: React.FC<Props> = (props) => {
@@ -68,6 +65,18 @@ const GameScreenView: React.FC<Props> = (props) => {
         setSelectedMission={props.setSelectedMission}
         close={() => props.setSelectedMission(undefined)}
       />
+      <StartGameModal
+        show={props.showStartGameModal}
+        onClose={props.toggleShowStartGameModal}
+        startGame={props.startGame}
+        startingGame={props.startingGame}
+      />
+      <FinishGameModal
+        show={props.showFinishGameModal}
+        onClose={props.toggleShowFinishGameModal}
+        finishGame={props.finishGame}
+        finishingGame={props.finishingGame}
+      />
     </ScreenWrapper>
   );
 };
@@ -86,6 +95,17 @@ const Content: React.FC<Props> = (props) => {
   }
 
   const status = getGameStatus(props.game);
+
+  const tabContent: { [key in Tab]: JSX.Element } = {
+    players: <PlayerList game={props.game} me={props.me} />,
+    missions: (
+      <MissionList
+        game={props.game}
+        setSelectedMission={props.setSelectedMission}
+      />
+    ),
+    timeline: <TimeLine game={props.game} />,
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -143,29 +163,19 @@ const Content: React.FC<Props> = (props) => {
             onPress={() => props.changeTab("timeline")}
           />
         </View>
-
         <View style={{ flex: 1, paddingTop: 10 }}>
-          {props.selectedTab === "players" ? (
-            <PlayerList game={props.game} me={props.me} />
-          ) : (
-            <MissionList
-              game={props.game}
-              setSelectedMission={props.setSelectedMission}
-            />
-          )}
+          {tabContent[props.selectedTab]}
         </View>
       </View>
       <FinishGameButton
         game={props.game}
         me={props.me}
-        onPress={props.finishGame}
-        loading={props.finishingGame}
+        onPress={props.toggleShowFinishGameModal}
       />
       <StartGameButton
         game={props.game}
         me={props.me}
-        onPress={props.startGame}
-        loading={props.startingGame}
+        onPress={props.toggleShowStartGameModal}
       />
       <JoinCode game={props.game} />
     </View>
@@ -277,6 +287,17 @@ const MissionList: React.FC<{
     );
   }
 
+  if (props.game.finishedAt) {
+    return (
+      <View>
+        <HorizontalSpacer height={30} />
+        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+          The game is finished!
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <>
       <HorizontalSpacer height={20} />
@@ -344,6 +365,63 @@ const Mission: React.FC<{
   );
 };
 
+const TimeLine: React.FC<{ game: api.Game }> = (props) => {
+  return (
+    <FlatList
+      data={props.game.events}
+      contentContainerStyle={{ flex: 1, marginTop: 20 }}
+      renderItem={({ item }) => <Event game={props.game} event={item} />}
+      keyExtractor={(item) => item.id.toString()}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+};
+
+const Event: React.FC<{ event: api.Event; game: api.Game }> = (props) => {
+  let content = "";
+
+  if (props.event.eventType === "joinedGame") {
+    const userId = props.event.data.userId;
+    const player = props.game.players.find((p) => p.userId === userId)!;
+    content = `${player.displayName} joined the game`;
+  }
+
+  if (
+    props.event.eventType === "gameStarted" ||
+    props.event.eventType === "gameFinished"
+  ) {
+    const owner = props.game.players.find(
+      (p) => p.userId === props.game.ownerId
+    )!;
+    content = `${owner.displayName} ${
+      props.event.eventType === "gameStarted" ? "started" : "ended"
+    } the game`;
+  }
+
+  if (props.event.eventType === "markedMission") {
+    const getterId = props.event.data.userId;
+    const getter = props.game.players.find((p) => p.userId === getterId)!;
+    const againstId = props.event.data.againstPlayerId;
+    const against = props.game.players.find((p) => p.userId === againstId)!;
+    content = `${getter.displayName} ${
+      props.event.data.success ? "got" : "failed to get"
+    } ${against.displayName}`;
+  }
+
+  return (
+    <Row style={{ paddingBottom: 10 }}>
+      <View style={{ flex: 3 }}>
+        <Text style={{ fontWeight: "bold" }}>
+          {moment(props.event.createdAt).fromNow()}
+        </Text>
+      </View>
+      <View style={{ flex: 5 }}>
+        <Text style={{ textAlign: "right" }}>{content}</Text>
+      </View>
+    </Row>
+  );
+};
+
 const JoinCode: React.FC<{ game: api.Game }> = (props) => {
   const insets = useSafeAreaInsets();
 
@@ -376,8 +454,7 @@ const JoinCode: React.FC<{ game: api.Game }> = (props) => {
 const StartGameButton: React.FC<{
   game: api.Game;
   me: Props["me"];
-  onPress: Props["startGame"];
-  loading: Props["startingGame"];
+  onPress(): void;
 }> = (props) => {
   const isOwner = props.game.ownerId === props.me.id;
 
@@ -389,7 +466,6 @@ const StartGameButton: React.FC<{
     <GameActionButton
       text="START GAME"
       onPress={props.onPress}
-      loading={props.loading}
       withInserts={true}
     />
   );
@@ -398,8 +474,7 @@ const StartGameButton: React.FC<{
 const FinishGameButton: React.FC<{
   game: api.Game;
   me: Props["me"];
-  onPress: Props["finishGame"];
-  loading: Props["finishingGame"];
+  onPress(): void;
 }> = (props) => {
   const isOwner = props.game.ownerId === props.me.id;
 
@@ -411,7 +486,6 @@ const FinishGameButton: React.FC<{
     <GameActionButton
       text="FINISH GAME"
       onPress={props.onPress}
-      loading={props.loading}
       withInserts={true}
     />
   );
@@ -419,8 +493,7 @@ const FinishGameButton: React.FC<{
 
 const GameActionButton: React.FC<{
   text: string;
-  onPress: Props["finishGame"];
-  loading: Props["finishingGame"];
+  onPress(): void;
   withInserts: boolean;
 }> = (props) => {
   const insets = useSafeAreaInsets();
@@ -428,7 +501,6 @@ const GameActionButton: React.FC<{
   return (
     <Pressable
       onPress={props.onPress}
-      disabled={props.loading}
       style={() => [
         {
           backgroundColor: variables.colors.black,
@@ -439,19 +511,15 @@ const GameActionButton: React.FC<{
         },
       ]}
     >
-      {props.loading ? (
-        <ActivityIndicator size="small" color={variables.colors.white} />
-      ) : (
-        <TextButton
-          style={{
-            fontSize: 20,
-            textAlign: "center",
-            color: variables.colors.white,
-          }}
-          onPress={props.onPress}
-          text={props.text}
-        />
-      )}
+      <TextButton
+        style={{
+          fontSize: 20,
+          textAlign: "center",
+          color: variables.colors.white,
+        }}
+        onPress={props.onPress}
+        text={props.text}
+      />
     </Pressable>
   );
 };
@@ -569,6 +637,47 @@ const SuccessFailureButton: React.FC<{
         {props.text}
       </Text>
     </Pressable>
+  );
+};
+
+const StartGameModal: React.FC<{
+  show: boolean;
+  onClose(): void;
+  startGame(): Promise<void>;
+  startingGame: boolean;
+}> = (props) => {
+  return (
+    <BaseModal show={props.show} onClose={props.onClose}>
+      <Text style={{ fontWeight: "bold" }}>
+        Are you sure you want to start?
+      </Text>
+      <HorizontalSpacer height={20} />
+      <Text>New players wont be able to join once the game has started.</Text>
+      <HorizontalSpacer height={20} />
+
+      <Button onPress={props.startGame} loading={props.startingGame}>
+        START
+      </Button>
+    </BaseModal>
+  );
+};
+
+const FinishGameModal: React.FC<{
+  show: boolean;
+  onClose(): void;
+  finishGame(): Promise<void>;
+  finishingGame: boolean;
+}> = (props) => {
+  return (
+    <BaseModal show={props.show} onClose={props.onClose}>
+      <Text style={{ fontWeight: "bold" }}>
+        Are you sure you want to finish?
+      </Text>
+      <HorizontalSpacer height={20} />
+      <Button onPress={props.finishGame} loading={props.finishingGame}>
+        FINISH
+      </Button>
+    </BaseModal>
   );
 };
 

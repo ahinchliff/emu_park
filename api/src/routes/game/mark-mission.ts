@@ -95,13 +95,26 @@ const markMission: AuthRequestHandler<
     { status: body.status, againstPlayerId: body.againstPlayerId }
   );
 
+  await services.data.gameEvent.create({
+    gameId: game.gameId,
+    eventType: "markedMission",
+    data: {
+      userId: user.userId,
+      againstPlayerId: body.againstPlayerId,
+      missionId,
+      success: body.status === "completed",
+    },
+  });
+
   const players = await services.data.player.getMany({ gameId });
 
   const missions = await services.data.playerMission.getMany({
     gameId,
   });
 
-  const apiGame = toApiGame(user.userId, game, players, missions);
+  const events = await services.data.gameEvent.getMany({ gameId });
+
+  const apiGame = toApiGame(user.userId, game, players, missions, events);
 
   await services.socket.emitGameUpdate(game.gameId, apiGame);
 

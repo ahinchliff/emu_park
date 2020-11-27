@@ -48,11 +48,20 @@ declare namespace data {
     updatedAt: Date | undefined;
   };
 
+  type GameEventTable = {
+    gameEventId: number;
+    gameId: number;
+    eventType: "joinedGame" | "gameStarted" | "gameFinished" | "markedMission";
+    data: unknown;
+    createdAt: Date;
+  };
+
   type UserColumns = keyof UserTable;
   type GameColumns = keyof GameTable;
   type PlayerColumns = keyof PlayerTable;
   type MissionColumns = keyof MissionTable;
   type gameUserMissionColumns = keyof GameUserMissionTable;
+  type GameEventTableColumns = keyof GameEventTable;
 
   interface ITables {
     user: { [key in UserColumns]: unknown };
@@ -60,5 +69,6 @@ declare namespace data {
     player: { [key in PlayerColumns]: unknown };
     mission: { [key in MissionColumns]: unknown };
     gameUserMission: { [key in gameUserMissionColumns]: unknown };
+    gameEvent: { [key in GameEventTableColumns]: unknown };
   }
 }
